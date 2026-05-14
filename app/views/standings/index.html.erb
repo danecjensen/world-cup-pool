@@ -1,0 +1,32 @@
+<% content_for :title, "Standings" %>
+
+<h1 class="text-3xl font-extrabold tracking-tight mb-2">Standings</h1>
+<p class="text-slate-600 mb-6 text-sm">Ranked by total points. Ties stay tied.</p>
+
+<div class="rounded-xl bg-white shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+      <tr>
+        <th class="text-left px-4 py-3">#</th>
+        <th class="text-left px-4 py-3">Player</th>
+        <th class="text-right px-4 py-3">Group correct</th>
+        <th class="text-right px-4 py-3">Bracket correct</th>
+        <th class="text-right px-4 py-3">Total points</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% if @players.empty? %>
+        <tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">No players yet — be the first to sign up!</td></tr>
+      <% end %>
+      <% @players.each_with_index do |p, i| %>
+        <tr class="<%= 'bg-emerald-50/40' if i.zero? %>">
+          <td class="px-4 py-3 font-mono text-slate-400 w-10"><%= i + 1 %></td>
+          <td class="px-4 py-3 font-medium"><%= p.display_name %></td>
+          <td class="px-4 py-3 text-right text-slate-600"><%= p.group_correct %></td>
+          <td class="px-4 py-3 text-right text-slate-600"><%= p.bracket_correct %></td>
+          <td class="px-4 py-3 text-right font-bold text-emerald-700"><%= p.total_points %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,37 @@
+{
+  "name": "2026 FIFA World Cup Pool",
+  "description": "A Rails 7 + Postgres pool app for the 2026 FIFA World Cup. Players pick W/L/T for all 72 group games and fill out a full knockout bracket; admin enters results.",
+  "repository": "https://github.com/danecjensen/world-cup-pool",
+  "keywords": ["rails", "world-cup", "pool", "devise", "hotwire"],
+  "env": {
+    "RAILS_MASTER_KEY": {
+      "description": "Rails master key (from config/master.key)",
+      "required": true
+    },
+    "RAILS_LOG_TO_STDOUT": { "value": "enabled" },
+    "RAILS_SERVE_STATIC_FILES": { "value": "enabled" },
+    "ADMIN_EMAIL": {
+      "description": "Email for initial admin account",
+      "required": false
+    },
+    "ADMIN_PASSWORD": {
+      "description": "Password for initial admin account",
+      "required": false
+    },
+    "ADMIN_DISPLAY_NAME": {
+      "description": "Display name for initial admin account",
+      "value": "Commissioner",
+      "required": false
+    }
+  },
+  "addons": [
+    { "plan": "heroku-postgresql:essential-0" }
+  ],
+  "buildpacks": [
+    { "url": "heroku/ruby" },
+    { "url": "heroku/nodejs" }
+  ],
+  "scripts": {
+    "postdeploy": "bundle exec rails db:seed"
+  }
+}

@@ -1,0 +1,83 @@
+<% content_for :title, "Home · 2026 World Cup Pool" %>
+
+<section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-rose-600 p-10 text-white shadow-xl mb-10">
+  <div class="relative z-10 max-w-3xl">
+    <p class="text-sm uppercase tracking-widest text-emerald-100">June 11 – July 19, 2026</p>
+    <h1 class="mt-2 text-4xl md:text-5xl font-extrabold tracking-tight">
+      Pick every game. Settle every argument.
+    </h1>
+    <p class="mt-4 text-lg text-emerald-50">
+      48 teams · 104 matches · one shared pool. Predict winners of all 72 group games, then fill out your entire knockout bracket. Highest total points takes the trophy.
+    </p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <% if user_signed_in? %>
+        <%= link_to "Make group picks", group_picks_path, class: "inline-block bg-white text-emerald-700 font-semibold px-5 py-3 rounded-lg shadow hover:bg-emerald-50" %>
+        <%= link_to "Open bracket", bracket_picks_path, class: "inline-block bg-emerald-800/40 hover:bg-emerald-800/60 text-white font-semibold px-5 py-3 rounded-lg ring-1 ring-white/30" %>
+      <% else %>
+        <%= link_to "Sign up to play", new_user_registration_path, class: "inline-block bg-white text-emerald-700 font-semibold px-5 py-3 rounded-lg shadow hover:bg-emerald-50" %>
+        <%= link_to "Sign in", new_user_session_path, class: "inline-block bg-emerald-800/40 hover:bg-emerald-800/60 text-white font-semibold px-5 py-3 rounded-lg ring-1 ring-white/30" %>
+      <% end %>
+    </div>
+  </div>
+  <div class="absolute -right-10 -bottom-10 text-[14rem] opacity-10">⚽</div>
+</section>
+
+<section class="grid md:grid-cols-3 gap-6 mb-10">
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-2">Scoring</h2>
+    <ul class="text-sm text-slate-600 space-y-1">
+      <li>Group game: <span class="font-semibold">1 pt</span></li>
+      <li>Round of 32: <span class="font-semibold">2 pts</span></li>
+      <li>Round of 16: <span class="font-semibold">3 pts</span></li>
+      <li>Quarterfinal: <span class="font-semibold">4 pts</span></li>
+      <li>Semifinal: <span class="font-semibold">5 pts</span></li>
+      <li>Final: <span class="font-semibold">6 pts</span></li>
+    </ul>
+  </div>
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-2">Locks</h2>
+    <p class="text-sm text-slate-600">All group picks must be in before the first group game kicks off. All bracket picks must be in before the first R32 match kicks off. No late picks.</p>
+  </div>
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-2">Pool size</h2>
+    <p class="text-3xl font-bold text-emerald-700"><%= @user_count %></p>
+    <p class="text-sm text-slate-600">player<%= @user_count == 1 ? "" : "s" %> registered</p>
+  </div>
+</section>
+
+<section class="grid md:grid-cols-2 gap-6">
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-4">Leaderboard preview</h2>
+    <% if @top_players.any? %>
+      <ol class="space-y-2">
+        <% @top_players.each_with_index do |p, i| %>
+          <li class="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0">
+            <span class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400 w-5"><%= i + 1 %>.</span>
+              <span class="font-medium"><%= p.display_name %></span>
+            </span>
+            <span class="text-emerald-700 font-bold"><%= p.total %> pts</span>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p class="text-sm text-slate-500">No picks scored yet.</p>
+    <% end %>
+    <%= link_to "Full standings →", standings_path, class: "inline-block mt-4 text-sm font-medium text-emerald-700 hover:underline" %>
+  </div>
+
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-4">Next up</h2>
+    <% if @next_match %>
+      <p class="text-xs uppercase tracking-wide text-slate-400">Group <%= @next_match.group.letter %> · Match <%= @next_match.number %></p>
+      <p class="text-lg font-semibold mt-1"><%= @next_match.home_team.flag_emoji %> <%= @next_match.home_team.name %> vs <%= @next_match.away_team.name %> <%= @next_match.away_team.flag_emoji %></p>
+      <p class="text-sm text-slate-600 mt-1"><%= @next_match.kickoff_at.strftime("%a, %b %-d · %-l:%M %p") %> · <%= @next_match.venue %></p>
+    <% elsif @next_knockout %>
+      <p class="text-xs uppercase tracking-wide text-slate-400"><%= @next_knockout.round_name %></p>
+      <p class="text-lg font-semibold mt-1"><%= @next_knockout.home_team&.name || @next_knockout.home_slot&.display_label %> vs <%= @next_knockout.away_team&.name || @next_knockout.away_slot&.display_label %></p>
+      <p class="text-sm text-slate-600 mt-1"><%= @next_knockout.kickoff_at&.strftime("%a, %b %-d · %-l:%M %p") %></p>
+    <% else %>
+      <p class="text-sm text-slate-500">Tournament is over. Thanks for playing!</p>
+    <% end %>
+  </div>
+</section>
