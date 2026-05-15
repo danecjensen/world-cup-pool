@@ -81,6 +81,4 @@ test:
 #
 production:
   <<: *default
-  database: world_cup_pool_production
-  username: world_cup_pool
-  password: <%= ENV["WORLD_CUP_POOL_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>

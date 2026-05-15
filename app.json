@@ -28,8 +28,7 @@
     { "plan": "heroku-postgresql:essential-0" }
   ],
   "buildpacks": [
-    { "url": "heroku/ruby" },
-    { "url": "heroku/nodejs" }
+    { "url": "heroku/ruby" }
   ],
   "scripts": {
     "postdeploy": "bundle exec rails db:seed"

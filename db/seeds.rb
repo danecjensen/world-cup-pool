@@ -11,6 +11,19 @@
 require "active_support/core_ext/time"
 
 ActiveRecord::Base.transaction do
+  if Team.exists? && ENV["FORCE_RESEED"] != "true"
+    puts "Teams already seeded — skipping. Set FORCE_RESEED=true to wipe and reload."
+    if ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
+      User.find_or_create_by!(email: ENV["ADMIN_EMAIL"]) do |u|
+        u.display_name = ENV.fetch("ADMIN_DISPLAY_NAME", "Commissioner")
+        u.password = ENV["ADMIN_PASSWORD"]
+        u.admin = true
+      end
+      puts "Ensured admin user #{ENV['ADMIN_EMAIL']}."
+    end
+    next
+  end
+
   Pick.delete_all
   KnockoutMatch.delete_all
   BracketSlot.delete_all
