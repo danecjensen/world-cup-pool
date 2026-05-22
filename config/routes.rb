@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     resources :matches, only: [:index, :edit, :update]
     resources :knockout_matches, only: [:index, :edit, :update]
     resources :teams, only: [:index, :edit, :update]
+    resources :users, only: [:index, :update]
     post "score" => "dashboard#recompute_scores", as: :recompute_scores
   end
 end

@@ -1,0 +1,50 @@
+<% content_for :title, "Admin · Users" %>
+
+<h1 class="text-3xl font-extrabold tracking-tight mb-6">Users</h1>
+
+<div class="rounded-xl bg-white shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+      <tr>
+        <th class="text-left px-4 py-2">Display name</th>
+        <th class="text-left px-4 py-2">Email</th>
+        <th class="text-left px-4 py-2">Role</th>
+        <th class="text-right px-4 py-2">Points</th>
+        <th class="text-left px-4 py-2">Joined</th>
+        <th class="text-right px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% @users.each do |user| %>
+        <tr>
+          <td class="px-4 py-2 font-medium"><%= user.display_name %></td>
+          <td class="px-4 py-2 text-slate-600"><%= user.email %></td>
+          <td class="px-4 py-2">
+            <% if user.admin? %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Admin</span>
+            <% else %>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">Player</span>
+            <% end %>
+          </td>
+          <td class="px-4 py-2 text-right font-mono"><%= @points_by_user[user.id].to_i %></td>
+          <td class="px-4 py-2 text-slate-500"><%= user.created_at.to_date.iso8601 %></td>
+          <td class="px-4 py-2 text-right">
+            <% if user.admin? %>
+              <%= button_to "Demote to player",
+                            admin_user_path(user, user: { admin: false }),
+                            method: :patch,
+                            class: "text-xs font-semibold text-rose-700 hover:underline bg-transparent",
+                            form: { data: { turbo_confirm: "Remove admin from #{user.display_name}?" } } %>
+            <% else %>
+              <%= button_to "Promote to admin",
+                            admin_user_path(user, user: { admin: true }),
+                            method: :patch,
+                            class: "text-xs font-semibold text-emerald-700 hover:underline bg-transparent",
+                            form: { data: { turbo_confirm: "Make #{user.display_name} an admin?" } } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
