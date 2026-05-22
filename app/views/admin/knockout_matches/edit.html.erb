@@ -1,0 +1,47 @@
+<% content_for :title, "Edit KO Match ##{@match.number}" %>
+
+<h1 class="text-2xl font-bold mb-2"><%= @match.round_name %> · Match ##{@match.number}</h1>
+<p class="text-slate-600 mb-6">
+  <%= @match.home_team&.name || @match.home_slot&.display_label || "TBD" %>
+  vs
+  <%= @match.away_team&.name || @match.away_slot&.display_label || "TBD" %>
+</p>
+
+<%= form_with model: @match, url: admin_knockout_match_path(@match), method: :patch, local: true, html: { class: "space-y-4 max-w-md bg-white p-6 rounded-xl shadow" } do |f| %>
+  <% if @match.home_team.nil? || @match.away_team.nil? %>
+    <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded">
+      Slot teams aren't resolved yet. You can assign them manually below or wait for previous rounds to finish.
+    </p>
+    <div>
+      <%= f.label :home_team_id, "Home team", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.collection_select :home_team_id, Team.alphabetical, :id, :name, { include_blank: "—" }, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+    </div>
+    <div>
+      <%= f.label :away_team_id, "Away team", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.collection_select :away_team_id, Team.alphabetical, :id, :name, { include_blank: "—" }, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :home_score, "Home score", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.number_field :home_score, min: 0, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+    </div>
+    <div>
+      <%= f.label :away_score, "Away score", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.number_field :away_score, min: 0, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :venue, class: "block text-sm font-medium text-slate-700" %>
+    <%= f.text_field :venue, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+  </div>
+
+  <p class="text-xs text-slate-500">Knockout games can't draw — enter the final score after extra time / penalties as it appears on the scoreboard.</p>
+
+  <div class="flex gap-2">
+    <%= f.submit "Save & rescore", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md" %>
+    <%= link_to "Cancel", admin_knockout_matches_path, class: "text-slate-600 px-4 py-2" %>
+  </div>
+<% end %>

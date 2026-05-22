@@ -1,0 +1,42 @@
+<% content_for :title, "Admin · Knockout" %>
+
+<h1 class="text-3xl font-extrabold tracking-tight mb-6">Knockout matches</h1>
+
+<div class="rounded-xl bg-white shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+      <tr>
+        <th class="text-left px-4 py-2">#</th>
+        <th class="text-left px-4 py-2">Round</th>
+        <th class="text-left px-4 py-2">Matchup</th>
+        <th class="text-left px-4 py-2">Kickoff</th>
+        <th class="text-right px-4 py-2">Score</th>
+        <th class="text-right px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% @matches.each do |m| %>
+        <tr>
+          <td class="px-4 py-2 font-mono text-slate-400"><%= m.number %></td>
+          <td class="px-4 py-2"><%= m.round_name %></td>
+          <td class="px-4 py-2">
+            <%= m.home_team&.name || m.home_slot&.display_label || "TBD" %>
+            <span class="text-slate-400 mx-1">vs</span>
+            <%= m.away_team&.name || m.away_slot&.display_label || "TBD" %>
+          </td>
+          <td class="px-4 py-2 text-slate-500 text-xs"><%= m.kickoff_at&.strftime("%b %-d · %-l:%M %p") %></td>
+          <td class="px-4 py-2 text-right font-mono">
+            <% if m.home_score && m.away_score %>
+              <%= m.home_score %>–<%= m.away_score %>
+            <% else %>
+              <span class="text-slate-300">—</span>
+            <% end %>
+          </td>
+          <td class="px-4 py-2 text-right">
+            <%= link_to "Edit", edit_admin_knockout_match_path(m), class: "text-emerald-700 font-medium hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

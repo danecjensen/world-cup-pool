@@ -1,0 +1,27 @@
+<% content_for :title, "Edit Match ##{@match.number}" %>
+
+<h1 class="text-2xl font-bold mb-2">Match ##{@match.number}</h1>
+<p class="text-slate-600 mb-6">Group <%= @match.group.letter %> · <%= @match.home_team.name %> vs <%= @match.away_team.name %> · <%= @match.kickoff_at.strftime("%b %-d · %-l:%M %p") %></p>
+
+<%= form_with model: @match, url: admin_match_path(@match), method: :patch, local: true, html: { class: "space-y-4 max-w-md bg-white p-6 rounded-xl shadow" } do |f| %>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :home_score, "#{@match.home_team.name} score", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.number_field :home_score, min: 0, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500" %>
+    </div>
+    <div>
+      <%= f.label :away_score, "#{@match.away_team.name} score", class: "block text-sm font-medium text-slate-700" %>
+      <%= f.number_field :away_score, min: 0, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :venue, class: "block text-sm font-medium text-slate-700" %>
+    <%= f.text_field :venue, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit "Save & rescore", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md" %>
+    <%= link_to "Cancel", admin_matches_path, class: "text-slate-600 px-4 py-2" %>
+  </div>
+<% end %>

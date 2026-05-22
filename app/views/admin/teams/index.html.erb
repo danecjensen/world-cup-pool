@@ -1,0 +1,30 @@
+<% content_for :title, "Admin · Teams" %>
+
+<h1 class="text-3xl font-extrabold tracking-tight mb-6">Teams</h1>
+
+<div class="rounded-xl bg-white shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+      <tr>
+        <th class="text-left px-4 py-2">Group</th>
+        <th class="text-left px-4 py-2">Flag</th>
+        <th class="text-left px-4 py-2">Name</th>
+        <th class="text-left px-4 py-2">Code</th>
+        <th class="text-right px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% @teams.each do |t| %>
+        <tr>
+          <td class="px-4 py-2 font-semibold"><%= t.group&.letter %></td>
+          <td class="px-4 py-2 text-xl"><%= t.flag_emoji %></td>
+          <td class="px-4 py-2"><%= t.name %></td>
+          <td class="px-4 py-2 font-mono text-xs text-slate-500"><%= t.code %></td>
+          <td class="px-4 py-2 text-right">
+            <%= link_to "Edit", edit_admin_team_path(t), class: "text-emerald-700 font-medium hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

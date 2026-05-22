@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "2026 World Cup Pool" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-rose-50 text-slate-900 antialiased">
+    <header class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-rose-600 text-white shadow-lg">
+      <div class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+        <%= link_to root_path, class: "flex items-center gap-2 font-extrabold text-xl tracking-tight" do %>
+          <span class="text-2xl">⚽</span>
+          <span>World Cup 2026 Pool</span>
+        <% end %>
+
+        <nav class="flex flex-wrap items-center gap-1 text-sm font-medium">
+          <%= link_to "Standings", standings_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+          <% if user_signed_in? %>
+            <%= link_to "Group picks", group_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <%= link_to "Bracket", bracket_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <% if current_user.admin? %>
+              <%= link_to "Admin", admin_root_path, class: "px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30" %>
+            <% end %>
+            <span class="px-3 py-1.5 text-white/80">Hi, <%= current_user.display_name %></span>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "px-3 py-1.5 rounded-md bg-rose-700 hover:bg-rose-800 text-white", form: { data: { turbo: false } } %>
+          <% else %>
+            <%= link_to "Sign in", new_user_session_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <%= link_to "Sign up", new_user_registration_path, class: "px-3 py-1.5 rounded-md bg-white text-emerald-700 hover:bg-emerald-50" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <% if notice.present? %>
+      <div class="container mx-auto px-4 mt-4">
+        <p class="bg-emerald-100 border border-emerald-300 text-emerald-900 px-4 py-3 rounded-md"><%= notice %></p>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="container mx-auto px-4 mt-4">
+        <p class="bg-rose-100 border border-rose-300 text-rose-900 px-4 py-3 rounded-md"><%= alert %></p>
+      </div>
+    <% end %>
+
+    <main class="container mx-auto px-4 py-8">
+      <%= yield %>
+    </main>
+
+    <footer class="mt-12 py-6 text-center text-xs text-slate-500">
+      <p>2026 FIFA World Cup Pool · single shared pool · open registration</p>
+    </footer>
+  </body>
+</html>

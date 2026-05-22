@@ -1,0 +1,80 @@
+<% content_for :title, "Group Picks" %>
+
+<div class="flex flex-wrap items-end justify-between mb-6 gap-2">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight">Group stage picks</h1>
+    <p class="text-slate-600 mt-1 text-sm">Predict the result of each of the 72 group games. 1 point per correct pick.</p>
+  </div>
+  <% if @locked %>
+    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-100 text-rose-800 text-sm font-medium">🔒 Locked — first match has kicked off</span>
+  <% else %>
+    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-sm font-medium">Open until first kickoff</span>
+  <% end %>
+</div>
+
+<%= form_with url: group_picks_path, method: :patch, local: true, html: { class: "space-y-8" } do |f| %>
+  <% @groups.each do |group| %>
+    <section class="rounded-xl bg-white shadow overflow-hidden">
+      <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-5 py-3">
+        <h2 class="font-bold tracking-tight">Group <%= group.letter %></h2>
+      </header>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+          <tr>
+            <th class="text-left px-4 py-2">#</th>
+            <th class="text-left px-4 py-2">Match</th>
+            <th class="text-left px-4 py-2">Kickoff</th>
+            <th class="text-center px-4 py-2">Home win</th>
+            <th class="text-center px-4 py-2">Draw</th>
+            <th class="text-center px-4 py-2">Away win</th>
+            <th class="text-center px-4 py-2">Result</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% group.matches.sort_by(&:number).each do |m| %>
+            <% pick = @picks_by_match[m.id] %>
+            <tr class="<%= 'bg-slate-50' if m.finished? %>">
+              <td class="px-4 py-3 text-slate-400 font-mono"><%= m.number %></td>
+              <td class="px-4 py-3 font-medium">
+                <%= m.home_team.flag_emoji %> <%= m.home_team.name %>
+                <span class="text-slate-400 mx-1">vs</span>
+                <%= m.away_team.name %> <%= m.away_team.flag_emoji %>
+              </td>
+              <td class="px-4 py-3 text-slate-500 text-xs"><%= m.kickoff_at.strftime("%b %-d · %-l:%M %p") %></td>
+              <% %w[home draw away].each do |opt| %>
+                <td class="px-4 py-3 text-center">
+                  <label class="inline-flex">
+                    <input type="radio"
+                           name="picks[<%= m.id %>]"
+                           value="<%= opt %>"
+                           <%= "checked" if pick&.group_result == opt %>
+                           <%= "disabled" if @locked %>
+                           class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
+                  </label>
+                </td>
+              <% end %>
+              <td class="px-4 py-3 text-center">
+                <% if m.finished? %>
+                  <span class="font-mono text-slate-700"><%= m.home_score %>–<%= m.away_score %></span>
+                  <% if pick %>
+                    <span class="ml-1 <%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %> text-xs">
+                      <%= pick.correct ? "✓" : "✗" %>
+                    </span>
+                  <% end %>
+                <% else %>
+                  <span class="text-slate-300">—</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+
+  <% unless @locked %>
+    <div class="flex justify-end">
+      <%= f.submit "Save all picks", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
+    </div>
+  <% end %>
+<% end %>
