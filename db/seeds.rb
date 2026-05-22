@@ -1,12 +1,18 @@
 # 2026 FIFA World Cup pool seed
 #
-# Loads 48 qualified/projected teams into 12 groups of 4 based on the
-# December 5, 2025 group draw in Washington, D.C., then builds the 72
-# group-stage fixtures and the 5-round knockout bracket (R32 -> Final)
-# using FIFA's published 2026 bracket mapping.
+# Loads the final 48 qualified teams into the 12 groups drawn on
+# December 5, 2025 in Washington, D.C. All UEFA play-off paths
+# (A: Bosnia & Herzegovina, B: Sweden, C: Turkey, D: Czechia) and
+# inter-confederation play-off paths (1: DR Congo, 2: Iraq) are resolved
+# with their March 2026 winners — there are no placeholder teams.
 #
-# Admins can edit team-to-group assignments and exact bracket pairings
-# via the Rails console if real-world placements differ from what's seeded.
+# Within each group, teams are listed in FIFA seeding-pot order
+# (Pot 1 -> Pot 4). The intra-group position only affects the order group
+# fixtures are displayed; bracket scoring uses final group standings.
+#
+# Then builds the 72 group-stage fixtures and the 5-round knockout bracket
+# (R32 -> Final). Admins can adjust kickoff times/venues per match to match
+# FIFA's published schedule.
 
 require "active_support/core_ext/time"
 
@@ -36,69 +42,80 @@ ActiveRecord::Base.transaction do
     h[letter] = Group.create!(letter: letter)
   end
 
-  # 48 Teams across 12 groups (Dec 5, 2025 draw). The fourth slot in groups
-  # where intercontinental / UEFA play-off winners are still TBD uses a
-  # placeholder team that admins can rename in the console once known.
+  # Final 48 teams, grouped per the Dec 5, 2025 draw and resolved with the
+  # March 2026 play-off winners. Format: [name, FIFA code, flag, group, pos].
   team_rows = [
-    ["Mexico",        "MEX", "🇲🇽", "A", 1],
-    ["South Korea",   "KOR", "🇰🇷", "A", 2],
-    ["Ivory Coast",   "CIV", "🇨🇮", "A", 3],
-    ["Norway",        "NOR", "🇳🇴", "A", 4],
+    # Group A
+    ["Mexico",                "MEX", "🇲🇽", "A", 1],
+    ["South Korea",           "KOR", "🇰🇷", "A", 2],
+    ["South Africa",          "RSA", "🇿🇦", "A", 3],
+    ["Czechia",               "CZE", "🇨🇿", "A", 4],
 
-    ["Canada",        "CAN", "🇨🇦", "B", 1],
-    ["Ecuador",       "ECU", "🇪🇨", "B", 2],
-    ["Egypt",         "EGY", "🇪🇬", "B", 3],
-    ["UEFA Play-off A", "UEA", "🏳️", "B", 4],
+    # Group B
+    ["Canada",                "CAN", "🇨🇦", "B", 1],
+    ["Switzerland",           "SUI", "🇨🇭", "B", 2],
+    ["Qatar",                 "QAT", "🇶🇦", "B", 3],
+    ["Bosnia and Herzegovina", "BIH", "🇧🇦", "B", 4],
 
-    ["United States", "USA", "🇺🇸", "C", 1],
-    ["Japan",         "JPN", "🇯🇵", "C", 2],
-    ["Algeria",       "ALG", "🇩🇿", "C", 3],
-    ["Paraguay",      "PAR", "🇵🇾", "C", 4],
+    # Group C
+    ["Brazil",                "BRA", "🇧🇷", "C", 1],
+    ["Morocco",               "MAR", "🇲🇦", "C", 2],
+    ["Scotland",              "SCO", "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "C", 3],
+    ["Haiti",                 "HAI", "🇭🇹", "C", 4],
 
-    ["Brazil",        "BRA", "🇧🇷", "D", 1],
-    ["Iran",          "IRN", "🇮🇷", "D", 2],
-    ["Tunisia",       "TUN", "🇹🇳", "D", 3],
-    ["Inter-Confed 1","ICF", "🏳️", "D", 4],
+    # Group D
+    ["United States",         "USA", "🇺🇸", "D", 1],
+    ["Australia",             "AUS", "🇦🇺", "D", 2],
+    ["Paraguay",              "PAR", "🇵🇾", "D", 3],
+    ["Turkey",                "TUR", "🇹🇷", "D", 4],
 
-    ["France",        "FRA", "🇫🇷", "E", 1],
-    ["Australia",     "AUS", "🇦🇺", "E", 2],
-    ["Cape Verde",    "CPV", "🇨🇻", "E", 3],
-    ["Uzbekistan",    "UZB", "🇺🇿", "E", 4],
+    # Group E
+    ["Germany",               "GER", "🇩🇪", "E", 1],
+    ["Ecuador",               "ECU", "🇪🇨", "E", 2],
+    ["Ivory Coast",           "CIV", "🇨🇮", "E", 3],
+    ["Curaçao",               "CUW", "🇨🇼", "E", 4],
 
-    ["Argentina",     "ARG", "🇦🇷", "F", 1],
-    ["Morocco",       "MAR", "🇲🇦", "F", 2],
-    ["Saudi Arabia",  "KSA", "🇸🇦", "F", 3],
-    ["Senegal",       "SEN", "🇸🇳", "F", 4],
+    # Group F
+    ["Netherlands",           "NED", "🇳🇱", "F", 1],
+    ["Japan",                 "JPN", "🇯🇵", "F", 2],
+    ["Tunisia",               "TUN", "🇹🇳", "F", 3],
+    ["Sweden",                "SWE", "🇸🇪", "F", 4],
 
-    ["Spain",         "ESP", "🇪🇸", "G", 1],
-    ["Switzerland",   "SUI", "🇨🇭", "G", 2],
-    ["South Africa",  "RSA", "🇿🇦", "G", 3],
-    ["New Zealand",   "NZL", "🇳🇿", "G", 4],
+    # Group G
+    ["Belgium",               "BEL", "🇧🇪", "G", 1],
+    ["Iran",                  "IRN", "🇮🇷", "G", 2],
+    ["Egypt",                 "EGY", "🇪🇬", "G", 3],
+    ["New Zealand",           "NZL", "🇳🇿", "G", 4],
 
-    ["Germany",       "GER", "🇩🇪", "H", 1],
-    ["Colombia",      "COL", "🇨🇴", "H", 2],
-    ["Jordan",        "JOR", "🇯🇴", "H", 3],
-    ["UEFA Play-off B", "UEB", "🏳️", "H", 4],
+    # Group H
+    ["Spain",                 "ESP", "🇪🇸", "H", 1],
+    ["Uruguay",               "URU", "🇺🇾", "H", 2],
+    ["Saudi Arabia",          "KSA", "🇸🇦", "H", 3],
+    ["Cape Verde",            "CPV", "🇨🇻", "H", 4],
 
-    ["Portugal",      "POR", "🇵🇹", "I", 1],
-    ["Croatia",       "CRO", "🇭🇷", "I", 2],
-    ["Qatar",         "QAT", "🇶🇦", "I", 3],
-    ["Inter-Confed 2","IC2", "🏳️", "I", 4],
+    # Group I
+    ["France",                "FRA", "🇫🇷", "I", 1],
+    ["Senegal",               "SEN", "🇸🇳", "I", 2],
+    ["Norway",                "NOR", "🇳🇴", "I", 3],
+    ["Iraq",                  "IRQ", "🇮🇶", "I", 4],
 
-    ["Belgium",       "BEL", "🇧🇪", "J", 1],
-    ["Uruguay",       "URU", "🇺🇾", "J", 2],
-    ["Ghana",         "GHA", "🇬🇭", "J", 3],
-    ["UEFA Play-off C", "UEC", "🏳️", "J", 4],
+    # Group J
+    ["Argentina",             "ARG", "🇦🇷", "J", 1],
+    ["Austria",               "AUT", "🇦🇹", "J", 2],
+    ["Algeria",               "ALG", "🇩🇿", "J", 3],
+    ["Jordan",                "JOR", "🇯🇴", "J", 4],
 
-    ["England",       "ENG", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "K", 1],
-    ["Panama",        "PAN", "🇵🇦", "K", 2],
-    ["Curacao",       "CUW", "🇨🇼", "K", 3],
-    ["UEFA Play-off D", "UED", "🏳️", "K", 4],
+    # Group K
+    ["Portugal",              "POR", "🇵🇹", "K", 1],
+    ["Colombia",              "COL", "🇨🇴", "K", 2],
+    ["Uzbekistan",            "UZB", "🇺🇿", "K", 3],
+    ["DR Congo",              "COD", "🇨🇩", "K", 4],
 
-    ["Netherlands",   "NED", "🇳🇱", "L", 1],
-    ["Austria",       "AUT", "🇦🇹", "L", 2],
-    ["Haiti",         "HAI", "🇭🇹", "L", 3],
-    ["Jamaica",       "JAM", "🇯🇲", "L", 4]
+    # Group L
+    ["England",               "ENG", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "L", 1],
+    ["Croatia",               "CRO", "🇭🇷", "L", 2],
+    ["Panama",                "PAN", "🇵🇦", "L", 3],
+    ["Ghana",                 "GHA", "🇬🇭", "L", 4]
   ]
 
   teams_by_slot = {}
