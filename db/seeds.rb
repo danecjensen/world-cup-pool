@@ -132,16 +132,19 @@ ActiveRecord::Base.transaction do
             "BMO Field", "BC Place", "Levi's Stadium", "Lincoln Financial Field",
             "Lumen Field", "Gillette Stadium", "Arrowhead Stadium", "Estadio BBVA"]
 
-  GROUP_STAGE_SCHEDULE.each_with_index do |row, idx|
-    Match.create!(
-      number:     idx + 1,
-      group:      groups[row[:group]],
-      home_team:  teams_by_code.fetch(row[:home]),
-      away_team:  teams_by_code.fetch(row[:away]),
-      kickoff_at: central.local(*row[:kickoff]),
-      venue:      row[:venue]
-    )
-  end
+  GROUP_STAGE_SCHEDULE
+    .map { |row| row.merge(kickoff_at: central.local(*row[:kickoff])) }
+    .sort_by { |row| [row[:kickoff_at], row[:group]] }
+    .each_with_index do |row, idx|
+      Match.create!(
+        number:     idx + 1,
+        group:      groups[row[:group]],
+        home_team:  teams_by_code.fetch(row[:home]),
+        away_team:  teams_by_code.fetch(row[:away]),
+        kickoff_at: row[:kickoff_at],
+        venue:      row[:venue]
+      )
+    end
 
   # Bracket slots for group finishers (1st/2nd/3rd of each group, 36 total).
   group_letters.each do |letter|

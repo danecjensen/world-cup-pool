@@ -34,4 +34,22 @@ namespace :group_stage do
 
     puts "Applied schedule to #{updated} matches."
   end
+
+  desc "Renumber group-stage matches in chronological order of kickoff (tiebreak: group letter)"
+  task renumber_chronologically: :environment do
+    ordered = Match.joins(:group).order(:kickoff_at, "groups.letter").to_a
+
+    ActiveRecord::Base.transaction do
+      # Pass 1: park every match at a non-colliding negative number to free up 1..72.
+      ordered.each_with_index do |m, idx|
+        m.update_column(:number, -(idx + 1))
+      end
+      # Pass 2: assign the final chronological number.
+      ordered.each_with_index do |m, idx|
+        m.update_column(:number, idx + 1)
+      end
+    end
+
+    puts "Renumbered #{ordered.size} matches."
+  end
 end
