@@ -5,8 +5,9 @@ class Developer::RecordsController < Developer::BaseController
   before_action :load_record, only: [:show, :edit, :update, :destroy]
 
   def index
-    @records = @model.order(id: :desc).limit(PER_PAGE)
     @columns = @model.column_names
+    @sort_column, @sort_direction = resolve_sort
+    @records = @model.order(@sort_column => @sort_direction).limit(PER_PAGE)
   end
 
   def show
@@ -54,6 +55,12 @@ class Developer::RecordsController < Developer::BaseController
 
   def load_record
     @record = @model.find(params[:id])
+  end
+
+  def resolve_sort
+    column = @columns.include?(params[:sort]) ? params[:sort] : "id"
+    direction = params[:dir] == "asc" ? :asc : :desc
+    [column, direction]
   end
 
   def record_params

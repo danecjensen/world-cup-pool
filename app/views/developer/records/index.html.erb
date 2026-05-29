@@ -4,7 +4,7 @@
   <div>
     <%= link_to "← Models", developer_root_path, class: "text-xs text-slate-500 hover:underline" %>
     <h1 class="text-2xl font-extrabold tracking-tight"><%= @model.name.pluralize %></h1>
-    <p class="text-xs text-slate-500"><code class="font-mono"><%= @model.table_name %></code> · <%= @model.count %> total · showing latest <%= [@model.count, Developer::RecordsController::PER_PAGE].min %></p>
+    <p class="text-xs text-slate-500"><code class="font-mono"><%= @model.table_name %></code> · <%= @model.count %> total · showing first <%= [@model.count, Developer::RecordsController::PER_PAGE].min %> by <code class="font-mono"><%= @sort_column %> <%= @sort_direction %></code></p>
   </div>
   <%= link_to "New #{@model.name}",
               developer_new_record_path(model: @model.model_name.route_key),
@@ -16,7 +16,14 @@
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
       <tr>
         <% @columns.each do |col| %>
-          <th class="text-left px-3 py-2 font-medium"><%= col %></th>
+          <% active = col == @sort_column %>
+          <% next_dir = (active && @sort_direction == :asc) ? "desc" : "asc" %>
+          <% indicator = active ? (@sort_direction == :asc ? " ▲" : " ▼") : "" %>
+          <th class="text-left px-3 py-2 font-medium">
+            <%= link_to "#{col}#{indicator}",
+                        developer_records_path(model: @model.model_name.route_key, sort: col, dir: next_dir),
+                        class: "#{active ? 'text-slate-900' : 'text-slate-500'} hover:underline whitespace-nowrap" %>
+          </th>
         <% end %>
         <th class="px-3 py-2"></th>
       </tr>
