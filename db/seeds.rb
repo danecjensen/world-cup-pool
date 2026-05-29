@@ -15,6 +15,7 @@
 # FIFA's published schedule.
 
 require "active_support/core_ext/time"
+require Rails.root.join("db/group_stage_schedule")
 
 ActiveRecord::Base.transaction do
   if Team.exists? && ENV["FORCE_RESEED"] != "true"
@@ -124,31 +125,22 @@ ActiveRecord::Base.transaction do
     teams_by_slot["#{letter}#{pos}"] = t
   end
 
-  base_date = Time.zone.local(2026, 6, 11, 12, 0)
+  central = ActiveSupport::TimeZone["Central Time (US & Canada)"]
+  teams_by_code = Team.all.index_by(&:code)
   venues = ["MetLife Stadium", "SoFi Stadium", "AT&T Stadium", "Mercedes-Benz Stadium",
             "Hard Rock Stadium", "NRG Stadium", "Estadio Azteca", "Estadio Akron",
             "BMO Field", "BC Place", "Levi's Stadium", "Lincoln Financial Field",
             "Lumen Field", "Gillette Stadium", "Arrowhead Stadium", "Estadio BBVA"]
 
-  # Round-robin pairings per matchday.
-  pairings = [[[1, 2], [3, 4]], [[1, 3], [2, 4]], [[1, 4], [2, 3]]]
-
-  match_number = 0
-  pairings.each_with_index do |md_pairs, md_idx|
-    group_letters.each do |letter|
-      md_pairs.each do |home_pos, away_pos|
-        match_number += 1
-        kickoff = base_date + (md_idx * 24 * 3).hours + (match_number * 3).hours
-        Match.create!(
-          number: match_number,
-          group: groups[letter],
-          home_team: teams_by_slot["#{letter}#{home_pos}"],
-          away_team: teams_by_slot["#{letter}#{away_pos}"],
-          kickoff_at: kickoff,
-          venue: venues[match_number % venues.length]
-        )
-      end
-    end
+  GROUP_STAGE_SCHEDULE.each_with_index do |row, idx|
+    Match.create!(
+      number:     idx + 1,
+      group:      groups[row[:group]],
+      home_team:  teams_by_code.fetch(row[:home]),
+      away_team:  teams_by_code.fetch(row[:away]),
+      kickoff_at: central.local(*row[:kickoff]),
+      venue:      row[:venue]
+    )
   end
 
   # Bracket slots for group finishers (1st/2nd/3rd of each group, 36 total).
