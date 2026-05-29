@@ -36,7 +36,10 @@
 
     <div class="mt-8 grid grid-cols-8 md:grid-cols-12 gap-1 text-2xl md:text-3xl leading-none place-items-center">
       <% @team_flags.each do |flag, name| %>
-        <span class="hover:scale-125 transition-transform duration-150 cursor-help" title="<%= name %>"><%= flag %></span>
+        <span class="relative group inline-block">
+          <span class="block hover:scale-125 transition-transform duration-150" aria-label="<%= name %>"><%= flag %></span>
+          <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded-md bg-slate-900 text-white text-xs font-semibold tracking-normal whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-100 shadow-lg z-20"><%= name %></span>
+        </span>
       <% end %>
     </div>
 
