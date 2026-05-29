@@ -1,0 +1,45 @@
+<% content_for :title, "Developer · #{@model.name.pluralize}" %>
+
+<div class="flex items-center justify-between mb-4">
+  <div>
+    <%= link_to "← Models", developer_root_path, class: "text-xs text-slate-500 hover:underline" %>
+    <h1 class="text-2xl font-extrabold tracking-tight"><%= @model.name.pluralize %></h1>
+    <p class="text-xs text-slate-500"><code class="font-mono"><%= @model.table_name %></code> · <%= @model.count %> total · showing latest <%= [@model.count, Developer::RecordsController::PER_PAGE].min %></p>
+  </div>
+  <%= link_to "New #{@model.name}",
+              new_developer_record_path(model: @model.model_name.route_key),
+              class: "px-3 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" %>
+</div>
+
+<div class="rounded-xl bg-white shadow overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+      <tr>
+        <% @columns.each do |col| %>
+          <th class="text-left px-3 py-2 font-medium"><%= col %></th>
+        <% end %>
+        <th class="px-3 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      <% @records.each do |record| %>
+        <tr class="align-top">
+          <% @columns.each do |col| %>
+            <td class="px-3 py-2 font-mono text-xs text-slate-700 max-w-[24ch] truncate" title="<%= record[col] %>">
+              <%= record[col].to_s.truncate(48) %>
+            </td>
+          <% end %>
+          <td class="px-3 py-2 text-right whitespace-nowrap">
+            <%= link_to "View",   developer_record_path(model: @model.model_name.route_key, id: record.id), class: "text-xs text-slate-700 hover:underline" %>
+            <%= link_to "Edit",   edit_developer_record_path(model: @model.model_name.route_key, id: record.id), class: "ml-2 text-xs text-emerald-700 font-semibold hover:underline" %>
+            <%= button_to "Delete",
+                          developer_record_path(model: @model.model_name.route_key, id: record.id),
+                          method: :delete,
+                          class: "ml-2 text-xs text-rose-700 font-semibold hover:underline bg-transparent inline",
+                          form: { class: "inline", data: { turbo_confirm: "Delete #{@model.name} ##{record.id}?" } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,12 @@
+<% content_for :title, "Developer · New #{@model.name}" %>
+
+<div class="mb-4">
+  <%= link_to "← #{@model.name.pluralize}",
+              developer_records_path(model: @model.model_name.route_key),
+              class: "text-xs text-slate-500 hover:underline" %>
+  <h1 class="text-2xl font-extrabold tracking-tight">New <%= @model.name %></h1>
+</div>
+
+<div class="rounded-xl bg-white shadow p-6">
+  <%= render "form" %>
+</div>

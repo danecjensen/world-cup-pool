@@ -31,6 +31,7 @@
             <%= link_to "Bracket", bracket_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path, class: "px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30" %>
+              <%= link_to "Dev", developer_root_path, class: "px-3 py-1.5 rounded-md bg-slate-900/30 hover:bg-slate-900/50" %>
             <% end %>
             <span class="px-3 py-1.5 text-white/80">Hi, <%= current_user.display_name %></span>
             <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "px-3 py-1.5 rounded-md bg-rose-700 hover:bg-rose-800 text-white", form: { data: { turbo: false } } %>

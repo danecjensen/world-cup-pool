@@ -11,6 +11,20 @@ Rails.application.routes.draw do
   resource :bracket_picks, only: [:show, :update], controller: "bracket_picks"
   resources :standings, only: [:index]
 
+  namespace :developer do
+    root to: "dashboard#index"
+    constraints model: /[a-z_]+/ do
+      get    ":model/new",      to: "records#new",     as: :new_record
+      post   ":model",          to: "records#create"
+      get    ":model/:id/edit", to: "records#edit",    as: :edit_record
+      get    ":model/:id",      to: "records#show",    as: :record
+      patch  ":model/:id",      to: "records#update"
+      put    ":model/:id",      to: "records#update"
+      delete ":model/:id",      to: "records#destroy"
+      get    ":model",          to: "records#index",   as: :records
+    end
+  end
+
   namespace :admin do
     root to: "dashboard#index"
     resources :matches, only: [:index, :edit, :update]

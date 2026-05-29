@@ -1,0 +1,33 @@
+<% content_for :title, "Developer · #{@model.name} ##{@record.id}" %>
+
+<div class="flex items-center justify-between mb-4">
+  <div>
+    <%= link_to "← #{@model.name.pluralize}",
+                developer_records_path(model: @model.model_name.route_key),
+                class: "text-xs text-slate-500 hover:underline" %>
+    <h1 class="text-2xl font-extrabold tracking-tight"><%= @model.name %> #<%= @record.id %></h1>
+  </div>
+  <div class="flex gap-2">
+    <%= link_to "Edit",
+                edit_developer_record_path(model: @model.model_name.route_key, id: @record.id),
+                class: "px-3 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" %>
+    <%= button_to "Delete",
+                  developer_record_path(model: @model.model_name.route_key, id: @record.id),
+                  method: :delete,
+                  class: "px-3 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold",
+                  form: { data: { turbo_confirm: "Delete #{@model.name} ##{@record.id}?" } } %>
+  </div>
+</div>
+
+<div class="rounded-xl bg-white shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <tbody class="divide-y divide-slate-100">
+      <% @model.column_names.each do |col| %>
+        <tr class="align-top">
+          <th class="text-left px-4 py-2 bg-slate-50 font-mono text-xs text-slate-500 w-1/4"><%= col %></th>
+          <td class="px-4 py-2 font-mono text-xs break-all"><%= @record[col].inspect %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,55 @@
+<%= form_with model: @record,
+              url: @record.persisted? ? developer_record_path(model: @model.model_name.route_key, id: @record.id)
+                                       : developer_records_path(model: @model.model_name.route_key),
+              method: @record.persisted? ? :patch : :post,
+              local: true,
+              class: "space-y-4" do |f| %>
+  <% if @record.errors.any? %>
+    <div class="rounded-md bg-rose-50 border border-rose-200 text-rose-900 px-4 py-3 text-sm">
+      <p class="font-semibold mb-1"><%= pluralize(@record.errors.count, "error") %> prevented saving:</p>
+      <ul class="list-disc list-inside">
+        <% @record.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% (@model.column_names - skip_in_forms).each do |col| %>
+    <% column = @model.columns_hash[col] %>
+    <div>
+      <%= f.label col, col, class: "block text-xs font-mono uppercase tracking-wider text-slate-500 mb-1" %>
+
+      <% case column.type %>
+      <% when :boolean %>
+        <div class="flex items-center gap-2">
+          <%= f.check_box col, class: "h-4 w-4 rounded border-slate-300 text-emerald-600" %>
+          <span class="text-sm text-slate-600">current: <code class="font-mono"><%= @record[col].inspect %></code></span>
+        </div>
+      <% when :text %>
+        <%= f.text_area col, rows: 4, class: "w-full rounded-md border-slate-300 shadow-sm text-sm font-mono" %>
+      <% when :integer, :bigint %>
+        <%= f.number_field col, class: "w-full rounded-md border-slate-300 shadow-sm text-sm font-mono" %>
+      <% when :decimal, :float %>
+        <%= f.number_field col, step: "any", class: "w-full rounded-md border-slate-300 shadow-sm text-sm font-mono" %>
+      <% when :datetime %>
+        <%= f.datetime_local_field col, value: @record[col]&.iso8601, class: "w-full rounded-md border-slate-300 shadow-sm text-sm font-mono" %>
+      <% when :date %>
+        <%= f.date_field col, class: "w-full rounded-md border-slate-300 shadow-sm text-sm font-mono" %>
+      <% else %>
+        <%= f.text_field col, class: "w-full rounded-md border-slate-300 shadow-sm text-sm font-mono" %>
+      <% end %>
+
+      <p class="mt-1 text-xs text-slate-400 font-mono"><%= column.sql_type %><%= " · null: false" unless column.null %></p>
+    </div>
+  <% end %>
+
+  <div class="flex gap-2">
+    <%= f.submit (@record.persisted? ? "Save changes" : "Create #{@model.name}"),
+                 class: "px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold cursor-pointer" %>
+    <%= link_to "Cancel",
+                @record.persisted? ? developer_record_path(model: @model.model_name.route_key, id: @record.id)
+                                   : developer_records_path(model: @model.model_name.route_key),
+                class: "px-4 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold" %>
+  </div>
+<% end %>

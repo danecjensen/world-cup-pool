@@ -1,0 +1,16 @@
+<% content_for :title, "Developer" %>
+
+<h1 class="text-3xl font-extrabold tracking-tight mb-2">Developer panel</h1>
+<p class="text-sm text-slate-500 mb-6">Direct CRUD on every ActiveRecord model. No validations are bypassed, but there are no business-logic guards beyond what the model enforces. Use with care.</p>
+
+<div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <% @model_stats.each do |klass, count| %>
+    <%= link_to developer_records_path(model: klass.model_name.route_key),
+                class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
+      <p class="text-xs uppercase tracking-wide text-slate-500"><%= klass.table_name %></p>
+      <p class="font-semibold mt-1"><%= klass.name %></p>
+      <p class="text-3xl font-bold mt-1"><%= count %></p>
+      <p class="text-xs text-slate-500"><%= "record".pluralize(count) %></p>
+    <% end %>
+  <% end %>
+</div>
