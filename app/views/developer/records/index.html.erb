@@ -7,7 +7,7 @@
     <p class="text-xs text-slate-500"><code class="font-mono"><%= @model.table_name %></code> · <%= @model.count %> total · showing latest <%= [@model.count, Developer::RecordsController::PER_PAGE].min %></p>
   </div>
   <%= link_to "New #{@model.name}",
-              new_developer_record_path(model: @model.model_name.route_key),
+              developer_new_record_path(model: @model.model_name.route_key),
               class: "px-3 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" %>
 </div>
 
@@ -31,7 +31,7 @@
           <% end %>
           <td class="px-3 py-2 text-right whitespace-nowrap">
             <%= link_to "View",   developer_record_path(model: @model.model_name.route_key, id: record.id), class: "text-xs text-slate-700 hover:underline" %>
-            <%= link_to "Edit",   edit_developer_record_path(model: @model.model_name.route_key, id: record.id), class: "ml-2 text-xs text-emerald-700 font-semibold hover:underline" %>
+            <%= link_to "Edit",   developer_edit_record_path(model: @model.model_name.route_key, id: record.id), class: "ml-2 text-xs text-emerald-700 font-semibold hover:underline" %>
             <%= button_to "Delete",
                           developer_record_path(model: @model.model_name.route_key, id: record.id),
                           method: :delete,

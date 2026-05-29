@@ -9,7 +9,7 @@
   </div>
   <div class="flex gap-2">
     <%= link_to "Edit",
-                edit_developer_record_path(model: @model.model_name.route_key, id: @record.id),
+                developer_edit_record_path(model: @model.model_name.route_key, id: @record.id),
                 class: "px-3 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" %>
     <%= button_to "Delete",
                   developer_record_path(model: @model.model_name.route_key, id: @record.id),
