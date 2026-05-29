@@ -1,6 +1,6 @@
 <% content_for :title, "Home · 2026 World Cup Pool" %>
 
-<section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-rose-600 p-10 text-white shadow-xl mb-10">
+<section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-rose-600 p-10 text-white shadow-xl mb-10 cursor-default">
   <div class="relative z-10">
     <p class="text-sm uppercase tracking-widest text-emerald-100 text-center">June 11 – July 19, 2026</p>
 
@@ -34,10 +34,15 @@
       </div>
     <% end %>
 
-    <div class="mt-8 flex flex-wrap justify-center gap-x-1.5 gap-y-1 text-2xl md:text-3xl leading-none">
-      <% @team_flags.each do |flag| %>
-        <span class="hover:scale-125 transition-transform duration-150"><%= flag %></span>
+    <div class="mt-8 grid grid-cols-8 md:grid-cols-12 gap-1 text-2xl md:text-3xl leading-none place-items-center">
+      <% @team_flags.each do |flag, name| %>
+        <span class="hover:scale-125 transition-transform duration-150 cursor-help" title="<%= name %>"><%= flag %></span>
       <% end %>
+    </div>
+
+    <div class="mt-10 flex justify-center">
+      <%= link_to "Make picks", (user_signed_in? ? group_picks_path : new_user_registration_path),
+                  class: "inline-block bg-white text-emerald-700 font-extrabold uppercase tracking-wider text-lg md:text-xl px-10 py-5 rounded-xl shadow-lg ring-4 ring-white/30 hover:bg-emerald-50 hover:scale-105 active:scale-95 transition-transform duration-150 cursor-pointer" %>
     </div>
   </div>
   <div class="absolute -right-10 -bottom-10 text-[14rem] opacity-10">⚽</div>
