@@ -2,12 +2,12 @@
 # Kickoff times are Central Time; the Time.zone in callers converts to UTC.
 GROUP_STAGE_SCHEDULE = [
   # Group A
-  { group: "A", home: "MEX", away: "RSA", kickoff: [2026, 6, 11, 13,  0], venue: "Estadio Azteca, Mexico City" },
-  { group: "A", home: "KOR", away: "CZE", kickoff: [2026, 6, 11, 20,  0], venue: "Estadio Akron, Zapopan" },
+  { group: "A", home: "MEX", away: "RSA", kickoff: [2026, 6, 11, 14,  0], venue: "Estadio Azteca, Mexico City" },
+  { group: "A", home: "KOR", away: "CZE", kickoff: [2026, 6, 11, 21,  0], venue: "Estadio Akron, Zapopan" },
   { group: "A", home: "CZE", away: "RSA", kickoff: [2026, 6, 18, 11,  0], venue: "Mercedes-Benz Stadium, Atlanta" },
-  { group: "A", home: "MEX", away: "KOR", kickoff: [2026, 6, 18, 19,  0], venue: "Estadio Akron, Zapopan" },
-  { group: "A", home: "CZE", away: "MEX", kickoff: [2026, 6, 24, 19,  0], venue: "Estadio Azteca, Mexico City" },
-  { group: "A", home: "RSA", away: "KOR", kickoff: [2026, 6, 24, 19,  0], venue: "Estadio BBVA, Guadalupe" },
+  { group: "A", home: "MEX", away: "KOR", kickoff: [2026, 6, 18, 20,  0], venue: "Estadio Akron, Zapopan" },
+  { group: "A", home: "CZE", away: "MEX", kickoff: [2026, 6, 24, 20,  0], venue: "Estadio Azteca, Mexico City" },
+  { group: "A", home: "RSA", away: "KOR", kickoff: [2026, 6, 24, 20,  0], venue: "Estadio BBVA, Guadalupe" },
 
   # Group B
   { group: "B", home: "CAN", away: "BIH", kickoff: [2026, 6, 12, 14,  0], venue: "BMO Field, Toronto" },
@@ -43,9 +43,9 @@ GROUP_STAGE_SCHEDULE = [
 
   # Group F
   { group: "F", home: "NED", away: "JPN", kickoff: [2026, 6, 14, 15,  0], venue: "AT&T Stadium, Arlington" },
-  { group: "F", home: "SWE", away: "TUN", kickoff: [2026, 6, 14, 20,  0], venue: "Estadio BBVA, Guadalupe" },
+  { group: "F", home: "SWE", away: "TUN", kickoff: [2026, 6, 14, 21,  0], venue: "Estadio BBVA, Guadalupe" },
   { group: "F", home: "NED", away: "SWE", kickoff: [2026, 6, 20, 12,  0], venue: "NRG Stadium, Houston" },
-  { group: "F", home: "TUN", away: "JPN", kickoff: [2026, 6, 20, 22,  0], venue: "Estadio BBVA, Guadalupe" },
+  { group: "F", home: "TUN", away: "JPN", kickoff: [2026, 6, 20, 23,  0], venue: "Estadio BBVA, Guadalupe" },
   { group: "F", home: "JPN", away: "SWE", kickoff: [2026, 6, 25, 18,  0], venue: "AT&T Stadium, Arlington" },
   { group: "F", home: "TUN", away: "NED", kickoff: [2026, 6, 25, 18,  0], venue: "Arrowhead Stadium, Kansas City" },
 
@@ -63,7 +63,7 @@ GROUP_STAGE_SCHEDULE = [
   { group: "H", home: "ESP", away: "KSA", kickoff: [2026, 6, 21, 11,  0], venue: "Mercedes-Benz Stadium, Atlanta" },
   { group: "H", home: "URU", away: "CPV", kickoff: [2026, 6, 21, 17,  0], venue: "Hard Rock Stadium, Miami Gardens" },
   { group: "H", home: "CPV", away: "KSA", kickoff: [2026, 6, 26, 19,  0], venue: "NRG Stadium, Houston" },
-  { group: "H", home: "URU", away: "ESP", kickoff: [2026, 6, 26, 18,  0], venue: "Estadio Akron, Zapopan" },
+  { group: "H", home: "URU", away: "ESP", kickoff: [2026, 6, 26, 19,  0], venue: "Estadio Akron, Zapopan" },
 
   # Group I
   { group: "I", home: "FRA", away: "SEN", kickoff: [2026, 6, 16, 14,  0], venue: "MetLife Stadium, East Rutherford" },
@@ -83,9 +83,9 @@ GROUP_STAGE_SCHEDULE = [
 
   # Group K
   { group: "K", home: "POR", away: "COD", kickoff: [2026, 6, 17, 12,  0], venue: "NRG Stadium, Houston" },
-  { group: "K", home: "UZB", away: "COL", kickoff: [2026, 6, 17, 20,  0], venue: "Estadio Azteca, Mexico City" },
+  { group: "K", home: "UZB", away: "COL", kickoff: [2026, 6, 17, 21,  0], venue: "Estadio Azteca, Mexico City" },
   { group: "K", home: "POR", away: "UZB", kickoff: [2026, 6, 23, 12,  0], venue: "NRG Stadium, Houston" },
-  { group: "K", home: "COL", away: "COD", kickoff: [2026, 6, 23, 20,  0], venue: "Estadio Akron, Zapopan" },
+  { group: "K", home: "COL", away: "COD", kickoff: [2026, 6, 23, 21,  0], venue: "Estadio Akron, Zapopan" },
   { group: "K", home: "COL", away: "POR", kickoff: [2026, 6, 27, 18, 30], venue: "Hard Rock Stadium, Miami Gardens" },
   { group: "K", home: "COD", away: "UZB", kickoff: [2026, 6, 27, 18, 30], venue: "Mercedes-Benz Stadium, Atlanta" },
 
