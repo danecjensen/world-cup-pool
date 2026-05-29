@@ -37,8 +37,10 @@
               <td class="px-4 py-3 text-slate-400 font-mono"><%= m.number %></td>
               <td class="px-4 py-3 font-medium">
                 <%= m.home_team.flag_emoji %> <%= m.home_team.name %>
+                <span class="text-slate-400 text-xs font-normal">(home)</span>
                 <span class="text-slate-400 mx-1">vs</span>
                 <%= m.away_team.name %> <%= m.away_team.flag_emoji %>
+                <span class="text-slate-400 text-xs font-normal">(away)</span>
               </td>
               <td class="px-4 py-3 text-slate-500 text-xs"><%= m.kickoff_at.strftime("%b %-d · %-l:%M %p") %></td>
               <% %w[home draw away].each do |opt| %>
