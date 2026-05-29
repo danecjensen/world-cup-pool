@@ -1,3 +1,5 @@
+require "csv"
+
 class Developer::RecordsController < Developer::BaseController
   PER_PAGE = 100
 
@@ -7,7 +9,16 @@ class Developer::RecordsController < Developer::BaseController
   def index
     @columns = @model.column_names
     @sort_column, @sort_direction = resolve_sort
-    @records = @model.order(@sort_column => @sort_direction).limit(PER_PAGE)
+    scope = @model.order(@sort_column => @sort_direction)
+
+    respond_to do |format|
+      format.html { @records = scope.limit(PER_PAGE) }
+      format.csv do
+        send_data build_csv(scope),
+                  filename: "#{@model.table_name}-#{Time.current.strftime('%Y%m%d-%H%M%S')}.csv",
+                  type: "text/csv"
+      end
+    end
   end
 
   def show
@@ -55,6 +66,15 @@ class Developer::RecordsController < Developer::BaseController
 
   def load_record
     @record = @model.find(params[:id])
+  end
+
+  def build_csv(scope)
+    CSV.generate do |csv|
+      csv << @columns
+      scope.find_each do |record|
+        csv << @columns.map { |col| record[col] }
+      end
+    end
   end
 
   def resolve_sort
