@@ -3,7 +3,11 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  helper_method :group_stage_locked?, :knockout_stage_locked?
+  helper_method :group_stage_locked?, :knockout_stage_locked?, :bracket_visible?
+
+  def bracket_visible?
+    SiteSetting.current.bracket_visible?
+  end
 
   def group_stage_locked?
     @group_stage_locked ||= Match.minimum(:kickoff_at).then { |t| t.present? && t <= Time.current }

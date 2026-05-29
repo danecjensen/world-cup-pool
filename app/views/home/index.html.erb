@@ -12,7 +12,9 @@
     <div class="mt-6 flex flex-wrap gap-3">
       <% if user_signed_in? %>
         <%= link_to "Make group picks", group_picks_path, class: "inline-block bg-white text-emerald-700 font-semibold px-5 py-3 rounded-lg shadow hover:bg-emerald-50" %>
-        <%= link_to "Open bracket", bracket_picks_path, class: "inline-block bg-emerald-800/40 hover:bg-emerald-800/60 text-white font-semibold px-5 py-3 rounded-lg ring-1 ring-white/30" %>
+        <% if bracket_visible? %>
+          <%= link_to "Open bracket", bracket_picks_path, class: "inline-block bg-emerald-800/40 hover:bg-emerald-800/60 text-white font-semibold px-5 py-3 rounded-lg ring-1 ring-white/30" %>
+        <% end %>
       <% else %>
         <%= link_to "Sign up to play", new_user_registration_path, class: "inline-block bg-white text-emerald-700 font-semibold px-5 py-3 rounded-lg shadow hover:bg-emerald-50" %>
         <%= link_to "Sign in", new_user_session_path, class: "inline-block bg-emerald-800/40 hover:bg-emerald-800/60 text-white font-semibold px-5 py-3 rounded-lg ring-1 ring-white/30" %>
@@ -72,7 +74,7 @@
       <p class="text-xs uppercase tracking-wide text-slate-400">Group <%= @next_match.group.letter %> · Match <%= @next_match.number %></p>
       <p class="text-lg font-semibold mt-1"><%= @next_match.home_team.flag_emoji %> <%= @next_match.home_team.name %> vs <%= @next_match.away_team.name %> <%= @next_match.away_team.flag_emoji %></p>
       <p class="text-sm text-slate-600 mt-1"><%= @next_match.kickoff_at.strftime("%a, %b %-d · %-l:%M %p") %> · <%= @next_match.venue %></p>
-    <% elsif @next_knockout %>
+    <% elsif @next_knockout && bracket_visible? %>
       <p class="text-xs uppercase tracking-wide text-slate-400"><%= @next_knockout.round_name %></p>
       <p class="text-lg font-semibold mt-1"><%= @next_knockout.home_team&.name || @next_knockout.home_slot&.display_label %> vs <%= @next_knockout.away_team&.name || @next_knockout.away_slot&.display_label %></p>
       <p class="text-sm text-slate-600 mt-1"><%= @next_knockout.kickoff_at&.strftime("%a, %b %-d · %-l:%M %p") %></p>

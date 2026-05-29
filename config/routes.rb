@@ -32,5 +32,6 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :edit, :update]
     resources :users, only: [:index, :update]
     post "score" => "dashboard#recompute_scores", as: :recompute_scores
+    post "toggle_bracket_visibility" => "dashboard#toggle_bracket_visibility", as: :toggle_bracket_visibility
   end
 end

@@ -41,6 +41,19 @@
     <h2 class="font-semibold">Recompute all scores</h2>
     <p class="text-sm opacity-90 mt-1">Re-runs scoring + bracket slot resolution.</p>
   <% end %>
+  <%= button_to admin_toggle_bracket_visibility_path, method: :post,
+                class: "rounded-xl #{bracket_visible? ? 'bg-amber-600 hover:bg-amber-700' : 'bg-slate-700 hover:bg-slate-800'} text-white shadow p-5 text-left w-full" do %>
+    <h2 class="font-semibold">
+      <% if bracket_visible? %>
+        Hide bracket from users
+      <% else %>
+        Show bracket to users
+      <% end %>
+    </h2>
+    <p class="text-sm opacity-90 mt-1">
+      Currently <%= bracket_visible? ? "visible" : "hidden" %>. Toggles the bracket nav link and the home page CTA.
+    </p>
+  <% end %>
 </div>
 
 <% if @pending_bracket_slots.positive? %>

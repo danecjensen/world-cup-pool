@@ -12,4 +12,11 @@ class Admin::DashboardController < Admin::BaseController
     ScoringService.recompute_all
     redirect_to admin_root_path, notice: "Scores recomputed."
   end
+
+  def toggle_bracket_visibility
+    setting = SiteSetting.current
+    setting.update!(bracket_visible: !setting.bracket_visible?)
+    redirect_to admin_root_path,
+                notice: "Bracket is now #{setting.bracket_visible? ? 'visible' : 'hidden'} to users."
+  end
 end

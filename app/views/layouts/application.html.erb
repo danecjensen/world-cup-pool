@@ -28,7 +28,9 @@
           <%= link_to "Standings", standings_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
           <% if user_signed_in? %>
             <%= link_to "Group picks", group_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
-            <%= link_to "Bracket", bracket_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <% if bracket_visible? %>
+              <%= link_to "Bracket", bracket_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <% end %>
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path, class: "px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30" %>
               <%= link_to "Dev", developer_root_path, class: "px-3 py-1.5 rounded-md bg-slate-900/30 hover:bg-slate-900/50" %>
