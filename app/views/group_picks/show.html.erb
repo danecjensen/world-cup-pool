@@ -22,11 +22,10 @@
         <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
           <tr>
             <th class="text-left px-4 py-2">#</th>
-            <th class="text-left px-4 py-2">Match</th>
             <th class="text-left px-4 py-2">Kickoff</th>
-            <th class="text-center px-4 py-2">Home win</th>
+            <th class="text-right px-4 py-2"></th>
             <th class="text-center px-4 py-2">Draw</th>
-            <th class="text-center px-4 py-2">Away win</th>
+            <th class="text-left px-4 py-2"></th>
             <th class="text-center px-4 py-2">Result</th>
           </tr>
         </thead>
@@ -35,24 +34,37 @@
             <% pick = @picks_by_match[m.id] %>
             <tr class="<%= 'bg-slate-50' if m.finished? %>">
               <td class="px-4 py-3 text-slate-400 font-mono"><%= m.number %></td>
-              <td class="px-4 py-3 font-medium">
-                <%= m.home_team.flag_emoji %> <%= m.home_team.name %>
-                <span class="text-slate-400 mx-1">vs</span>
-                <%= m.away_team.name %> <%= m.away_team.flag_emoji %>
+              <td class="px-4 py-3 text-slate-500 text-xs whitespace-nowrap"><%= m.kickoff_at.strftime("%b %-d · %-l:%M %p") %></td>
+              <td class="px-4 py-3 text-right">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <span class="font-medium"><%= m.home_team.flag_emoji %> <%= m.home_team.name %></span>
+                  <input type="radio"
+                         name="picks[<%= m.id %>]"
+                         value="home"
+                         <%= "checked" if pick&.group_result == "home" %>
+                         <%= "disabled" if @locked %>
+                         class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
+                </label>
               </td>
-              <td class="px-4 py-3 text-slate-500 text-xs"><%= m.kickoff_at.strftime("%b %-d · %-l:%M %p") %></td>
-              <% %w[home draw away].each do |opt| %>
-                <td class="px-4 py-3 text-center">
-                  <label class="inline-flex">
-                    <input type="radio"
-                           name="picks[<%= m.id %>]"
-                           value="<%= opt %>"
-                           <%= "checked" if pick&.group_result == opt %>
-                           <%= "disabled" if @locked %>
-                           class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
-                  </label>
-                </td>
-              <% end %>
+              <td class="px-4 py-3 text-center">
+                <input type="radio"
+                       name="picks[<%= m.id %>]"
+                       value="draw"
+                       <%= "checked" if pick&.group_result == "draw" %>
+                       <%= "disabled" if @locked %>
+                       class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
+              </td>
+              <td class="px-4 py-3 text-left">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <input type="radio"
+                         name="picks[<%= m.id %>]"
+                         value="away"
+                         <%= "checked" if pick&.group_result == "away" %>
+                         <%= "disabled" if @locked %>
+                         class="h-5 w-5 text-emerald-600 focus:ring-emerald-500">
+                  <span class="font-medium"><%= m.away_team.name %> <%= m.away_team.flag_emoji %></span>
+                </label>
+              </td>
               <td class="px-4 py-3 text-center">
                 <% if m.finished? %>
                   <span class="font-mono text-slate-700"><%= m.home_score %>–<%= m.away_score %></span>
