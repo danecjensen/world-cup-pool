@@ -2,7 +2,7 @@
 
 <div class="flex flex-wrap items-end justify-between mb-6 gap-2">
   <div>
-    <h1 class="text-3xl font-extrabold tracking-tight">Group stage picks</h1>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Group stage picks</h1>
     <p class="text-slate-600 mt-1 text-sm">Predict the result of each of the 72 group games. 1 point per correct pick.</p>
   </div>
   <% if @locked %>
@@ -12,81 +12,64 @@
   <% end %>
 </div>
 
-<%= form_with url: group_picks_path, method: :patch, local: true, html: { class: "space-y-8" } do |f| %>
+<%= form_with url: group_picks_path, method: :patch, local: true, html: { class: "space-y-8 pb-24" } do |f| %>
   <% @groups.each do |group| %>
     <section class="rounded-xl bg-white shadow overflow-hidden">
-      <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-5 py-3">
+      <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 sm:px-5 py-3">
         <h2 class="font-bold tracking-tight">Group <%= group.letter %></h2>
       </header>
-      <table class="w-full text-sm">
-        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-          <tr>
-            <th class="text-left px-4 py-2">#</th>
-            <th class="text-left px-4 py-2">Kickoff</th>
-            <th class="text-right px-4 py-2"></th>
-            <th class="text-center px-4 py-2">Draw</th>
-            <th class="text-left px-4 py-2"></th>
-            <th class="text-center px-4 py-2">Result</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <% group.matches.sort_by(&:number).each do |m| %>
-            <% pick = @picks_by_match[m.id] %>
-            <tr class="<%= 'bg-slate-50' if m.finished? %>">
-              <td class="px-4 py-3 text-slate-400 font-mono"><%= m.number %></td>
-              <td class="px-4 py-3 text-slate-500 text-xs whitespace-nowrap"><%= m.kickoff_at.strftime("%b %-d · %-l:%M %p") %></td>
-              <td class="px-4 py-3 text-right">
-                <label class="inline-flex items-center gap-2 cursor-pointer">
-                  <span class="font-medium"><%= m.home_team.flag_emoji %> <%= m.home_team.name %></span>
-                  <input type="radio"
-                         name="picks[<%= m.id %>]"
-                         value="home"
-                         <%= "checked" if pick&.group_result == "home" %>
-                         <%= "disabled" if @locked %>
-                         class="h-4 w-4 text-emerald-600 focus:ring-emerald-500">
-                </label>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <input type="radio"
-                       name="picks[<%= m.id %>]"
-                       value="draw"
-                       <%= "checked" if pick&.group_result == "draw" %>
-                       <%= "disabled" if @locked %>
-                       class="h-4 w-4 text-emerald-600 focus:ring-emerald-500">
-              </td>
-              <td class="px-4 py-3 text-left">
-                <label class="inline-flex items-center gap-2 cursor-pointer">
-                  <input type="radio"
-                         name="picks[<%= m.id %>]"
-                         value="away"
-                         <%= "checked" if pick&.group_result == "away" %>
-                         <%= "disabled" if @locked %>
-                         class="h-4 w-4 text-emerald-600 focus:ring-emerald-500">
-                  <span class="font-medium"><%= m.away_team.name %> <%= m.away_team.flag_emoji %></span>
-                </label>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <% if m.finished? %>
-                  <span class="font-mono text-slate-700"><%= m.home_score %>–<%= m.away_score %></span>
-                  <% if pick %>
-                    <span class="ml-1 <%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %> text-xs">
-                      <%= pick.correct ? "✓" : "✗" %>
-                    </span>
-                  <% end %>
-                <% else %>
-                  <span class="text-slate-300">—</span>
+      <ul class="divide-y divide-slate-100">
+        <% group.matches.sort_by(&:number).each do |m| %>
+          <% pick = @picks_by_match[m.id] %>
+          <li class="px-3 sm:px-5 py-4 <%= 'bg-slate-50' if m.finished? %>">
+            <div class="flex items-baseline justify-between text-xs text-slate-500 mb-3 gap-2">
+              <span class="truncate">
+                <span class="font-mono text-slate-400 mr-2">#<%= m.number %></span>
+                <%= m.kickoff_at.strftime("%a %b %-d · %-l:%M %p") %>
+              </span>
+              <% if m.finished? %>
+                <span class="font-mono text-slate-700 whitespace-nowrap"><%= m.home_score %>–<%= m.away_score %></span>
+                <% if pick %>
+                  <span class="<%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %>">
+                    <%= pick.correct ? "✓" : "✗" %>
+                  </span>
                 <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+              <% end %>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <% [
+                   ["home", "#{m.home_team.flag_emoji} #{m.home_team.name}"],
+                   ["draw", "Draw"],
+                   ["away", "#{m.away_team.flag_emoji} #{m.away_team.name}"]
+                 ].each do |opt, label| %>
+                <label class="block cursor-pointer select-none">
+                  <input type="radio"
+                         name="picks[<%= m.id %>]"
+                         value="<%= opt %>"
+                         <%= "checked" if pick&.group_result == opt %>
+                         <%= "disabled" if @locked %>
+                         class="peer sr-only">
+                  <div class="min-h-[3rem] flex items-center justify-center text-center
+                              border-2 border-slate-200 bg-white rounded-lg
+                              px-2 py-2 text-sm font-medium text-slate-700 leading-tight break-words
+                              peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-800 peer-checked:font-semibold
+                              peer-disabled:opacity-60 peer-disabled:cursor-not-allowed
+                              hover:border-slate-300 active:scale-[0.98] transition">
+                    <%= label %>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
     </section>
   <% end %>
 
   <% unless @locked %>
-    <div class="flex justify-end">
-      <%= f.submit "Save all picks", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
+    <div class="fixed bottom-0 inset-x-0 z-20 px-4 py-3 bg-gradient-to-t from-white via-white to-white/80 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:flex sm:justify-end sm:px-0 sm:py-0">
+      <%= f.submit "Save all picks", class: "w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
     </div>
   <% end %>
 <% end %>
