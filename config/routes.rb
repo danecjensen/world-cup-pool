@@ -30,7 +30,9 @@ Rails.application.routes.draw do
     resources :matches, only: [:index, :edit, :update]
     resources :knockout_matches, only: [:index, :edit, :update]
     resources :teams, only: [:index, :edit, :update]
-    resources :users, only: [:index, :update]
+    resources :users, only: [:index, :update] do
+      member { patch :reset_password }
+    end
     post "score" => "dashboard#recompute_scores", as: :recompute_scores
     post "toggle_bracket_visibility" => "dashboard#toggle_bracket_visibility", as: :toggle_bracket_visibility
   end
