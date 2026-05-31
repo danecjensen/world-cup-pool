@@ -82,9 +82,25 @@ Rails.application.configure do
     config.action_mailer.default_url_options = { host: ENV["APP_HOST"], protocol: "https" }
   end
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Deliver password-reset and account emails over SMTP. The defaults target the
+  # Heroku SendGrid add-on (`heroku addons:create sendgrid:starter`), which sets
+  # SENDGRID_USERNAME / SENDGRID_PASSWORD. Any SMTP provider (Mailgun, Postmark,
+  # etc.) works by overriding the SMTP_* vars instead.
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  # Raise on delivery failures so a misconfigured mailer is visible in the logs
+  # instead of silently dropping password-reset emails.
+  config.action_mailer.raise_delivery_errors = true
+
+  config.action_mailer.smtp_settings = {
+    address:              ENV.fetch("SMTP_ADDRESS", "smtp.sendgrid.net"),
+    port:                 ENV.fetch("SMTP_PORT", "587").to_i,
+    domain:               ENV["SMTP_DOMAIN"].presence || ENV["APP_HOST"].presence || "localhost",
+    user_name:            ENV["SMTP_USERNAME"].presence || ENV["SENDGRID_USERNAME"].presence || "apikey",
+    password:             ENV["SMTP_PASSWORD"].presence || ENV["SENDGRID_PASSWORD"].presence || ENV["SENDGRID_API_KEY"],
+    authentication:       :plain,
+    enable_starttls_auto: true
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

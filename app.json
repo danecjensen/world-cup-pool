@@ -22,10 +22,20 @@
       "description": "Display name for initial admin account",
       "value": "Commissioner",
       "required": false
+    },
+    "APP_HOST": {
+      "description": "Public hostname (e.g. your-app.herokuapp.com). Used to build password-reset links in emails.",
+      "required": false
+    },
+    "MAIL_FROM": {
+      "description": "From address for password-reset and account emails. Use an address on a domain verified with your email provider.",
+      "value": "no-reply@worldcuppool.app",
+      "required": false
     }
   },
   "addons": [
-    { "plan": "heroku-postgresql:essential-0" }
+    { "plan": "heroku-postgresql:essential-0" },
+    { "plan": "sendgrid:starter" }
   ],
   "buildpacks": [
     { "url": "heroku/ruby" }

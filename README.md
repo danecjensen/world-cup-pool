@@ -38,15 +38,35 @@ User.create!(email: "you@example.com", password: "...", display_name: "You", adm
 ```bash
 heroku create
 heroku addons:create heroku-postgresql:essential-0
+heroku addons:create sendgrid:starter
 heroku config:set RAILS_MASTER_KEY=$(cat config/master.key) \
                    ADMIN_EMAIL=you@example.com \
                    ADMIN_PASSWORD=changeme \
-                   ADMIN_DISPLAY_NAME=Commissioner
+                   ADMIN_DISPLAY_NAME=Commissioner \
+                   APP_HOST=your-app.herokuapp.com \
+                   MAIL_FROM=no-reply@yourdomain.com
 git push heroku main
 heroku run rails db:seed
 ```
 
 The included `app.json` and `Procfile` configure the release phase to run `db:prepare` and the postdeploy hook to seed teams/groups/fixtures.
+
+## Email (password reset)
+
+Devise's "Forgot your password?" flow emails a reset link. In production this is
+delivered over SMTP. The defaults target the **Heroku SendGrid add-on**, which
+provisions `SENDGRID_USERNAME` / `SENDGRID_PASSWORD` automatically — no extra
+config is needed beyond:
+
+- `APP_HOST` — the public hostname, so reset links point at the right place.
+- `MAIL_FROM` — the sender address (use a domain verified in SendGrid).
+
+To use a different provider (Mailgun, Postmark, plain SMTP, …) set the generic
+overrides instead: `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`,
+`SMTP_PASSWORD`. See `config/environments/production.rb`.
+
+In development, emails are not sent — Devise reset links are printed to the
+Rails server log.
 
 ## Admin operations
 
