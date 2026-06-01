@@ -1,6 +1,6 @@
 class KnockoutMatch < ApplicationRecord
   ROUNDS = %w[r32 r16 qf sf final].freeze
-  ROUND_POINTS = { "r32" => 2, "r16" => 3, "qf" => 4, "sf" => 5, "final" => 6 }.freeze
+  ROUND_POINTS = { "r32" => 2, "r16" => 4, "qf" => 6, "sf" => 8, "final" => 10 }.freeze
   ROUND_NAMES = {
     "r32" => "Round of 32",
     "r16" => "Round of 16",
