@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_14_032305) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_01_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_14_032305) do
     t.index ["user_id"], name: "index_picks_on_user_id"
   end
 
+  create_table "site_settings", force: :cascade do |t|
+    t.boolean "bracket_visible", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "teams", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
@@ -105,6 +111,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_14_032305) do
     t.bigint "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "fifa_ranking"
     t.index ["code"], name: "index_teams_on_code", unique: true
     t.index ["group_id"], name: "index_teams_on_group_id"
     t.index ["name"], name: "index_teams_on_name", unique: true

@@ -19,6 +19,6 @@ class Admin::TeamsController < Admin::BaseController
   private
 
   def team_params
-    params.require(:team).permit(:name, :code, :flag_emoji, :group_id)
+    params.require(:team).permit(:name, :code, :flag_emoji, :group_id, :fifa_ranking)
   end
 end

@@ -39,10 +39,10 @@
 
             <div class="grid grid-cols-3 gap-2">
               <% [
-                   ["home", "#{m.home_team.flag_emoji} #{m.home_team.name}"],
-                   ["draw", "Draw"],
-                   ["away", "#{m.away_team.flag_emoji} #{m.away_team.name}"]
-                 ].each do |opt, label| %>
+                   ["home", m.home_team],
+                   ["draw", nil],
+                   ["away", m.away_team]
+                 ].each do |opt, team| %>
                 <label class="block cursor-pointer select-none">
                   <input type="radio"
                          name="picks[<%= m.id %>]"
@@ -50,13 +50,20 @@
                          <%= "checked" if pick&.group_result == opt %>
                          <%= "disabled" if @locked %>
                          class="peer sr-only">
-                  <div class="min-h-[3rem] flex items-center justify-center text-center
+                  <div class="min-h-[3rem] flex flex-col items-center justify-center text-center
                               border-2 border-slate-200 bg-white rounded-lg
                               px-2 py-2 text-sm font-medium text-slate-700 leading-tight break-words
                               peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-800 peer-checked:font-semibold
                               peer-disabled:opacity-60 peer-disabled:cursor-not-allowed
                               hover:border-slate-300 active:scale-[0.98] transition">
-                    <%= label %>
+                    <% if team %>
+                      <span><%= team.flag_emoji %> <%= team.name %></span>
+                      <% if team.fifa_ranking %>
+                        <span class="mt-0.5 text-[0.625rem] font-normal text-slate-400 leading-none">FIFA #<%= team.fifa_ranking %></span>
+                      <% end %>
+                    <% else %>
+                      <span>Draw</span>
+                    <% end %>
                   </div>
                 </label>
               <% end %>
