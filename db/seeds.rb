@@ -44,84 +44,85 @@ ActiveRecord::Base.transaction do
   end
 
   # Final 48 teams, grouped per the Dec 5, 2025 draw and resolved with the
-  # March 2026 play-off winners. Format: [name, FIFA code, flag, group, pos].
+  # March 2026 play-off winners. FIFA ranking is the April 1, 2026 release.
+  # Format: [name, FIFA code, flag, group, pos, fifa_ranking].
   team_rows = [
     # Group A
-    ["Mexico",                "MEX", "🇲🇽", "A", 1],
-    ["South Korea",           "KOR", "🇰🇷", "A", 2],
-    ["South Africa",          "RSA", "🇿🇦", "A", 3],
-    ["Czechia",               "CZE", "🇨🇿", "A", 4],
+    ["Mexico",                "MEX", "🇲🇽", "A", 1, 15],
+    ["South Korea",           "KOR", "🇰🇷", "A", 2, 25],
+    ["South Africa",          "RSA", "🇿🇦", "A", 3, 60],
+    ["Czechia",               "CZE", "🇨🇿", "A", 4, 41],
 
     # Group B
-    ["Canada",                "CAN", "🇨🇦", "B", 1],
-    ["Switzerland",           "SUI", "🇨🇭", "B", 2],
-    ["Qatar",                 "QAT", "🇶🇦", "B", 3],
-    ["Bosnia and Herzegovina", "BIH", "🇧🇦", "B", 4],
+    ["Canada",                "CAN", "🇨🇦", "B", 1, 30],
+    ["Switzerland",           "SUI", "🇨🇭", "B", 2, 19],
+    ["Qatar",                 "QAT", "🇶🇦", "B", 3, 55],
+    ["Bosnia and Herzegovina", "BIH", "🇧🇦", "B", 4, 65],
 
     # Group C
-    ["Brazil",                "BRA", "🇧🇷", "C", 1],
-    ["Morocco",               "MAR", "🇲🇦", "C", 2],
-    ["Scotland",              "SCO", "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "C", 3],
-    ["Haiti",                 "HAI", "🇭🇹", "C", 4],
+    ["Brazil",                "BRA", "🇧🇷", "C", 1, 6],
+    ["Morocco",               "MAR", "🇲🇦", "C", 2, 8],
+    ["Scotland",              "SCO", "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "C", 3, 43],
+    ["Haiti",                 "HAI", "🇭🇹", "C", 4, 83],
 
     # Group D
-    ["United States",         "USA", "🇺🇸", "D", 1],
-    ["Australia",             "AUS", "🇦🇺", "D", 2],
-    ["Paraguay",              "PAR", "🇵🇾", "D", 3],
-    ["Turkey",                "TUR", "🇹🇷", "D", 4],
+    ["United States",         "USA", "🇺🇸", "D", 1, 16],
+    ["Australia",             "AUS", "🇦🇺", "D", 2, 27],
+    ["Paraguay",              "PAR", "🇵🇾", "D", 3, 40],
+    ["Turkey",                "TUR", "🇹🇷", "D", 4, 22],
 
     # Group E
-    ["Germany",               "GER", "🇩🇪", "E", 1],
-    ["Ecuador",               "ECU", "🇪🇨", "E", 2],
-    ["Ivory Coast",           "CIV", "🇨🇮", "E", 3],
-    ["Curaçao",               "CUW", "🇨🇼", "E", 4],
+    ["Germany",               "GER", "🇩🇪", "E", 1, 10],
+    ["Ecuador",               "ECU", "🇪🇨", "E", 2, 23],
+    ["Ivory Coast",           "CIV", "🇨🇮", "E", 3, 34],
+    ["Curaçao",               "CUW", "🇨🇼", "E", 4, 82],
 
     # Group F
-    ["Netherlands",           "NED", "🇳🇱", "F", 1],
-    ["Japan",                 "JPN", "🇯🇵", "F", 2],
-    ["Tunisia",               "TUN", "🇹🇳", "F", 3],
-    ["Sweden",                "SWE", "🇸🇪", "F", 4],
+    ["Netherlands",           "NED", "🇳🇱", "F", 1, 7],
+    ["Japan",                 "JPN", "🇯🇵", "F", 2, 18],
+    ["Tunisia",               "TUN", "🇹🇳", "F", 3, 44],
+    ["Sweden",                "SWE", "🇸🇪", "F", 4, 38],
 
     # Group G
-    ["Belgium",               "BEL", "🇧🇪", "G", 1],
-    ["Iran",                  "IRN", "🇮🇷", "G", 2],
-    ["Egypt",                 "EGY", "🇪🇬", "G", 3],
-    ["New Zealand",           "NZL", "🇳🇿", "G", 4],
+    ["Belgium",               "BEL", "🇧🇪", "G", 1, 9],
+    ["Iran",                  "IRN", "🇮🇷", "G", 2, 21],
+    ["Egypt",                 "EGY", "🇪🇬", "G", 3, 29],
+    ["New Zealand",           "NZL", "🇳🇿", "G", 4, 85],
 
     # Group H
-    ["Spain",                 "ESP", "🇪🇸", "H", 1],
-    ["Uruguay",               "URU", "🇺🇾", "H", 2],
-    ["Saudi Arabia",          "KSA", "🇸🇦", "H", 3],
-    ["Cape Verde",            "CPV", "🇨🇻", "H", 4],
+    ["Spain",                 "ESP", "🇪🇸", "H", 1, 2],
+    ["Uruguay",               "URU", "🇺🇾", "H", 2, 17],
+    ["Saudi Arabia",          "KSA", "🇸🇦", "H", 3, 61],
+    ["Cape Verde",            "CPV", "🇨🇻", "H", 4, 69],
 
     # Group I
-    ["France",                "FRA", "🇫🇷", "I", 1],
-    ["Senegal",               "SEN", "🇸🇳", "I", 2],
-    ["Norway",                "NOR", "🇳🇴", "I", 3],
-    ["Iraq",                  "IRQ", "🇮🇶", "I", 4],
+    ["France",                "FRA", "🇫🇷", "I", 1, 1],
+    ["Senegal",               "SEN", "🇸🇳", "I", 2, 14],
+    ["Norway",                "NOR", "🇳🇴", "I", 3, 31],
+    ["Iraq",                  "IRQ", "🇮🇶", "I", 4, 57],
 
     # Group J
-    ["Argentina",             "ARG", "🇦🇷", "J", 1],
-    ["Austria",               "AUT", "🇦🇹", "J", 2],
-    ["Algeria",               "ALG", "🇩🇿", "J", 3],
-    ["Jordan",                "JOR", "🇯🇴", "J", 4],
+    ["Argentina",             "ARG", "🇦🇷", "J", 1, 3],
+    ["Austria",               "AUT", "🇦🇹", "J", 2, 24],
+    ["Algeria",               "ALG", "🇩🇿", "J", 3, 28],
+    ["Jordan",                "JOR", "🇯🇴", "J", 4, 63],
 
     # Group K
-    ["Portugal",              "POR", "🇵🇹", "K", 1],
-    ["Colombia",              "COL", "🇨🇴", "K", 2],
-    ["Uzbekistan",            "UZB", "🇺🇿", "K", 3],
-    ["DR Congo",              "COD", "🇨🇩", "K", 4],
+    ["Portugal",              "POR", "🇵🇹", "K", 1, 5],
+    ["Colombia",              "COL", "🇨🇴", "K", 2, 13],
+    ["Uzbekistan",            "UZB", "🇺🇿", "K", 3, 50],
+    ["DR Congo",              "COD", "🇨🇩", "K", 4, 46],
 
     # Group L
-    ["England",               "ENG", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "L", 1],
-    ["Croatia",               "CRO", "🇭🇷", "L", 2],
-    ["Panama",                "PAN", "🇵🇦", "L", 3],
-    ["Ghana",                 "GHA", "🇬🇭", "L", 4]
+    ["England",               "ENG", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "L", 1, 4],
+    ["Croatia",               "CRO", "🇭🇷", "L", 2, 11],
+    ["Panama",                "PAN", "🇵🇦", "L", 3, 33],
+    ["Ghana",                 "GHA", "🇬🇭", "L", 4, 74]
   ]
 
   teams_by_slot = {}
-  team_rows.each do |name, code, flag, letter, pos|
-    t = Team.create!(name: name, code: code, flag_emoji: flag, group: groups[letter])
+  team_rows.each do |name, code, flag, letter, pos, fifa_ranking|
+    t = Team.create!(name: name, code: code, flag_emoji: flag, group: groups[letter], fifa_ranking: fifa_ranking)
     teams_by_slot["#{letter}#{pos}"] = t
   end
 
