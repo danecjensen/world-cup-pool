@@ -6,6 +6,7 @@ class ScoringService
   end
 
   def recompute_all
+    Pick.update_all(correct: false, points_awarded: 0)
     score_group_picks
     resolve_bracket_slots
     score_knockout_picks
