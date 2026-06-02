@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "2026 World Cup Pool" %></title>
+    <title><%= content_for(:title) || pool_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
@@ -21,7 +21,7 @@
       <div class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
         <%= link_to root_path, class: "flex items-center gap-2 font-extrabold text-xl tracking-tight" do %>
           <span class="text-2xl">⚽</span>
-          <span>World Cup 2026 Pool</span>
+          <span><%= pool_name %></span>
         <% end %>
 
         <nav class="flex flex-wrap items-center gap-1 text-sm font-medium">
@@ -61,7 +61,7 @@
     </main>
 
     <footer class="mt-12 py-6 text-center text-xs text-slate-500">
-      <p>2026 FIFA World Cup Pool · single shared pool · open registration</p>
+      <p><%= pool_tagline %></p>
     </footer>
   </body>
 </html>

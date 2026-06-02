@@ -22,6 +22,14 @@
       "description": "Display name for initial admin account",
       "value": "Commissioner",
       "required": false
+    },
+    "POOL_NAME": {
+      "description": "Display name for this pool",
+      "required": false
+    },
+    "POOL_TAGLINE": {
+      "description": "Footer tagline for this pool",
+      "required": false
     }
   },
   "addons": [
