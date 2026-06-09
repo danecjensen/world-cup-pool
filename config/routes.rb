@@ -33,6 +33,8 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :update] do
       member { patch :reset_password }
     end
+    resources :payments, only: [:index, :update]
+    get "group_pick_status" => "group_pick_status#index", as: :group_pick_status
     post "score" => "dashboard#recompute_scores", as: :recompute_scores
     post "toggle_bracket_visibility" => "dashboard#toggle_bracket_visibility", as: :toggle_bracket_visibility
   end

@@ -37,6 +37,14 @@
     <h2 class="font-semibold">Manage users →</h2>
     <p class="text-sm text-slate-500 mt-1">View all players and promote to admin.</p>
   <% end %>
+  <%= link_to admin_payments_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
+    <h2 class="font-semibold">Track payments →</h2>
+    <p class="text-sm text-slate-500 mt-1">Tick a box to mark each player as paid.</p>
+  <% end %>
+  <%= link_to admin_group_pick_status_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
+    <h2 class="font-semibold">Group pick status →</h2>
+    <p class="text-sm text-slate-500 mt-1">See who has submitted all their group-stage picks.</p>
+  <% end %>
   <%= button_to admin_recompute_scores_path, method: :post, class: "rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow p-5 text-left w-full" do %>
     <h2 class="font-semibold">Recompute all scores</h2>
     <p class="text-sm opacity-90 mt-1">Re-runs scoring + bracket slot resolution.</p>
