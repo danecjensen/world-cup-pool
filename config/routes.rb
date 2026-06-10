@@ -7,6 +7,11 @@ Rails.application.routes.draw do
 
   root "home#index"
 
+  resource :profile, only: [:show], controller: "profiles" do
+    patch :update_name
+    patch :update_password
+  end
+
   resource :group_picks, only: [:show, :update], controller: "group_picks"
   resource :bracket_picks, only: [:show, :update], controller: "bracket_picks"
   resources :standings, only: [:index]

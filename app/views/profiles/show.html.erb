@@ -1,0 +1,96 @@
+<% content_for :title, "Your Profile" %>
+
+<div class="mb-6">
+  <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Your profile</h1>
+  <p class="text-slate-600 mt-1 text-sm">Update your username or password, and review your group stage picks.</p>
+</div>
+
+<div class="grid gap-6 md:grid-cols-2 mb-10">
+  <section class="bg-white rounded-xl shadow p-6">
+    <h2 class="text-lg font-bold tracking-tight mb-4">Username</h2>
+    <%= form_with model: current_user, url: update_name_profile_path, method: :patch, html: { class: "space-y-4" } do |f| %>
+      <% if @name_errors.present? %>
+        <div class="bg-rose-50 border border-rose-200 text-rose-800 text-sm px-3 py-2 rounded">
+          <% @name_errors.each do |msg| %><p><%= msg %></p><% end %>
+        </div>
+      <% end %>
+      <div>
+        <%= f.label :display_name, "Username", class: "block text-sm font-medium text-slate-700" %>
+        <%= f.text_field :display_name, class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+      </div>
+      <%= f.submit "Save username", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md" %>
+    <% end %>
+  </section>
+
+  <section class="bg-white rounded-xl shadow p-6">
+    <h2 class="text-lg font-bold tracking-tight mb-4">Change password</h2>
+    <%= form_with model: current_user, url: update_password_profile_path, method: :patch, html: { class: "space-y-4" } do |f| %>
+      <% if @password_errors.present? %>
+        <div class="bg-rose-50 border border-rose-200 text-rose-800 text-sm px-3 py-2 rounded">
+          <% @password_errors.each do |msg| %><p><%= msg %></p><% end %>
+        </div>
+      <% end %>
+      <div>
+        <%= f.label :current_password, class: "block text-sm font-medium text-slate-700" %>
+        <%= f.password_field :current_password, autocomplete: "current-password", class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+      </div>
+      <div>
+        <%= f.label :password, "New password", class: "block text-sm font-medium text-slate-700" %>
+        <%= f.password_field :password, autocomplete: "new-password", class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+      </div>
+      <div>
+        <%= f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-slate-700" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
+      </div>
+      <%= f.submit "Update password", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md" %>
+    <% end %>
+  </section>
+</div>
+
+<div class="flex flex-wrap items-end justify-between mb-4 gap-2">
+  <h2 class="text-xl font-extrabold tracking-tight">Your group stage picks</h2>
+  <%= link_to "Edit picks", group_picks_path, class: "text-sm font-medium text-emerald-700 hover:text-emerald-800 underline" %>
+</div>
+
+<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+  <% @groups.each do |group| %>
+    <section class="rounded-xl bg-white shadow overflow-hidden">
+      <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 py-2">
+        <h3 class="font-bold tracking-tight text-sm">Group <%= group.letter %></h3>
+      </header>
+      <ul class="divide-y divide-slate-100 text-sm">
+        <% group.matches.sort_by(&:number).each do |m| %>
+          <% pick = @picks_by_match[m.id] %>
+          <li class="px-4 py-2.5 flex items-center justify-between gap-3 <%= 'bg-slate-50' if m.finished? %>">
+            <div class="min-w-0">
+              <div class="truncate text-slate-700">
+                <%= m.home_team.flag_emoji %> <%= m.home_team.name %>
+                <span class="text-slate-400">vs</span>
+                <%= m.away_team.flag_emoji %> <%= m.away_team.name %>
+              </div>
+              <div class="text-xs text-slate-400">
+                <span class="font-mono">#<%= m.number %></span>
+                <% if m.finished? %>
+                  · <span class="font-mono text-slate-600"><%= m.home_score %>–<%= m.away_score %></span>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-right whitespace-nowrap">
+              <% if pick&.group_result %>
+                <% picked_team = { "home" => m.home_team, "away" => m.away_team }[pick.group_result] %>
+                <span class="font-medium text-slate-800">
+                  <%= picked_team ? "#{picked_team.flag_emoji} #{picked_team.name}" : "Draw" %>
+                </span>
+                <% if m.finished? %>
+                  <span class="<%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %>"><%= pick.correct ? "✓" : "✗" %></span>
+                <% end %>
+              <% else %>
+                <span class="text-slate-400">No pick</span>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</div>
