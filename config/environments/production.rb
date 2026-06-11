@@ -36,8 +36,11 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files in cloud object storage (see config/storage.yml).
+  # Defaults to Amazon S3 because hosts like Heroku have an ephemeral file
+  # system — local disk would lose uploads on every deploy/restart. Set
+  # ACTIVE_STORAGE_SERVICE=local to override (not recommended in production).
+  config.active_storage.service = ENV.fetch("ACTIVE_STORAGE_SERVICE", "amazon").to_sym
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil

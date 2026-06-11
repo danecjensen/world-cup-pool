@@ -48,6 +48,46 @@ heroku run rails db:seed
 
 The included `app.json` and `Procfile` configure the release phase to run `db:prepare` and the postdeploy hook to seed teams/groups/fixtures.
 
+### Media storage for `/feed` (required on Heroku)
+
+The `/feed` photo & video gallery uses Active Storage. Heroku's file system is
+**ephemeral** — files written to local disk are wiped on every deploy and on the
+daily dyno restart — so production defaults to Amazon S3. Provide a bucket with
+either of these approaches:
+
+**Option A — your own S3 bucket:**
+
+```bash
+heroku config:set AWS_ACCESS_KEY_ID=... \
+                   AWS_SECRET_ACCESS_KEY=... \
+                   AWS_REGION=us-east-1 \
+                   AWS_BUCKET=your-bucket-name
+```
+
+**Option B — Bucketeer add-on** (sets `BUCKETEER_*` vars automatically):
+
+```bash
+heroku addons:create bucketeer:hobbyist
+```
+
+Uploads use Active Storage **direct uploads** (browser → S3), which keeps large
+videos from hitting Heroku's 30-second request timeout. For this the bucket
+needs CORS allowing `PUT` from your app's origin:
+
+```json
+[
+  {
+    "AllowedOrigins": ["https://your-app.herokuapp.com"],
+    "AllowedMethods": ["PUT"],
+    "AllowedHeaders": ["Content-Type", "Content-MD5", "Content-Disposition"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+To run against local disk instead (e.g. a non-Heroku host with a persistent
+volume), set `ACTIVE_STORAGE_SERVICE=local`.
+
 ## Admin operations
 
 After signing in as admin, visit `/admin`:
