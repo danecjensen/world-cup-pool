@@ -72,17 +72,26 @@ heroku addons:create bucketeer:hobbyist
 
 Uploads use Active Storage **direct uploads** (browser → S3), which keeps large
 videos from hitting Heroku's 30-second request timeout. For this the bucket
-needs CORS allowing `PUT` from your app's origin:
+needs a CORS policy. Set `APP_HOST` to your app's hostname, then run the
+included task (works for both your own bucket and Bucketeer):
 
-```json
-[
-  {
-    "AllowedOrigins": ["https://your-app.herokuapp.com"],
-    "AllowedMethods": ["PUT"],
-    "AllowedHeaders": ["Content-Type", "Content-MD5", "Content-Disposition"],
-    "MaxAgeSeconds": 3600
-  }
-]
+```bash
+heroku config:set APP_HOST=your-app.herokuapp.com
+heroku run rails storage:configure_cors
+```
+
+Verify the whole storage path end-to-end with a round-trip smoke test:
+
+```bash
+heroku run rails storage:check
+```
+
+If `configure_cors` reports **access denied** (some add-on credentials can't
+change the bucket policy), fall back to proxied uploads — they route through
+the dyno and need no CORS (fine for photos and short clips):
+
+```bash
+heroku config:set ACTIVE_STORAGE_DIRECT_UPLOADS=false
 ```
 
 To run against local disk instead (e.g. a non-Heroku host with a persistent
