@@ -16,6 +16,10 @@ Rails.application.routes.draw do
   resource :bracket_picks, only: [:show, :update], controller: "bracket_picks"
   resources :standings, only: [:index]
 
+  get "feed" => "feed#index", as: :feed
+  post "feed" => "feed#create"
+  delete "feed/:id" => "feed#destroy", as: :feed_post
+
   namespace :developer do
     root to: "dashboard#index"
     constraints model: /[a-z_]+/ do

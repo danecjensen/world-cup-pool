@@ -26,6 +26,7 @@
 
         <nav class="flex flex-wrap items-center gap-1 text-sm font-medium">
           <%= link_to "Standings", standings_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+          <%= link_to "Feed", feed_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
           <% if user_signed_in? %>
             <%= link_to "Group picks", group_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
             <% if bracket_visible? %>

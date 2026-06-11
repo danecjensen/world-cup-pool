@@ -3,6 +3,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :picks, dependent: :destroy
+  has_many :posts, dependent: :destroy
 
   validates :display_name, presence: true, uniqueness: { case_sensitive: false }, length: { in: 2..30 }
 
