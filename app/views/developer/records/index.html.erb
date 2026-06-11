@@ -20,25 +20,30 @@
   <table class="w-full text-sm">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
       <tr>
-        <% @columns.each do |col| %>
-          <% active = col == @sort_column %>
-          <% next_dir = (active && @sort_direction == :asc) ? "desc" : "asc" %>
-          <% indicator = active ? (@sort_direction == :asc ? " ▲" : " ▼") : "" %>
-          <th class="text-left px-3 py-2 font-medium">
-            <%= link_to "#{col}#{indicator}",
-                        developer_records_path(model: @model.model_name.route_key, sort: col, dir: next_dir),
-                        class: "#{active ? 'text-slate-900' : 'text-slate-500'} hover:underline whitespace-nowrap" %>
-          </th>
+        <% @display_columns.each do |col| %>
+          <% if sortable_column?(col) %>
+            <% active = col == @sort_column %>
+            <% next_dir = (active && @sort_direction == :asc) ? "desc" : "asc" %>
+            <% indicator = active ? (@sort_direction == :asc ? " ▲" : " ▼") : "" %>
+            <th class="text-left px-3 py-2 font-medium">
+              <%= link_to "#{col}#{indicator}",
+                          developer_records_path(model: @model.model_name.route_key, sort: col, dir: next_dir),
+                          class: "#{active ? 'text-slate-900' : 'text-slate-500'} hover:underline whitespace-nowrap" %>
+            </th>
+          <% else %>
+            <th class="text-left px-3 py-2 font-medium text-slate-500 whitespace-nowrap"><%= col %></th>
+          <% end %>
         <% end %>
         <th class="px-3 py-2"></th>
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-100">
       <% @records.each do |record| %>
+        <% row = display_row(record) %>
         <tr class="align-top">
-          <% @columns.each do |col| %>
-            <td class="px-3 py-2 font-mono text-xs text-slate-700 max-w-[24ch] truncate" title="<%= record[col] %>">
-              <%= record[col].to_s.truncate(48) %>
+          <% @display_columns.each do |col| %>
+            <td class="px-3 py-2 font-mono text-xs text-slate-700 max-w-[24ch] truncate" title="<%= row[col] %>">
+              <%= row[col].to_s.truncate(48) %>
             </td>
           <% end %>
           <td class="px-3 py-2 text-right whitespace-nowrap">
