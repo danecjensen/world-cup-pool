@@ -69,10 +69,21 @@ class Developer::RecordsController < Developer::BaseController
   end
 
   def build_csv(scope)
-    CSV.generate do |csv|
-      csv << @columns
-      scope.find_each do |record|
-        csv << @columns.map { |col| record[col] }
+    if @model.respond_to?(:csv_export_columns)
+      columns = @model.csv_export_columns
+      CSV.generate do |csv|
+        csv << columns
+        @model.csv_export_scope(scope).find_each do |record|
+          row = record.csv_export_row
+          csv << columns.map { |col| row[col] }
+        end
+      end
+    else
+      CSV.generate do |csv|
+        csv << @columns
+        scope.find_each do |record|
+          csv << @columns.map { |col| record[col] }
+        end
       end
     end
   end
