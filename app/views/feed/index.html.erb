@@ -35,8 +35,35 @@
             class: "block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500 mb-4" %>
 
       <%= f.submit "Share", class: "px-5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm cursor-pointer" %>
+      <p class="mt-3 text-xs text-slate-500">Posts are reviewed by an admin before they appear in the feed.</p>
     <% end %>
   </div>
+
+  <% if @pending_posts.any? %>
+    <div class="rounded-xl bg-amber-50 border border-amber-200 p-5 mb-8">
+      <h2 class="text-sm font-semibold text-amber-900 mb-3">⏳ Awaiting approval</h2>
+      <ul class="space-y-3">
+        <% @pending_posts.each do |post| %>
+          <li class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-md overflow-hidden bg-slate-900 flex items-center justify-center shrink-0">
+              <% if post.image? %>
+                <%= image_tag post.media, class: "w-full h-full object-cover", loading: "lazy", alt: "Pending post" %>
+              <% else %>
+                <span class="text-white text-xl">🎬</span>
+              <% end %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-slate-700 truncate"><%= post.caption.presence || "Your post" %></p>
+              <p class="text-xs text-amber-700">Submitted <%= time_ago_in_words(post.created_at) %> ago — pending review</p>
+            </div>
+            <%= button_to "Cancel", feed_post_path(post), method: :delete,
+                  form: { data: { turbo_confirm: "Delete this pending post?" } },
+                  class: "text-xs text-rose-600 hover:text-rose-800 hover:underline shrink-0" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
 <% else %>
   <div class="rounded-xl bg-white shadow p-5 mb-8 text-sm text-slate-600">
     <%= link_to "Sign in", new_user_session_path, class: "text-emerald-700 font-semibold hover:underline" %>

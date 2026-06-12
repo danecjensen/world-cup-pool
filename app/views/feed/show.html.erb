@@ -16,6 +16,9 @@
     </div>
 
     <div class="p-5">
+      <% if @post.pending? %>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 mb-3 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">⏳ Pending admin approval</span>
+      <% end %>
       <% if @post.caption.present? %>
         <p class="text-slate-800 whitespace-pre-line mb-3"><%= @post.caption %></p>
       <% end %>

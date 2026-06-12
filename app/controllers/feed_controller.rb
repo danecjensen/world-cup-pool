@@ -2,12 +2,23 @@ class FeedController < ApplicationController
   before_action :authenticate_user!, only: [:create, :destroy]
 
   def index
-    @posts = Post.includes(:user, :comments, media_attachment: :blob).newest_first
+    @posts = Post.approved.includes(:user, :comments, media_attachment: :blob).newest_first
+    # So a user can see that their own submission is in the queue.
+    @pending_posts = if user_signed_in?
+      current_user.posts.pending.includes(:comments, media_attachment: :blob).newest_first
+    else
+      Post.none
+    end
     @post = Post.new
   end
 
   def show
     @post = Post.includes(:user, { comments: :user }, media_attachment: :blob).find(params[:id])
+
+    if @post.pending? && !can_view_pending?(@post)
+      redirect_to feed_path, alert: "That post isn't available." and return
+    end
+
     @comment = Comment.new
   end
 
@@ -15,9 +26,10 @@ class FeedController < ApplicationController
     @post = current_user.posts.build(post_params)
 
     if @post.save
-      redirect_to feed_path, notice: "Your post was shared!"
+      redirect_to feed_path, notice: "Thanks! Your post was submitted and will appear once an admin approves it."
     else
-      @posts = Post.includes(:user, :comments, media_attachment: :blob).newest_first
+      @posts = Post.approved.includes(:user, :comments, media_attachment: :blob).newest_first
+      @pending_posts = current_user.posts.pending.includes(:comments, media_attachment: :blob).newest_first
       flash.now[:alert] = @post.errors.full_messages.to_sentence
       render :index, status: :unprocessable_entity
     end
@@ -35,6 +47,11 @@ class FeedController < ApplicationController
   end
 
   private
+
+  # A still-pending post is only visible to its author and to admins.
+  def can_view_pending?(post)
+    user_signed_in? && (post.user_id == current_user.id || current_user.admin?)
+  end
 
   def post_params
     params.require(:post).permit(:caption, :media)

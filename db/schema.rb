@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_12_020000) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_12_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -142,6 +142,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_12_020000) do
     t.text "caption"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "approved_at"
+    t.bigint "approved_by_id"
+    t.index ["approved_at"], name: "index_posts_on_approved_at"
+    t.index ["approved_by_id"], name: "index_posts_on_approved_by_id"
     t.index ["created_at"], name: "index_posts_on_created_at"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end

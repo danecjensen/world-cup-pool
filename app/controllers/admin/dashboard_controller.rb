@@ -6,6 +6,7 @@ class Admin::DashboardController < Admin::BaseController
     @knockout_finished = KnockoutMatch.where.not(winner_team_id: nil).count
     @user_count = User.count
     @pending_bracket_slots = BracketSlot.where(team_id: nil).count
+    @pending_post_count = Post.pending.count
   end
 
   def recompute_scores

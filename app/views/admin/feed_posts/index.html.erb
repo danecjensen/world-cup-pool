@@ -1,0 +1,51 @@
+<% content_for :title, "Feed moderation" %>
+
+<div class="flex flex-wrap items-end justify-between mb-6 gap-2">
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Feed moderation</h1>
+    <p class="text-slate-600 mt-1 text-sm">Posts wait here until an admin approves them. Approved posts appear in the feed; rejected posts are deleted.</p>
+  </div>
+  <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100 text-amber-800 text-sm font-medium">
+    <%= pluralize(@pending_posts.size, "post") %> awaiting review
+  </span>
+</div>
+
+<% if @pending_posts.empty? %>
+  <div class="rounded-xl bg-white shadow p-10 text-center text-slate-500">
+    🎉 Nothing to review — the queue is empty.
+  </div>
+<% else %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <% @pending_posts.each do |post| %>
+      <div class="rounded-xl bg-white shadow overflow-hidden flex flex-col">
+        <div class="bg-slate-900 flex items-center justify-center aspect-square overflow-hidden">
+          <% if post.video? %>
+            <video controls preload="metadata" class="w-full h-full object-contain bg-black">
+              <%= tag.source src: url_for(post.media), type: post.media.content_type %>
+              Your browser does not support the video tag.
+            </video>
+          <% elsif post.image? %>
+            <%= image_tag post.media, class: "w-full h-full object-cover", loading: "lazy", alt: post.caption.presence || "Pending feed photo" %>
+          <% end %>
+        </div>
+
+        <div class="p-4 flex flex-col gap-2 flex-1">
+          <% if post.caption.present? %>
+            <p class="text-sm text-slate-800 whitespace-pre-line"><%= post.caption %></p>
+          <% end %>
+          <div class="mt-auto flex items-center justify-between text-xs text-slate-500 pt-2">
+            <span class="font-medium text-slate-700"><%= post.user.display_name %></span>
+            <span><%= time_ago_in_words(post.created_at) %> ago</span>
+          </div>
+          <div class="flex items-center gap-2 pt-2">
+            <%= button_to "Approve", approve_admin_feed_post_path(post), method: :patch,
+                  class: "flex-1 text-center text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-md cursor-pointer" %>
+            <%= button_to "Reject", admin_feed_post_path(post), method: :delete,
+                  form: { data: { turbo_confirm: "Reject and delete this post?" } },
+                  class: "flex-1 text-center text-sm font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-2 rounded-md cursor-pointer" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,5 +1,6 @@
 class Post < ApplicationRecord
   belongs_to :user
+  belongs_to :approved_by, class_name: "User", optional: true
 
   has_one_attached :media
   has_many :comments, dependent: :destroy
@@ -9,6 +10,8 @@ class Post < ApplicationRecord
   validate :media_type_and_size
 
   scope :newest_first, -> { order(created_at: :desc) }
+  scope :approved, -> { where.not(approved_at: nil) }
+  scope :pending, -> { where(approved_at: nil) }
 
   ALLOWED_CONTENT_TYPES = %w[
     image/png image/jpeg image/jpg image/gif image/webp
@@ -16,6 +19,19 @@ class Post < ApplicationRecord
   ].freeze
 
   MAX_FILE_SIZE = 100.megabytes
+
+  def approved?
+    approved_at.present?
+  end
+
+  def pending?
+    !approved?
+  end
+
+  # Mark the post as approved by an admin so it becomes visible in the feed.
+  def approve!(by:)
+    update!(approved_at: Time.current, approved_by: by)
+  end
 
   def image?
     media.attached? && media.content_type.to_s.start_with?("image/")
