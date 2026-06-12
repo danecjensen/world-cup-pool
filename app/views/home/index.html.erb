@@ -44,37 +44,55 @@
     </div>
 
     <div class="mt-10 flex justify-center">
-      <%= link_to "Make picks", (user_signed_in? ? group_picks_path : new_user_registration_path),
-                  class: "inline-block bg-white text-emerald-700 font-extrabold uppercase tracking-wider text-lg md:text-xl px-10 py-5 rounded-xl shadow-lg ring-4 ring-white/30 hover:bg-emerald-50 hover:scale-105 active:scale-95 transition-transform duration-150 cursor-pointer" %>
+      <%= link_to feed_path,
+                  class: "inline-block bg-white text-emerald-700 text-center px-10 py-5 rounded-xl shadow-lg ring-4 ring-white/30 hover:bg-emerald-50 hover:scale-105 active:scale-95 transition-transform duration-150 cursor-pointer" do %>
+        <span class="block font-extrabold uppercase tracking-wider text-lg md:text-xl">🎉 Join the party</span>
+        <span class="block mt-1 text-sm font-medium text-emerald-600 normal-case">Share how your World Cup is going</span>
+      <% end %>
     </div>
   </div>
   <div class="absolute -right-10 -bottom-10 text-[14rem] opacity-10">⚽</div>
 </section>
 
-<section class="grid md:grid-cols-3 gap-6 mb-10">
-  <div class="rounded-xl bg-white shadow p-6">
-    <h2 class="font-semibold text-slate-900 mb-2">Scoring</h2>
-    <ul class="text-sm text-slate-600 space-y-1">
-      <li>Group game: <span class="font-semibold">1 pt</span></li>
-      <li>Round of 32: <span class="font-semibold">2 pts</span></li>
-      <li>Round of 16: <span class="font-semibold">4 pts</span></li>
-      <li>Quarterfinal: <span class="font-semibold">6 pts</span></li>
-      <li>Semifinal: <span class="font-semibold">8 pts</span></li>
-      <li>Final: <span class="font-semibold">10 pts</span></li>
-    </ul>
+<section class="mb-10">
+  <div class="flex flex-wrap items-end justify-between gap-2 mb-4">
+    <div>
+      <h2 class="text-xl font-extrabold tracking-tight">Latest from the pool</h2>
+      <p class="text-sm text-slate-600">Photos and videos from everyone's World Cup.</p>
+    </div>
+    <%= link_to "Open the feed →", feed_path, class: "text-sm font-medium text-emerald-700 hover:underline" %>
   </div>
-  <div class="rounded-xl bg-white shadow p-6">
-    <h2 class="font-semibold text-slate-900 mb-2">Locks</h2>
-    <p class="text-sm text-slate-600">All group picks must be in before the first group game kicks off. All bracket picks must be in before the first R32 match kicks off. No late picks.</p>
-  </div>
-  <div class="rounded-xl bg-white shadow p-6">
-    <h2 class="font-semibold text-slate-900 mb-2">Pool size</h2>
-    <p class="text-3xl font-bold text-emerald-700"><%= @user_count %></p>
-    <p class="text-sm text-slate-600">player<%= @user_count == 1 ? "" : "s" %> registered</p>
-  </div>
+
+  <% if @recent_posts.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <% @recent_posts.each do |post| %>
+        <%= link_to feed_post_path(post), class: "rounded-xl bg-white shadow overflow-hidden flex flex-col group" do %>
+          <div class="bg-slate-900 flex items-center justify-center aspect-square overflow-hidden">
+            <% if post.image? %>
+              <%= image_tag post.media, class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-200", loading: "lazy", alt: post.caption.presence || "Feed photo" %>
+            <% elsif post.video? %>
+              <span class="text-6xl">🎬</span>
+            <% end %>
+          </div>
+          <div class="p-4 flex items-center justify-between gap-2 text-xs text-slate-500">
+            <span class="truncate">
+              <span class="font-medium text-slate-700"><%= post.user.display_name %></span>
+              <% if post.caption.present? %> · <%= truncate(post.caption, length: 40) %><% end %>
+            </span>
+            <span class="text-emerald-700 font-medium whitespace-nowrap">💬 <%= post.comments.size %></span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="rounded-xl bg-white shadow p-10 text-center text-slate-500">
+      No posts yet —
+      <%= link_to "be the first to share a moment!", feed_path, class: "text-emerald-700 font-semibold hover:underline" %>
+    </div>
+  <% end %>
 </section>
 
-<section class="grid md:grid-cols-2 gap-6">
+<section class="grid md:grid-cols-2 gap-6 mb-10">
   <div class="rounded-xl bg-white shadow p-6">
     <h2 class="font-semibold text-slate-900 mb-4">Leaderboard preview</h2>
     <% if @top_players.any? %>
@@ -135,5 +153,28 @@
     <% else %>
       <p class="text-sm text-slate-500">Tournament is over. Thanks for playing!</p>
     <% end %>
+  </div>
+</section>
+
+<section class="grid md:grid-cols-3 gap-6">
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-2">Scoring</h2>
+    <ul class="text-sm text-slate-600 space-y-1">
+      <li>Group game: <span class="font-semibold">1 pt</span></li>
+      <li>Round of 32: <span class="font-semibold">2 pts</span></li>
+      <li>Round of 16: <span class="font-semibold">4 pts</span></li>
+      <li>Quarterfinal: <span class="font-semibold">6 pts</span></li>
+      <li>Semifinal: <span class="font-semibold">8 pts</span></li>
+      <li>Final: <span class="font-semibold">10 pts</span></li>
+    </ul>
+  </div>
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-2">Locks</h2>
+    <p class="text-sm text-slate-600">All group picks must be in before the first group game kicks off. All bracket picks must be in before the first R32 match kicks off. No late picks.</p>
+  </div>
+  <div class="rounded-xl bg-white shadow p-6">
+    <h2 class="font-semibold text-slate-900 mb-2">Pool size</h2>
+    <p class="text-3xl font-bold text-emerald-700"><%= @user_count %></p>
+    <p class="text-sm text-slate-600">player<%= @user_count == 1 ? "" : "s" %> registered</p>
   </div>
 </section>
