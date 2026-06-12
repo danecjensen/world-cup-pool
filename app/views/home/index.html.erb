@@ -44,11 +44,8 @@
     </div>
 
     <div class="mt-10 flex justify-center">
-      <%= link_to feed_path,
-                  class: "inline-block bg-white text-emerald-700 text-center px-10 py-5 rounded-xl shadow-lg ring-4 ring-white/30 hover:bg-emerald-50 hover:scale-105 active:scale-95 transition-transform duration-150 cursor-pointer" do %>
-        <span class="block font-extrabold uppercase tracking-wider text-lg md:text-xl">📸 Send pics</span>
-        <span class="block mt-1 text-sm font-medium text-emerald-600 normal-case">Share how your World Cup is going</span>
-      <% end %>
+      <%= link_to "My Picks", group_picks_path,
+                  class: "inline-block bg-white text-emerald-700 font-extrabold uppercase tracking-wider text-lg md:text-xl px-10 py-5 rounded-xl shadow-lg ring-4 ring-white/30 hover:bg-emerald-50 hover:scale-105 active:scale-95 transition-transform duration-150 cursor-pointer" %>
     </div>
   </div>
   <div class="absolute -right-10 -bottom-10 text-[14rem] opacity-10">⚽</div>
