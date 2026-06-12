@@ -1,9 +1,9 @@
-<% content_for :title, "Group Picks" %>
+<% content_for :title, "My Picks" %>
 
 <div class="flex flex-wrap items-end justify-between mb-6 gap-2">
   <div>
-    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Group stage picks</h1>
-    <p class="text-slate-600 mt-1 text-sm">Predict the result of each of the 72 group games. 1 point per correct pick.</p>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">My picks</h1>
+    <p class="text-slate-600 mt-1 text-sm">Predict the result of each of the 72 group games. 1 point per correct pick. Percentages show how the pool picked.</p>
   </div>
   <% if @locked %>
     <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-100 text-rose-800 text-sm font-medium">🔒 Locked — first match has kicked off</span>
@@ -38,11 +38,14 @@
             </div>
 
             <div class="grid grid-cols-3 gap-2">
+              <% match_total = @group_pick_totals[m.id] %>
               <% [
                    ["home", m.home_team],
                    ["draw", nil],
                    ["away", m.away_team]
                  ].each do |opt, team| %>
+                <% opt_count = @group_pick_counts[[m.id, opt]] || 0 %>
+                <% opt_pct = match_total.to_i.positive? ? (100.0 * opt_count / match_total).round : nil %>
                 <label class="block cursor-pointer select-none">
                   <input type="radio"
                          name="picks[<%= m.id %>]"
@@ -63,6 +66,9 @@
                       <% end %>
                     <% else %>
                       <span>Draw</span>
+                    <% end %>
+                    <% if opt_pct %>
+                      <span class="mt-1 text-[0.625rem] font-semibold text-slate-500 leading-none" title="<%= opt_count %> of <%= match_total %> pickers"><%= opt_pct %>%</span>
                     <% end %>
                   </div>
                 </label>
