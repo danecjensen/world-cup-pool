@@ -97,6 +97,37 @@ heroku config:set ACTIVE_STORAGE_DIRECT_UPLOADS=false
 To run against local disk instead (e.g. a non-Heroku host with a persistent
 volume), set `ACTIVE_STORAGE_SERVICE=local`.
 
+## Custom domain & HTTPS
+
+Production runs behind a custom domain (e.g. `worldcup.cool`) with Heroku's
+Automated Certificate Management (ACM) issuing the TLS cert. If users see
+Safari's **"This Connection Is Not Private"** error, it is a certificate/DNS
+problem, not an app bug. Check:
+
+```bash
+# What cert is actually served, and is it expired/mismatched?
+echo | openssl s_client -servername worldcup.cool -connect worldcup.cool:443 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+
+heroku domains          # both apex AND www must be listed, each with a DNS target
+heroku certs:auto       # status must be "OK", not "Failing"/"Provisioning"
+dig +short worldcup.cool CAA   # any line here can block Let's Encrypt renewal
+```
+
+The apex must be an **ALIAS/ANAME (or flattened CNAME)** to the `*.herokudns.com`
+target Heroku prints — never a bare `A` record to a Heroku IP.
+
+### Canonical host (`CANONICAL_HOST`)
+
+Set `CANONICAL_HOST` to permanently redirect the `www.` variant to the bare
+apex, keeping everyone on the one hostname the cert covers:
+
+```bash
+heroku config:set CANONICAL_HOST=worldcup.cool
+```
+
+Leave it unset locally and on `*.herokuapp.com` (it's a no-op there).
+
 ## Admin operations
 
 After signing in as admin, visit `/admin`:

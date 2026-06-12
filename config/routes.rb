@@ -1,4 +1,21 @@
 Rails.application.routes.draw do
+  # Canonical host redirect. When CANONICAL_HOST is set (e.g. "worldcup.cool"),
+  # requests to the "www." variant are permanently redirected to the bare apex,
+  # so users always land on the single hostname the TLS certificate covers. This
+  # avoids Safari's "This Connection Is Not Private" error in the case where only
+  # one of apex/www has a valid cert. It is a no-op in development and on
+  # *.herokuapp.com because the request host won't match "www.<CANONICAL_HOST>".
+  # NOTE: this only helps once the apex's own certificate is valid — it is a
+  # complement to correct DNS + Heroku ACM on the apex, not a replacement.
+  if (canonical_host = ENV["CANONICAL_HOST"].presence)
+    constraints(host: "www.#{canonical_host}") do
+      match "(*path)", via: :all, to: redirect(status: 301) { |params, request|
+        query = request.query_string.empty? ? "" : "?#{request.query_string}"
+        "https://#{canonical_host}/#{params[:path]}#{query}"
+      }
+    end
+  end
+
   devise_for :users, controllers: { registrations: "users/registrations" }
 
   get "up" => "rails/health#show", as: :rails_health_check
