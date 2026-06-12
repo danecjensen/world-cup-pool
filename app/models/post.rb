@@ -2,6 +2,7 @@ class Post < ApplicationRecord
   belongs_to :user
 
   has_one_attached :media
+  has_many :comments, dependent: :destroy
 
   validates :caption, length: { maximum: 500 }
   validate :media_must_be_attached

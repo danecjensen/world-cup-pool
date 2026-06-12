@@ -18,7 +18,10 @@ Rails.application.routes.draw do
 
   get "feed" => "feed#index", as: :feed
   post "feed" => "feed#create"
-  delete "feed/:id" => "feed#destroy", as: :feed_post
+  get "feed/:id" => "feed#show", as: :feed_post
+  delete "feed/:id" => "feed#destroy"
+  post "feed/:id/comments" => "comments#create", as: :feed_post_comments
+  delete "feed/:id/comments/:comment_id" => "comments#destroy", as: :feed_post_comment
 
   namespace :developer do
     root to: "dashboard#index"
