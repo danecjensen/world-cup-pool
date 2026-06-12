@@ -24,9 +24,14 @@ class FeedController < ApplicationController
   end
 
   def destroy
-    @post = current_user.posts.find(params[:id])
+    @post = Post.find(params[:id])
+
+    unless @post.user_id == current_user.id || current_user.admin?
+      redirect_to feed_path, alert: "You can only delete your own posts." and return
+    end
+
     @post.destroy
-    redirect_to feed_path, notice: "Your post was removed."
+    redirect_to feed_path, notice: "Post removed."
   end
 
   private

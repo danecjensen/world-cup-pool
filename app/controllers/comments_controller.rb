@@ -13,7 +13,12 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    comment = @post.comments.where(user: current_user).find(params[:comment_id])
+    comment = @post.comments.find(params[:comment_id])
+
+    unless comment.user_id == current_user.id || current_user.admin?
+      redirect_to feed_post_path(@post), alert: "You can only delete your own comments." and return
+    end
+
     comment.destroy
     redirect_to feed_post_path(@post), notice: "Comment removed."
   end

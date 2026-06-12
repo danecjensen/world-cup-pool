@@ -74,7 +74,7 @@
             <span><%= time_ago_in_words(post.created_at) %> ago</span>
           </div>
           <%= link_to "💬 #{pluralize(post.comments.size, 'comment')}", feed_post_path(post), class: "text-xs text-emerald-700 font-medium hover:underline" %>
-          <% if user_signed_in? && post.user_id == current_user.id %>
+          <% if can_moderate?(post) %>
             <%= button_to "Delete", feed_post_path(post), method: :delete,
                   form: { data: { turbo_confirm: "Delete this post?" } },
                   class: "self-start text-xs text-rose-600 hover:text-rose-800 hover:underline" %>
