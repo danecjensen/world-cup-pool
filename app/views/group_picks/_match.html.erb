@@ -1,0 +1,59 @@
+<li data-group-picks-sort-target="match"
+    data-group="<%= group.letter %>"
+    data-order="<%= m.number %>"
+    data-kickoff="<%= m.kickoff_at.to_i %>"
+    class="px-3 sm:px-5 py-4 <%= 'bg-slate-50' if m.finished? %>">
+  <div class="flex items-baseline justify-between text-xs text-slate-500 mb-3 gap-2">
+    <span class="truncate">
+      <span class="font-mono text-slate-400 mr-2">#<%= m.number %></span>
+      <span data-group-picks-sort-target="badge" class="hidden inline-flex items-center px-1.5 py-0.5 mr-2 rounded bg-emerald-100 text-emerald-700 font-semibold">Grp <%= group.letter %></span>
+      <%= m.kickoff_at.strftime("%a %b %-d · %-l:%M %p") %>
+    </span>
+    <% if m.finished? %>
+      <span class="font-mono text-slate-700 whitespace-nowrap"><%= m.home_score %>–<%= m.away_score %></span>
+      <% if pick %>
+        <span class="<%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %>">
+          <%= pick.correct ? "✓" : "✗" %>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-3 gap-2">
+    <% match_total = @group_pick_totals[m.id] %>
+    <% [
+         ["home", m.home_team],
+         ["draw", nil],
+         ["away", m.away_team]
+       ].each do |opt, team| %>
+      <% opt_count = @group_pick_counts[[m.id, opt]] || 0 %>
+      <% opt_pct = match_total.to_i.positive? ? (100.0 * opt_count / match_total).round : nil %>
+      <label class="block cursor-pointer select-none">
+        <input type="radio"
+               name="picks[<%= m.id %>]"
+               value="<%= opt %>"
+               <%= "checked" if pick&.group_result == opt %>
+               <%= "disabled" if @locked %>
+               class="peer sr-only">
+        <div class="min-h-[3rem] flex flex-col items-center justify-center text-center
+                    border-2 border-slate-200 bg-white rounded-lg
+                    px-2 py-2 text-sm font-medium text-slate-700 leading-tight break-words
+                    peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-800 peer-checked:font-semibold
+                    peer-disabled:opacity-60 peer-disabled:cursor-not-allowed
+                    hover:border-slate-300 active:scale-[0.98] transition">
+          <% if team %>
+            <span><%= team.flag_emoji %> <%= team.name %></span>
+            <% if team.fifa_ranking %>
+              <span class="mt-0.5 text-[0.625rem] font-normal text-slate-400 leading-none">FIFA #<%= team.fifa_ranking %></span>
+            <% end %>
+          <% else %>
+            <span>Draw</span>
+          <% end %>
+          <% if opt_pct %>
+            <span class="mt-1 text-[0.625rem] font-semibold text-slate-500 leading-none" title="<%= opt_count %> of <%= match_total %> pickers"><%= opt_pct %>%</span>
+          <% end %>
+        </div>
+      </label>
+    <% end %>
+  </div>
+</li>
