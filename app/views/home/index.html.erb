@@ -51,42 +51,60 @@
 
 <section class="mb-10">
   <div class="rounded-xl bg-white shadow p-6">
-    <h2 class="font-semibold text-slate-900 mb-4">Next up</h2>
-    <% if @next_match %>
-      <p class="text-xs uppercase tracking-wide text-slate-400">Group <%= @next_match.group.letter %> · Match <%= @next_match.number %></p>
-      <p class="text-lg font-semibold mt-1"><%= @next_match.home_team.flag_emoji %> <%= @next_match.home_team.name %> vs <%= @next_match.away_team.name %> <%= @next_match.away_team.flag_emoji %></p>
-      <p class="text-sm text-slate-600 mt-1"><%= @next_match.kickoff_at.strftime("%a, %b %-d · %-l:%M %p") %> · <%= @next_match.venue %></p>
-      <% if user_signed_in? %>
-        <% if @next_match_pick&.group_result %>
-          <% picked_team = { "home" => @next_match.home_team, "away" => @next_match.away_team }[@next_match_pick.group_result] %>
-          <p class="text-sm mt-2">
-            <span class="text-slate-500">Your pick:</span>
-            <span class="font-semibold text-emerald-700"><%= picked_team ? "#{picked_team.flag_emoji} #{picked_team.name}" : "Draw" %></span>
-          </p>
-        <% else %>
-          <p class="text-sm mt-2">
-            <span class="text-slate-500">Your pick:</span>
-            <%= link_to "none yet — make your pick", group_picks_path, class: "font-medium text-rose-600 hover:underline" %>
-          </p>
-        <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-2 mb-4">
+      <h2 class="font-semibold text-slate-900">Next up</h2>
+      <% if @next_day %>
+        <p class="text-sm font-medium text-slate-500"><%= @next_day.strftime("%A, %b %-d") %></p>
       <% end %>
-    <% elsif @next_knockout && bracket_visible? %>
-      <p class="text-xs uppercase tracking-wide text-slate-400"><%= @next_knockout.round_name %></p>
-      <p class="text-lg font-semibold mt-1"><%= @next_knockout.home_team&.name || @next_knockout.home_slot&.display_label %> vs <%= @next_knockout.away_team&.name || @next_knockout.away_slot&.display_label %></p>
-      <p class="text-sm text-slate-600 mt-1"><%= @next_knockout.kickoff_at&.strftime("%a, %b %-d · %-l:%M %p") %></p>
-      <% if user_signed_in? %>
-        <% if @next_knockout_pick&.team %>
-          <p class="text-sm mt-2">
-            <span class="text-slate-500">Your pick:</span>
-            <span class="font-semibold text-emerald-700"><%= @next_knockout_pick.team.flag_emoji %> <%= @next_knockout_pick.team.name %></span>
-          </p>
-        <% else %>
-          <p class="text-sm mt-2">
-            <span class="text-slate-500">Your pick:</span>
-            <%= link_to "none yet — make your pick", bracket_picks_path, class: "font-medium text-rose-600 hover:underline" %>
-          </p>
+    </div>
+
+    <% if @next_matches.any? || @next_knockouts.any? %>
+      <ul class="divide-y divide-slate-100">
+        <% @next_matches.each do |match| %>
+          <% pick = @match_picks[match.id] %>
+          <li class="py-3 first:pt-0 last:pb-0">
+            <p class="text-xs uppercase tracking-wide text-slate-400">Group <%= match.group.letter %> · Match <%= match.number %></p>
+            <p class="text-lg font-semibold mt-1"><%= match.home_team.flag_emoji %> <%= match.home_team.name %> vs <%= match.away_team.name %> <%= match.away_team.flag_emoji %></p>
+            <p class="text-sm text-slate-600 mt-1"><%= match.kickoff_at.strftime("%-l:%M %p") %> · <%= match.venue %></p>
+            <% if user_signed_in? %>
+              <% if pick&.group_result %>
+                <% picked_team = { "home" => match.home_team, "away" => match.away_team }[pick.group_result] %>
+                <p class="text-sm mt-1">
+                  <span class="text-slate-500">Your pick:</span>
+                  <span class="font-semibold text-emerald-700"><%= picked_team ? "#{picked_team.flag_emoji} #{picked_team.name}" : "Draw" %></span>
+                </p>
+              <% else %>
+                <p class="text-sm mt-1">
+                  <span class="text-slate-500">Your pick:</span>
+                  <%= link_to "none yet — make your pick", group_picks_path, class: "font-medium text-rose-600 hover:underline" %>
+                </p>
+              <% end %>
+            <% end %>
+          </li>
         <% end %>
-      <% end %>
+
+        <% @next_knockouts.each do |ko| %>
+          <% pick = @knockout_picks[ko.id] %>
+          <li class="py-3 first:pt-0 last:pb-0">
+            <p class="text-xs uppercase tracking-wide text-slate-400"><%= ko.round_name %></p>
+            <p class="text-lg font-semibold mt-1"><%= ko.home_team&.name || ko.home_slot&.display_label %> vs <%= ko.away_team&.name || ko.away_slot&.display_label %></p>
+            <p class="text-sm text-slate-600 mt-1"><%= ko.kickoff_at&.strftime("%-l:%M %p") %></p>
+            <% if user_signed_in? %>
+              <% if pick&.team %>
+                <p class="text-sm mt-1">
+                  <span class="text-slate-500">Your pick:</span>
+                  <span class="font-semibold text-emerald-700"><%= pick.team.flag_emoji %> <%= pick.team.name %></span>
+                </p>
+              <% else %>
+                <p class="text-sm mt-1">
+                  <span class="text-slate-500">Your pick:</span>
+                  <%= link_to "none yet — make your pick", bracket_picks_path, class: "font-medium text-rose-600 hover:underline" %>
+                </p>
+              <% end %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
     <% else %>
       <p class="text-sm text-slate-500">Tournament is over. Thanks for playing!</p>
     <% end %>
