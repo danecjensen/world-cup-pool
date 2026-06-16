@@ -54,6 +54,6 @@ class FeedController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:caption, :media)
+    params.require(:post).permit(:caption, :media, :post_type, :link_url)
   end
 end

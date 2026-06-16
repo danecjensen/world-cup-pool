@@ -4,16 +4,7 @@
   <%= link_to "← Back to feed", feed_path, class: "inline-block text-sm font-medium text-emerald-700 hover:text-emerald-800 hover:underline mb-4" %>
 
   <div class="rounded-xl bg-white shadow overflow-hidden mb-6">
-    <div class="bg-slate-900 flex items-center justify-center max-h-[70vh] overflow-hidden">
-      <% if @post.video? %>
-        <video controls preload="metadata" class="w-full max-h-[70vh] object-contain bg-black">
-          <%= tag.source src: url_for(@post.media), type: @post.media.content_type %>
-          Your browser does not support the video tag.
-        </video>
-      <% elsif @post.image? %>
-        <%= image_tag @post.media, class: "w-full max-h-[70vh] object-contain", alt: @post.caption.presence || "Feed photo" %>
-      <% end %>
-    </div>
+    <%= render "feed/post_content", post: @post, linked: false %>
 
     <div class="p-5">
       <% if @post.pending? %>
