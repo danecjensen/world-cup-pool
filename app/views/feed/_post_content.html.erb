@@ -45,20 +45,20 @@
 <% elsif post.instagram? %>
   <div class="flex justify-center bg-white p-2" data-controller="embed" data-embed-platform-value="instagram">
     <blockquote class="instagram-media"
-                data-instgrm-permalink="<%= post.link_url %>"
+                data-instgrm-permalink="<%= post.embed_permalink %>"
                 data-instgrm-version="14"
                 style="background:#FFF; border:0; margin:0; max-width:540px; width:100%; min-width:1px;">
-      <a href="<%= post.link_url %>" target="_blank" rel="noopener noreferrer">View this post on Instagram</a>
+      <a href="<%= post.embed_permalink %>" target="_blank" rel="noopener noreferrer">View this post on Instagram</a>
     </blockquote>
   </div>
 
 <% elsif post.threads? %>
   <div class="flex justify-center bg-white p-2" data-controller="embed" data-embed-platform-value="threads">
     <blockquote class="text-post-media"
-                data-text-post-permalink="<%= post.link_url %>"
+                data-text-post-permalink="<%= post.embed_permalink %>"
                 data-text-post-version="0"
                 style="background:#FFF; border:0; margin:0; max-width:540px; width:100%; min-width:1px;">
-      <a href="<%= post.link_url %>" target="_blank" rel="noopener noreferrer">View this post on Threads</a>
+      <a href="<%= post.embed_permalink %>" target="_blank" rel="noopener noreferrer">View this post on Threads</a>
     </blockquote>
   </div>
 <% end %>

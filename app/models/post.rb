@@ -77,6 +77,17 @@ class Post < ApplicationRecord
     LINK_BASED_TYPES.include?(post_type)
   end
 
+  # The canonical permalink fed to the Instagram/Threads embed widgets. Computed
+  # on the fly (not just at save time) so posts saved before a normalisation fix
+  # — e.g. older threads.net links — still embed correctly.
+  def embed_permalink
+    case post_type
+    when "instagram" then normalize_instagram_url(link_url) || link_url
+    when "threads" then normalize_threads_url(link_url) || link_url
+    else link_url
+    end
+  end
+
   def image?
     media.attached? && media.content_type.to_s.start_with?("image/")
   end
@@ -192,13 +203,15 @@ class Post < ApplicationRecord
     "https://www.instagram.com/#{match[1]}/#{match[2]}/"
   end
 
+  # Threads migrated from threads.net to threads.com; the embed widget lives on
+  # www.threads.com and expects a www.threads.com permalink, so canonicalise to
+  # that regardless of which host (or www) the user pasted.
   def normalize_threads_url(value)
     uri = parse_http_uri(value)
     return nil unless uri && THREADS_HOSTS.include?(uri.host.downcase)
     return nil unless uri.path.to_s.match?(THREADS_PATH)
 
-    host = uri.host.downcase.sub(/\Awww\./, "")
-    "https://#{host}#{uri.path.chomp('/')}"
+    "https://www.threads.com#{uri.path.chomp('/')}"
   end
 
   def should_fetch_open_graph?

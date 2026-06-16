@@ -1,42 +1,57 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Renders Instagram and Threads blockquote embeds. Both providers ship a small
-// script that scans the DOM for their blockquotes and swaps in a styled iframe.
+// Renders Instagram and Threads blockquote embeds. Both providers ship the same
+// embed SDK: loading either script defines `window.instgrm` and registers a
+// renderer for that provider's blockquote (`instagram-media` /
+// `text-post-media`). Calling `window.instgrm.Embeds.process()` then swaps any
+// unprocessed blockquotes for a styled iframe.
 //
-// The tricky part is Turbo: a normal <script async> tag only runs once, so a
-// blockquote rendered after a Turbo navigation never gets processed. We handle
-// that by (re)injecting the embed script on every connect — appending a script
-// element always re-executes it, which re-scans the page. For Instagram we can
-// take the cheaper path of calling its exposed process() API when it's already
-// loaded.
+// Each post attaches this controller, so we:
+//   1. ensure that post's provider script is loaded (once per page), and
+//   2. call process() after it loads, on (re)connect (Turbo navigation), and
+//      whenever the SDK is already present.
+// process() is idempotent — it skips blockquotes it has already rendered.
 const EMBED_SCRIPTS = {
   instagram: "https://www.instagram.com/embed.js",
-  threads: "https://www.threads.net/embed.js"
+  threads: "https://www.threads.com/embed.js"
 }
 
 export default class extends Controller {
   static values = { platform: String }
 
   connect() {
-    if (this.platformValue === "instagram" && window.instgrm?.Embeds?.process) {
-      window.instgrm.Embeds.process()
-      return
-    }
-
-    this.injectScript()
+    this.ensureScriptLoaded(EMBED_SCRIPTS[this.platformValue])
+    // Already-loaded case (another embed loaded the SDK, or Turbo navigation).
+    this.process()
   }
 
-  injectScript() {
-    const src = EMBED_SCRIPTS[this.platformValue]
+  process() {
+    if (window.instgrm?.Embeds?.process) {
+      window.instgrm.Embeds.process()
+    }
+  }
+
+  ensureScriptLoaded(src) {
     if (!src) return
 
-    const existing = document.querySelector(`script[data-embed-platform="${this.platformValue}"]`)
-    if (existing) existing.remove()
+    const existing = document.querySelector(`script[data-embed-src="${src}"]`)
+    if (existing) {
+      if (existing.dataset.loaded === "true") {
+        this.process()
+      } else {
+        existing.addEventListener("load", () => this.process(), { once: true })
+      }
+      return
+    }
 
     const script = document.createElement("script")
     script.async = true
     script.src = src
-    script.dataset.embedPlatform = this.platformValue
+    script.dataset.embedSrc = src
+    script.addEventListener("load", () => {
+      script.dataset.loaded = "true"
+      this.process()
+    }, { once: true })
     document.body.appendChild(script)
   }
 }
