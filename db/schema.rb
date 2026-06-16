@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_12_030000) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_16_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -144,6 +144,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_12_030000) do
     t.datetime "updated_at", null: false
     t.datetime "approved_at"
     t.bigint "approved_by_id"
+    t.string "post_type", default: "media", null: false
+    t.string "link_url"
+    t.string "og_title"
+    t.text "og_description"
+    t.string "og_image_url"
+    t.string "og_site_name"
     t.index ["approved_at"], name: "index_posts_on_approved_at"
     t.index ["approved_by_id"], name: "index_posts_on_approved_by_id"
     t.index ["created_at"], name: "index_posts_on_created_at"

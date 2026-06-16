@@ -1,11 +1,12 @@
 <% content_for :title, "Feed" %>
 
 <h1 class="text-3xl font-extrabold tracking-tight mb-2">Feed</h1>
-<p class="text-slate-600 mb-6 text-sm">Share your World Cup moments — photos and videos from the pool.</p>
+<p class="text-slate-600 mb-6 text-sm">Share your World Cup moments — photos, videos, links, and posts from Instagram &amp; Threads.</p>
 
 <% if user_signed_in? %>
   <div class="rounded-xl bg-white shadow p-5 mb-8">
-    <%= form_with model: @post, url: feed_path, method: :post, html: { multipart: true, data: { turbo: false } } do |f| %>
+    <%= form_with model: @post, url: feed_path, method: :post,
+          html: { multipart: true, data: { turbo: false, controller: "post-form" } } do |f| %>
       <% if @post.errors.any? %>
         <div class="bg-rose-100 border border-rose-300 text-rose-900 px-4 py-3 rounded-md mb-4 text-sm">
           <ul class="list-disc list-inside">
@@ -16,16 +17,47 @@
         </div>
       <% end %>
 
-      <label class="block text-sm font-medium text-slate-700 mb-1">Photo or video</label>
-      <%# Direct uploads (browser -> S3) keep big videos off the dyno and away from
-          Heroku's 30s timeout. Set ACTIVE_STORAGE_DIRECT_UPLOADS=false to proxy
-          uploads through the app instead (no bucket CORS needed). %>
-      <% direct_uploads = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ACTIVE_STORAGE_DIRECT_UPLOADS", true)) %>
-      <%= f.file_field :media,
-            accept: "image/*,video/*",
-            required: true,
-            direct_upload: direct_uploads,
-            class: "block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer mb-4" %>
+      <%= f.hidden_field :post_type, value: @post.post_type.presence || "media",
+            data: { "post-form-target": "typeField" } %>
+
+      <%# What kind of post? Each tab swaps in the relevant input below. %>
+      <div class="flex flex-wrap gap-2 mb-4">
+        <% [["media", "📷 Photo / Video"], ["link", "🔗 Link"], ["instagram", "📸 Instagram"], ["threads", "🧵 Threads"]].each do |type, label| %>
+          <button type="button"
+                  data-action="post-form#select"
+                  data-post-form-target="tab"
+                  data-type="<%= type %>"
+                  data-post-form-type-param="<%= type %>"
+                  class="px-3 py-1.5 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 cursor-pointer">
+            <%= label %>
+          </button>
+        <% end %>
+      </div>
+
+      <%# Media upload %>
+      <div data-post-form-target="panel" data-types="media">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Photo or video</label>
+        <%# Direct uploads (browser -> S3) keep big videos off the dyno and away from
+            Heroku's 30s timeout. Set ACTIVE_STORAGE_DIRECT_UPLOADS=false to proxy
+            uploads through the app instead (no bucket CORS needed). %>
+        <% direct_uploads = ActiveModel::Type::Boolean.new.cast(ENV.fetch("ACTIVE_STORAGE_DIRECT_UPLOADS", true)) %>
+        <%= f.file_field :media,
+              accept: "image/*,video/*",
+              direct_upload: direct_uploads,
+              class: "block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer mb-4" %>
+      </div>
+
+      <%# Link / Instagram / Threads all share the URL field; the hint changes. %>
+      <div data-post-form-target="panel" data-types="link instagram threads">
+        <label class="block text-sm font-medium text-slate-700 mb-1">URL</label>
+        <%= f.text_field :link_url,
+              type: "url",
+              placeholder: "https://…",
+              class: "block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500 mb-2" %>
+        <p data-post-form-target="panel" data-types="link" class="text-xs text-slate-500 mb-4">Paste any link — we'll pull in its preview image and description.</p>
+        <p data-post-form-target="panel" data-types="instagram" class="text-xs text-slate-500 mb-4">Paste an Instagram post, reel or TV link (e.g. instagram.com/p/…) — it'll be embedded.</p>
+        <p data-post-form-target="panel" data-types="threads" class="text-xs text-slate-500 mb-4">Paste a Threads post link (e.g. threads.net/@user/post/…) — it'll be embedded.</p>
+      </div>
 
       <label class="block text-sm font-medium text-slate-700 mb-1">Caption <span class="text-slate-400 font-normal">(optional)</span></label>
       <%= f.text_area :caption,
@@ -48,12 +80,14 @@
             <div class="w-14 h-14 rounded-md overflow-hidden bg-slate-900 flex items-center justify-center shrink-0">
               <% if post.image? %>
                 <%= image_tag post.media, class: "w-full h-full object-cover", loading: "lazy", alt: "Pending post" %>
+              <% elsif post.link? && post.og_image_url.present? %>
+                <%= image_tag post.og_image_url, class: "w-full h-full object-cover", loading: "lazy", alt: "Pending link", referrerpolicy: "no-referrer" %>
               <% else %>
-                <span class="text-white text-xl">🎬</span>
+                <span class="text-white text-xl"><%= post.video? ? "🎬" : post.instagram? ? "📸" : post.threads? ? "🧵" : "🔗" %></span>
               <% end %>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-sm text-slate-700 truncate"><%= post.caption.presence || "Your post" %></p>
+              <p class="text-sm text-slate-700 truncate"><%= post.caption.presence || post.og_title.presence || post.link_url.presence || "Your post" %></p>
               <p class="text-xs text-amber-700">Submitted <%= time_ago_in_words(post.created_at) %> ago — pending review</p>
             </div>
             <%= button_to "Cancel", feed_post_path(post), method: :delete,
@@ -67,7 +101,7 @@
 <% else %>
   <div class="rounded-xl bg-white shadow p-5 mb-8 text-sm text-slate-600">
     <%= link_to "Sign in", new_user_session_path, class: "text-emerald-700 font-semibold hover:underline" %>
-    to share your own photos and videos.
+    to share your own photos, videos and links.
   </div>
 <% end %>
 
@@ -79,18 +113,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
     <% @posts.each do |post| %>
       <div class="rounded-xl bg-white shadow overflow-hidden flex flex-col">
-        <div class="bg-slate-900 flex items-center justify-center aspect-square overflow-hidden">
-          <% if post.video? %>
-            <video controls preload="metadata" class="w-full h-full object-contain bg-black">
-              <%= tag.source src: url_for(post.media), type: post.media.content_type %>
-              Your browser does not support the video tag.
-            </video>
-          <% elsif post.image? %>
-            <%= link_to feed_post_path(post), class: "block w-full h-full" do %>
-              <%= image_tag post.media, class: "w-full h-full object-cover", loading: "lazy", alt: post.caption.presence || "Feed photo" %>
-            <% end %>
-          <% end %>
-        </div>
+        <%= render "feed/post_content", post: post, linked: true %>
 
         <div class="p-4 flex flex-col gap-2 flex-1">
           <% if post.caption.present? %>
