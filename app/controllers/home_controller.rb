@@ -33,5 +33,32 @@ class HomeController < ApplicationController
                        .select("users.*, COALESCE(SUM(picks.points_awarded), 0) AS total")
                        .order("total DESC")
                        .limit(5)
+
+    if user_signed_in?
+      standings = User.left_joins(:picks)
+                      .group("users.id")
+                      .select("users.id, users.display_name, COALESCE(SUM(picks.points_awarded), 0) AS total")
+                      .order(Arel.sql("total DESC, users.display_name ASC"))
+                      .to_a
+
+      @leader = standings.first
+      if @leader
+        @leader_points = @leader.total.to_i
+        # Rank with ties: players sharing the same total share a rank.
+        rank = 0
+        last_total = nil
+        standings.each_with_index do |player, index|
+          total = player.total.to_i
+          rank = index + 1 if total != last_total
+          last_total = total
+          if player.id == current_user.id
+            @my_rank = rank
+            @my_points = total
+            break
+          end
+        end
+        @total_players = standings.size
+      end
+    end
   end
 end
