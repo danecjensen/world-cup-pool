@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   resource :profile, only: [:show], controller: "profiles" do
     patch :update_name
     patch :update_password
+    get :flag
+    patch :update_flag
   end
 
   resource :group_picks, only: [:show, :update], controller: "group_picks"

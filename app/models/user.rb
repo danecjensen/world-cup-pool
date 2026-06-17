@@ -14,6 +14,15 @@ class User < ApplicationRecord
     admin
   end
 
+  # The display name with the supported nation's flag appended, e.g. "Dane 🇺🇸".
+  def name_with_flag
+    [display_name, support_flag].compact_blank.join(" ")
+  end
+
+  def supports_nation?
+    support_flag.present?
+  end
+
   def total_points
     picks.sum(:points_awarded)
   end

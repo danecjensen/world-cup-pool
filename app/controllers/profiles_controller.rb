@@ -16,6 +16,25 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def flag
+  end
+
+  def update_flag
+    nation = params.require(:user)[:support_nation].to_s.strip
+    flag = NationFlag.for(nation)
+
+    if nation.blank?
+      current_user.update(support_nation: nil, support_flag: nil)
+      redirect_to profile_path, notice: "Flag removed from your name."
+    elsif flag
+      current_user.update(support_nation: nation, support_flag: flag)
+      redirect_to profile_path, notice: "#{flag} added to your name. Go #{nation}!"
+    else
+      @flag_error = "We couldn't find a flag for \"#{nation}\". Try the country's English name (e.g. Brazil, USA, South Korea)."
+      render :flag, status: :unprocessable_entity
+    end
+  end
+
   def update_password
     if current_user.update_with_password(password_params)
       bypass_sign_in(current_user)

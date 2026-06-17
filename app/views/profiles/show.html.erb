@@ -23,6 +23,21 @@
   </section>
 
   <section class="bg-white rounded-xl shadow p-6">
+    <h2 class="text-lg font-bold tracking-tight mb-4">Nation flag</h2>
+    <% if current_user.supports_nation? %>
+      <p class="text-sm text-slate-600 mb-4">
+        You're flying the <span class="text-xl align-middle"><%= current_user.support_flag %></span>
+        flag for <span class="font-medium"><%= current_user.support_nation %></span>.
+      </p>
+    <% else %>
+      <p class="text-sm text-slate-600 mb-4">Add the flag of the nation you support next to your name.</p>
+    <% end %>
+    <%= link_to current_user.supports_nation? ? "Change your flag" : "Add your flag",
+          flag_profile_path,
+          class: "inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md" %>
+  </section>
+
+  <section class="bg-white rounded-xl shadow p-6">
     <h2 class="text-lg font-bold tracking-tight mb-4">Change password</h2>
     <%= form_with model: current_user, url: update_password_profile_path, method: :patch, html: { class: "space-y-4" } do |f| %>
       <% if @password_errors.present? %>

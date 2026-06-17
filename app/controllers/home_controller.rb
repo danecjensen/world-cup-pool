@@ -37,7 +37,7 @@ class HomeController < ApplicationController
     if user_signed_in?
       standings = User.left_joins(:picks)
                       .group("users.id")
-                      .select("users.id, users.display_name, COALESCE(SUM(picks.points_awarded), 0) AS total")
+                      .select("users.id, users.display_name, users.support_flag, COALESCE(SUM(picks.points_awarded), 0) AS total")
                       .order(Arel.sql("total DESC, users.display_name ASC"))
                       .to_a
 
