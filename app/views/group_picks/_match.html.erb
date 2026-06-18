@@ -1,8 +1,19 @@
+<%# Past games are greyed out. Once a game is finished we tint that grey
+    green when the user's pick was correct, and red when it was wrong. %>
+<% past = m.finished? || m.locked? %>
+<% state_class =
+     if m.finished? && pick && pick.correct
+       "bg-[#dfe7e1] text-slate-500" # green-gray: got it right
+     elsif m.finished? && pick && !pick.correct
+       "bg-[#e9dede] text-slate-500" # red-gray: got it wrong
+     elsif past
+       "bg-slate-100 text-slate-500" # already happened
+     end %>
 <li data-group-picks-sort-target="match"
     data-group="<%= group.letter %>"
     data-order="<%= m.number %>"
     data-kickoff="<%= m.kickoff_at.to_i %>"
-    class="px-3 sm:px-5 py-4 <%= 'bg-slate-50' if m.finished? %>">
+    class="px-3 sm:px-5 py-4 <%= state_class %>">
   <div class="flex items-baseline justify-between text-xs text-slate-500 mb-3 gap-2">
     <span class="truncate">
       <span class="font-mono text-slate-400 mr-2">#<%= m.number %></span>

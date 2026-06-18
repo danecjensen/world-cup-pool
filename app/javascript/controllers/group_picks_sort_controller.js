@@ -8,7 +8,7 @@ export default class extends Controller {
   static targets = ["grouped", "chronological", "chronoList", "match", "badge", "groupedBtn", "chronoBtn"]
 
   connect() {
-    this.mode = "grouped"
+    this.mode = "chronological"
     this.render()
   }
 
