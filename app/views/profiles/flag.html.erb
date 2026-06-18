@@ -31,10 +31,10 @@
         <%= label_tag "user_support_nation", "Nation you support", class: "block text-sm font-medium text-slate-700" %>
         <%= text_field_tag "user[support_nation]", current_user.support_nation,
               id: "user_support_nation", list: "nation-options", autofocus: true,
-              placeholder: "e.g. Brazil, USA, South Korea",
+              placeholder: "Pick one of the 48 World Cup nations",
               class: "mt-1 block w-full rounded-md border-slate-300 shadow-sm" %>
         <datalist id="nation-options">
-          <% NationFlag::ISO_CODES.keys.map(&:titleize).uniq.sort.each do |nation| %>
+          <% @world_cup_nations.each do |nation| %>
             <option value="<%= nation %>"></option>
           <% end %>
         </datalist>

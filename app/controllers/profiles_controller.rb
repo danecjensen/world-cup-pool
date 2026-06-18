@@ -17,6 +17,7 @@ class ProfilesController < ApplicationController
   end
 
   def flag
+    load_world_cup_nations
   end
 
   def update_flag
@@ -30,7 +31,8 @@ class ProfilesController < ApplicationController
       current_user.update(support_nation: nation, support_flag: flag)
       redirect_to profile_path, notice: "#{flag} added to your name. Go #{nation}!"
     else
-      @flag_error = "We couldn't find a flag for \"#{nation}\". Try the country's English name (e.g. Brazil, USA, South Korea)."
+      load_world_cup_nations
+      @flag_error = "We couldn't find a flag for \"#{nation}\". Pick one of the World Cup nations from the list."
       render :flag, status: :unprocessable_entity
     end
   end
@@ -56,5 +58,10 @@ class ProfilesController < ApplicationController
   def load_picks
     @groups = Group.includes(matches: [:home_team, :away_team]).order(:letter)
     @picks_by_match = current_user.picks.where.not(match_id: nil).index_by(&:match_id)
+  end
+
+  # The 48 nations in the tournament, used to populate the flag picker.
+  def load_world_cup_nations
+    @world_cup_nations = Team.alphabetical.pluck(:name)
   end
 end
