@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_17_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_20_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -175,6 +175,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_17_000000) do
     t.index ["name"], name: "index_teams_on_name", unique: true
   end
 
+  create_table "watch_parties", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "match_id"
+    t.string "location", null: false
+    t.string "match_label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_watch_parties_on_created_at"
+    t.index ["match_id"], name: "index_watch_parties_on_match_id"
+    t.index ["user_id"], name: "index_watch_parties_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -213,4 +225,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_17_000000) do
   add_foreign_key "picks", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "teams", "groups"
+  add_foreign_key "watch_parties", "matches"
+  add_foreign_key "watch_parties", "users"
 end

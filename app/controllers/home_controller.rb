@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   def index
     @user_count = User.count
+    @watch_parties = WatchParty.active_latest_per_user
     @recent_posts = Post.approved.includes(:user, :comments, media_attachment: :blob).newest_first.limit(3)
     @first_kickoff_at = Match.minimum(:kickoff_at)
     @team_flags = Team.joins(:group).order("groups.letter", "teams.id").pluck(:flag_emoji, :name)

@@ -3,6 +3,7 @@ class ProfilesController < ApplicationController
 
   def show
     load_picks
+    load_watch_parties
   end
 
   def update_name
@@ -10,6 +11,7 @@ class ProfilesController < ApplicationController
       redirect_to profile_path, notice: "Username updated."
     else
       load_picks
+      load_watch_parties
       @name_errors = current_user.errors.full_messages
       current_user.reload
       render :show, status: :unprocessable_entity
@@ -43,6 +45,7 @@ class ProfilesController < ApplicationController
       redirect_to profile_path, notice: "Password updated."
     else
       load_picks
+      load_watch_parties
       @password_errors = current_user.errors.full_messages
       current_user.reload
       render :show, status: :unprocessable_entity
@@ -58,6 +61,15 @@ class ProfilesController < ApplicationController
   def load_picks
     @groups = Group.includes(matches: [:home_team, :away_team]).order(:letter)
     @picks_by_match = current_user.picks.where.not(match_id: nil).index_by(&:match_id)
+  end
+
+  def load_watch_parties
+    @watch_party = WatchParty.new
+    @my_watch_parties = current_user.watch_parties.includes(match: [:home_team, :away_team]).newest_first
+    # Fixtures kicking off soon (or in progress) make for sensible meet-up options.
+    @watch_party_matches = Match.includes(:home_team, :away_team)
+                                .where(kickoff_at: 3.hours.ago..3.days.from_now)
+                                .ordered
   end
 
   # The 48 nations in the tournament, used to populate the flag picker.
