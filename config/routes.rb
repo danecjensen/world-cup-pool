@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     patch :update_flag
   end
 
+  resources :watch_parties, only: [:create, :destroy]
+
   resource :group_picks, only: [:show, :update], controller: "group_picks"
   resource :bracket_picks, only: [:show, :update], controller: "bracket_picks"
   resources :standings, only: [:index]

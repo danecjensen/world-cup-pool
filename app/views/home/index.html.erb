@@ -1,5 +1,27 @@
 <% content_for :title, "Home · #{pool_name}" %>
 
+<% if @watch_parties.any? %>
+  <section class="rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-lg px-5 py-4 mb-6">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-xl">📣</span>
+      <h2 class="font-bold tracking-tight">Watch parties happening now</h2>
+    </div>
+    <ul class="space-y-1.5">
+      <% @watch_parties.each do |wp| %>
+        <li class="text-sm sm:text-base">
+          <span class="font-semibold"><%= wp.user.name_with_flag %></span>
+          is watching <span class="font-semibold"><%= wp.game_name %></span>
+          at <span class="font-semibold underline decoration-white/40"><%= wp.location %></span>
+        </li>
+      <% end %>
+    </ul>
+    <% if user_signed_in? %>
+      <%= link_to "Post your own watch party →", profile_path,
+            class: "inline-block mt-3 text-sm font-semibold text-white/90 hover:text-white" %>
+    <% end %>
+  </section>
+<% end %>
+
 <% if user_signed_in? && @my_rank %>
   <%= link_to standings_path,
         class: "flex flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-xl bg-white border border-slate-200 shadow px-5 py-4 mb-6 hover:border-emerald-300 hover:shadow-md transition cursor-pointer" do %>
