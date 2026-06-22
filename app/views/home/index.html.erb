@@ -4,14 +4,21 @@
   <section class="rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-lg px-5 py-4 mb-6">
     <div class="flex items-center gap-2 mb-2">
       <span class="text-xl">📣</span>
-      <h2 class="font-bold tracking-tight">Watch parties happening now</h2>
+      <h2 class="font-bold tracking-tight">Where the pool is watching</h2>
     </div>
     <ul class="space-y-1.5">
       <% @watch_parties.each do |wp| %>
         <li class="text-sm sm:text-base">
+          <% if wp.live? %><span class="mr-1">🚨</span><% end %>
           <span class="font-semibold"><%= wp.user.name_with_flag %></span>
           is watching <span class="font-semibold"><%= wp.game_name %></span>
           at <span class="font-semibold underline decoration-white/40"><%= wp.location %></span>
+          <% if wp.live? %>
+            <span class="font-semibold uppercase tracking-wide">· live now</span>
+          <% elsif wp.kickoff_at %>
+            <span class="text-white/80">· <%= wp.kickoff_at.strftime("%a %-l:%M %p") %></span>
+          <% end %>
+          <% if wp.live? %><span class="ml-1">🚨</span><% end %>
         </li>
       <% end %>
     </ul>

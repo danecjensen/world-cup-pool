@@ -6,6 +6,9 @@ class WatchParty < ApplicationRecord
   # window it's assumed the game (and the meet-up) is over.
   ACTIVE_WINDOW = 6.hours
 
+  # Roughly how long a game runs from kickoff, used to decide if it's still live.
+  GAME_DURATION = 2.5.hours
+
   validates :location, presence: true, length: { maximum: 120 }
   validates :match_label, length: { maximum: 120 }
   validate :game_must_be_present
@@ -17,6 +20,21 @@ class WatchParty < ApplicationRecord
   # single person changing their mind doesn't flood the home page.
   def self.active_latest_per_user
     active.includes(:user, match: [:home_team, :away_team]).to_a.uniq(&:user_id)
+  end
+
+  # When the watched game kicks off, if a fixture was selected. Free-text
+  # watch parties ("Norway play Senegal") have no associated time.
+  def kickoff_at
+    match&.kickoff_at
+  end
+
+  # True when the game is being played right now: it's kicked off, hasn't
+  # finished, and we're still within a typical game's running time.
+  def live?
+    return false unless kickoff_at
+
+    now = Time.current
+    now >= kickoff_at && now <= kickoff_at + GAME_DURATION && !match.finished?
   end
 
   # The human-friendly name of the game being watched, e.g.
