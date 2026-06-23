@@ -1,5 +1,6 @@
 class BracketPicksController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_knockout_access!
 
   def show
     @rounds = KnockoutMatch::ROUNDS
@@ -31,5 +32,16 @@ class BracketPicksController < ApplicationController
     end
 
     redirect_to bracket_picks_path, notice: "Bracket picks saved."
+  end
+
+  private
+
+  # Gate the knockout bracket behind the feature flag. While the flag is off
+  # only admins may reach it (to test the feature); everyone else is bounced
+  # back to the home page until it goes live.
+  def require_knockout_access!
+    return if knockout_visible?
+
+    redirect_to root_path, alert: "The knockout bracket isn't open yet — check back soon!"
   end
 end

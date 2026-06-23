@@ -6,7 +6,7 @@ class HomeController < ApplicationController
     @first_kickoff_at = Match.minimum(:kickoff_at)
     @team_flags = Team.joins(:group).order("groups.letter", "teams.id").pluck(:flag_emoji, :name)
     next_group  = Match.where("kickoff_at > ?", Time.current).order(:kickoff_at).first
-    next_ko      = bracket_visible? ? KnockoutMatch.where("kickoff_at > ?", Time.current).order(:kickoff_at).first : nil
+    next_ko      = knockout_visible? ? KnockoutMatch.where("kickoff_at > ?", Time.current).order(:kickoff_at).first : nil
 
     # The next day on which any game is played, then every game on that day.
     @next_day = [next_group&.kickoff_at, next_ko&.kickoff_at].compact.min&.in_time_zone&.to_date
@@ -15,7 +15,7 @@ class HomeController < ApplicationController
       day_range = day_start..day_start.end_of_day
       @next_matches   = Match.includes(:group, :home_team, :away_team)
                              .where(kickoff_at: day_range).ordered
-      @next_knockouts = bracket_visible? ? KnockoutMatch.includes(:home_team, :away_team, :home_slot, :away_slot)
+      @next_knockouts = knockout_visible? ? KnockoutMatch.includes(:home_team, :away_team, :home_slot, :away_slot)
                                                         .where(kickoff_at: day_range).order(:kickoff_at) : KnockoutMatch.none
     else
       @next_matches   = Match.none
