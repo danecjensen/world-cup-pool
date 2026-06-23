@@ -1,0 +1,47 @@
+<% content_for :title, "Admin · Advancing teams" %>
+
+<div class="flex flex-wrap items-end justify-between gap-2 mb-2">
+  <h1 class="text-3xl font-extrabold tracking-tight">Teams advancing to the Round of 32</h1>
+  <%= link_to "← Back to knockout admin", admin_knockout_matches_path, class: "text-emerald-700 font-medium hover:underline text-sm" %>
+</div>
+<p class="text-slate-600 mb-6 text-sm max-w-3xl">
+  Set which team finished in each position of every group. Saving fills the Round of 32 matchups with real team
+  names — so when players open the bracket they see e.g. <em>Brazil vs Mexico</em> instead of <em>1C vs 2D</em>.
+  Once the group stage actually finishes, results are computed automatically and override anything set here.
+</p>
+
+<%= form_with url: admin_advancing_teams_path, method: :patch, local: true, html: { class: "space-y-6" } do |f| %>
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <% @groups.each do |group| %>
+      <% slots = @slots_by_group[group.letter] || [] %>
+      <% next if slots.empty? %>
+      <% group_teams = @teams_by_group[group.id] || [] %>
+      <section class="rounded-xl bg-white shadow overflow-hidden">
+        <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 py-2.5">
+          <h2 class="font-bold tracking-tight">Group <%= group.letter %></h2>
+        </header>
+        <div class="p-4 space-y-3">
+          <% slots.each do |slot| %>
+            <div>
+              <label class="block text-xs font-medium uppercase tracking-wide text-slate-500 mb-1"
+                     for="slots_<%= slot.id %>">
+                <%= Admin::AdvancingTeamsController::POSITION_LABELS[slot.position] || slot.code %>
+                <span class="text-slate-300 font-normal lowercase tracking-normal">(<%= slot.code %>)</span>
+              </label>
+              <%= select_tag "slots[#{slot.id}]",
+                    options_from_collection_for_select(group_teams, :id, :name, slot.team_id),
+                    include_blank: "— not set —",
+                    id: "slots_#{slot.id}",
+                    class: "block w-full rounded-md border-slate-300 shadow-sm text-sm" %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "Save advancing teams & rebuild bracket", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-3 rounded-lg shadow" %>
+    <%= link_to "Cancel", admin_knockout_matches_path, class: "text-slate-600 px-4 py-2" %>
+  </div>
+<% end %>

@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :matches, only: [:index, :edit, :update]
     resources :knockout_matches, only: [:index, :edit, :update]
+    resource :advancing_teams, only: [:show, :update], controller: "advancing_teams"
     resources :teams, only: [:index, :edit, :update]
     resources :users, only: [:index, :update] do
       member { patch :reset_password }
