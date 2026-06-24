@@ -20,22 +20,28 @@
     <header class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-rose-600 text-white shadow-lg">
       <div class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-3">
         <%= link_to root_path, class: "flex items-center gap-2 font-extrabold text-xl tracking-tight" do %>
-          <span class="text-2xl">⚽</span>
+          <%= image_tag "striker.png", alt: "Striker, the USA '94 mascot", class: "h-10 w-auto drop-shadow-sm -my-1", loading: "eager" %>
           <span><%= pool_name %></span>
         <% end %>
 
         <nav class="flex flex-wrap items-center gap-1 text-sm font-medium">
           <%= link_to "Standings", standings_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+          <%= link_to "Feed", feed_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
           <% if user_signed_in? %>
-            <%= link_to "Group picks", group_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
-            <% if bracket_visible? %>
-              <%= link_to "Bracket", bracket_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <%= link_to "My picks", group_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
+            <% if knockout_visible? %>
+              <%= link_to bracket_picks_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10 inline-flex items-center gap-1.5" do %>
+                Bracket
+                <% if knockout_preview? %>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-amber-400 text-amber-950">Preview</span>
+                <% end %>
+              <% end %>
             <% end %>
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path, class: "px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30" %>
               <%= link_to "Dev", developer_root_path, class: "px-3 py-1.5 rounded-md bg-slate-900/30 hover:bg-slate-900/50" %>
             <% end %>
-            <span class="px-3 py-1.5 text-white/80">Hi, <%= current_user.display_name %></span>
+            <%= link_to "Hi, #{current_user.name_with_flag}", profile_path, class: "px-3 py-1.5 rounded-md text-white/80 hover:bg-white/10 hover:text-white" %>
             <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "px-3 py-1.5 rounded-md bg-rose-700 hover:bg-rose-800 text-white", form: { data: { turbo: false } } %>
           <% else %>
             <%= link_to "Sign in", new_user_session_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
@@ -44,6 +50,24 @@
         </nav>
       </div>
     </header>
+
+    <% if user_signed_in? && !current_user.supports_nation? %>
+      <div class="container mx-auto px-4 mt-4"
+           data-controller="dismissible" data-dismissible-key-value="nation-flag-prompt-<%= current_user.id %>">
+        <div class="flex items-center gap-3 bg-amber-50 border border-amber-300 text-amber-900 px-4 py-3 rounded-md">
+          <span class="text-2xl">🏳️</span>
+          <p class="flex-1 text-sm">
+            Show your colours! <%= link_to "Add the flag of the nation you support", flag_profile_path, class: "font-semibold underline hover:text-amber-950" %>
+            to your name.
+          </p>
+          <button type="button" aria-label="Dismiss"
+                  data-action="dismissible#dismiss"
+                  class="shrink-0 rounded-md p-1 text-amber-700 hover:bg-amber-100 hover:text-amber-900">
+            <span class="text-lg leading-none">&times;</span>
+          </button>
+        </div>
+      </div>
+    <% end %>
 
     <% if notice.present? %>
       <div class="container mx-auto px-4 mt-4">

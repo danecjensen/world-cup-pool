@@ -20,14 +20,62 @@
   </div>
 </div>
 
+<section class="rounded-xl bg-white shadow overflow-hidden mb-8">
+  <header class="flex flex-wrap items-center justify-between gap-2 bg-gradient-to-r from-rose-600 to-rose-500 text-white px-5 py-4">
+    <div>
+      <h2 class="font-bold tracking-tight text-lg">Knockout stage</h2>
+      <p class="text-sm text-white/80">Administer the bracket and control who can see it.</p>
+    </div>
+    <% if bracket_visible? %>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400 text-emerald-950 text-sm font-semibold">● Live for all players</span>
+    <% else %>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-300 text-amber-950 text-sm font-semibold">● Admin-only preview</span>
+    <% end %>
+  </header>
+
+  <div class="p-5 space-y-4">
+    <div class="rounded-lg border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="max-w-prose">
+        <h3 class="font-semibold">Feature flag — show bracket to users</h3>
+        <p class="text-sm text-slate-500 mt-1">
+          <% if bracket_visible? %>
+            The knockout bracket is <strong>live</strong>: every player sees the Bracket nav link, the home-page CTA, and can submit picks.
+          <% else %>
+            The knockout bracket is <strong>hidden</strong> from players. Only admins can open it (in preview) to test before launch. Flip this on when you're ready for everyone.
+          <% end %>
+        </p>
+      </div>
+      <%= button_to admin_toggle_bracket_visibility_path, method: :post,
+                    class: "shrink-0 rounded-lg #{bracket_visible? ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white font-semibold px-5 py-3 shadow" do %>
+        <%= bracket_visible? ? "Hide bracket from users" : "Turn on for all players" %>
+      <% end %>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-4">
+      <%= link_to admin_advancing_teams_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Set Round of 32 bracket →</h3>
+        <p class="text-sm text-slate-500 mt-1">Drop a team into each of the 32 bracket slots by hand so matchups show real names. Winners advance automatically.</p>
+      <% end %>
+      <%= link_to bracket_picks_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Preview / test the bracket →</h3>
+        <p class="text-sm text-slate-500 mt-1">Open the player-facing knockout picks page yourself to test it before flipping the flag.</p>
+      <% end %>
+      <%= link_to admin_knockout_matches_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Enter knockout results →</h3>
+        <p class="text-sm text-slate-500 mt-1">31 bracket matches across 5 rounds, with winner and score entry.</p>
+      <% end %>
+    </div>
+
+    <% if @pending_bracket_slots.positive? %>
+      <p class="text-sm text-slate-500"><%= @pending_bracket_slots %> bracket slots are still unresolved (waiting for group stage results to finalize).</p>
+    <% end %>
+  </div>
+</section>
+
 <div class="grid md:grid-cols-2 gap-4 mb-8">
   <%= link_to admin_matches_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
     <h2 class="font-semibold">Enter group-stage results →</h2>
     <p class="text-sm text-slate-500 mt-1">All 72 fixtures with score entry.</p>
-  <% end %>
-  <%= link_to admin_knockout_matches_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
-    <h2 class="font-semibold">Enter knockout results →</h2>
-    <p class="text-sm text-slate-500 mt-1">31 bracket matches across 5 rounds.</p>
   <% end %>
   <%= link_to admin_teams_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
     <h2 class="font-semibold">Edit teams / re-seed →</h2>
@@ -37,25 +85,26 @@
     <h2 class="font-semibold">Manage users →</h2>
     <p class="text-sm text-slate-500 mt-1">View all players and promote to admin.</p>
   <% end %>
+  <%= link_to admin_payments_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
+    <h2 class="font-semibold">Track payments →</h2>
+    <p class="text-sm text-slate-500 mt-1">Tick a box to mark each player as paid.</p>
+  <% end %>
+  <%= link_to admin_group_pick_status_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
+    <h2 class="font-semibold">Group pick status →</h2>
+    <p class="text-sm text-slate-500 mt-1">See who has submitted all their group-stage picks.</p>
+  <% end %>
+  <%= link_to admin_feed_posts_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
+    <h2 class="font-semibold">
+      Moderate feed
+      <% if @pending_post_count.positive? %>
+        <span class="ml-1 inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-amber-500 text-white text-xs font-bold"><%= @pending_post_count %></span>
+      <% end %>
+      →
+    </h2>
+    <p class="text-sm text-slate-500 mt-1">Approve or reject photos and videos before they hit the feed.</p>
+  <% end %>
   <%= button_to admin_recompute_scores_path, method: :post, class: "rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow p-5 text-left w-full" do %>
     <h2 class="font-semibold">Recompute all scores</h2>
     <p class="text-sm opacity-90 mt-1">Re-runs scoring + bracket slot resolution.</p>
   <% end %>
-  <%= button_to admin_toggle_bracket_visibility_path, method: :post,
-                class: "rounded-xl #{bracket_visible? ? 'bg-amber-600 hover:bg-amber-700' : 'bg-slate-700 hover:bg-slate-800'} text-white shadow p-5 text-left w-full" do %>
-    <h2 class="font-semibold">
-      <% if bracket_visible? %>
-        Hide bracket from users
-      <% else %>
-        Show bracket to users
-      <% end %>
-    </h2>
-    <p class="text-sm opacity-90 mt-1">
-      Currently <%= bracket_visible? ? "visible" : "hidden" %>. Toggles the bracket nav link and the home page CTA.
-    </p>
-  <% end %>
 </div>
-
-<% if @pending_bracket_slots.positive? %>
-  <p class="text-sm text-slate-500"><%= @pending_bracket_slots %> bracket slots are still unresolved (waiting for group stage results to finalize).</p>
-<% end %>

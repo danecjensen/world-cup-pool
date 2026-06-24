@@ -5,6 +5,16 @@ class GroupPicksController < ApplicationController
     @groups = Group.includes(matches: [:home_team, :away_team]).order(:letter)
     @picks_by_match = current_user.picks.where.not(match_id: nil).index_by(&:match_id)
     @locked = group_stage_locked?
+
+    # How the whole pool picked each group game, so we can show what percentage
+    # of pickers backed each option. Only users who actually submitted a pick
+    # for a match count toward that match's denominator.
+    @group_pick_counts = Pick.where.not(match_id: nil)
+                             .where.not(group_result: nil)
+                             .group(:match_id, :group_result)
+                             .count
+    @group_pick_totals = Hash.new(0)
+    @group_pick_counts.each { |(match_id, _result), count| @group_pick_totals[match_id] += count }
   end
 
   def update

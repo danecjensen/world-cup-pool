@@ -30,6 +30,23 @@
     "POOL_TAGLINE": {
       "description": "Footer tagline for this pool",
       "required": false
+    },
+    "AWS_ACCESS_KEY_ID": {
+      "description": "S3 access key for /feed photo & video storage. Required because Heroku's file system is ephemeral (uploads on local disk are lost on each deploy/restart). Not needed if you provision the Bucketeer add-on, which sets its own BUCKETEER_* vars.",
+      "required": false
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+      "description": "S3 secret access key (pairs with AWS_ACCESS_KEY_ID).",
+      "required": false
+    },
+    "AWS_REGION": {
+      "description": "S3 bucket region, e.g. us-east-1.",
+      "value": "us-east-1",
+      "required": false
+    },
+    "AWS_BUCKET": {
+      "description": "S3 bucket name for uploaded media.",
+      "required": false
     }
   },
   "addons": [

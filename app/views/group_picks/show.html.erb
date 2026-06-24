@@ -1,82 +1,64 @@
-<% content_for :title, "Group Picks" %>
+<% content_for :title, "My Picks" %>
 
-<div class="flex flex-wrap items-end justify-between mb-6 gap-2">
-  <div>
-    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Group stage picks</h1>
-    <p class="text-slate-600 mt-1 text-sm">Predict the result of each of the 72 group games. 1 point per correct pick.</p>
+<div data-controller="group-picks-sort">
+  <div class="flex flex-wrap items-end justify-between mb-6 gap-2">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">My picks</h1>
+      <p class="text-slate-600 mt-1 text-sm">Predict the result of each of the 72 group games. 1 point per correct pick. Percentages show how the pool picked.</p>
+    </div>
+    <% if @locked %>
+      <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-100 text-rose-800 text-sm font-medium">🔒 Locked — first match has kicked off</span>
+    <% else %>
+      <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-sm font-medium">Open until first kickoff</span>
+    <% end %>
   </div>
-  <% if @locked %>
-    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-100 text-rose-800 text-sm font-medium">🔒 Locked — first match has kicked off</span>
-  <% else %>
-    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-sm font-medium">Open until first kickoff</span>
+
+  <div class="flex items-center gap-2 mb-6">
+    <span class="text-sm font-medium text-slate-500 mr-1">Sort by</span>
+    <div class="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 text-sm font-semibold">
+      <button type="button"
+              data-group-picks-sort-target="groupedBtn"
+              data-action="group-picks-sort#showGrouped"
+              class="px-3 py-1.5 rounded-md transition">Group</button>
+      <button type="button"
+              data-group-picks-sort-target="chronoBtn"
+              data-action="group-picks-sort#showChronological"
+              class="px-3 py-1.5 rounded-md transition">Date</button>
+    </div>
+  </div>
+
+  <%= form_with url: group_picks_path, method: :patch, local: true, html: { class: "pb-24" } do |f| %>
+    <%# Grouped view (default): one card per group %>
+    <div data-group-picks-sort-target="grouped" class="space-y-8">
+      <% @groups.each do |group| %>
+        <section class="rounded-xl bg-white shadow overflow-hidden">
+          <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 sm:px-5 py-3">
+            <h2 class="font-bold tracking-tight">Group <%= group.letter %></h2>
+          </header>
+          <ul id="group-list-<%= group.letter %>" class="divide-y divide-slate-100">
+            <% group.matches.sort_by(&:number).each do |m| %>
+              <%= render "match", m: m, group: group, pick: @picks_by_match[m.id] %>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+    </div>
+
+    <%# Chronological view: a single card holding every game, sorted by kickoff. %>
+    <%# Match cards are moved here by the Stimulus controller when toggled on. %>
+    <div data-group-picks-sort-target="chronological" class="hidden">
+      <section class="rounded-xl bg-white shadow overflow-hidden">
+        <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 sm:px-5 py-3">
+          <h2 class="font-bold tracking-tight">All games · by date</h2>
+        </header>
+        <ul data-group-picks-sort-target="chronoList" class="divide-y divide-slate-100"></ul>
+      </section>
+    </div>
+
+    <% unless @locked %>
+      <div class="fixed bottom-0 inset-x-0 z-20 px-4 py-3 bg-gradient-to-t from-white via-white to-white/80 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:flex sm:justify-end sm:px-0 sm:py-0 sm:mt-8">
+        <%= f.submit "Save all picks", class: "w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
+      </div>
+    <% end %>
   <% end %>
 </div>
-
-<%= form_with url: group_picks_path, method: :patch, local: true, html: { class: "space-y-8 pb-24" } do |f| %>
-  <% @groups.each do |group| %>
-    <section class="rounded-xl bg-white shadow overflow-hidden">
-      <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 sm:px-5 py-3">
-        <h2 class="font-bold tracking-tight">Group <%= group.letter %></h2>
-      </header>
-      <ul class="divide-y divide-slate-100">
-        <% group.matches.sort_by(&:number).each do |m| %>
-          <% pick = @picks_by_match[m.id] %>
-          <li class="px-3 sm:px-5 py-4 <%= 'bg-slate-50' if m.finished? %>">
-            <div class="flex items-baseline justify-between text-xs text-slate-500 mb-3 gap-2">
-              <span class="truncate">
-                <span class="font-mono text-slate-400 mr-2">#<%= m.number %></span>
-                <%= m.kickoff_at.strftime("%a %b %-d · %-l:%M %p") %>
-              </span>
-              <% if m.finished? %>
-                <span class="font-mono text-slate-700 whitespace-nowrap"><%= m.home_score %>–<%= m.away_score %></span>
-                <% if pick %>
-                  <span class="<%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %>">
-                    <%= pick.correct ? "✓" : "✗" %>
-                  </span>
-                <% end %>
-              <% end %>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2">
-              <% [
-                   ["home", m.home_team],
-                   ["draw", nil],
-                   ["away", m.away_team]
-                 ].each do |opt, team| %>
-                <label class="block cursor-pointer select-none">
-                  <input type="radio"
-                         name="picks[<%= m.id %>]"
-                         value="<%= opt %>"
-                         <%= "checked" if pick&.group_result == opt %>
-                         <%= "disabled" if @locked %>
-                         class="peer sr-only">
-                  <div class="min-h-[3rem] flex flex-col items-center justify-center text-center
-                              border-2 border-slate-200 bg-white rounded-lg
-                              px-2 py-2 text-sm font-medium text-slate-700 leading-tight break-words
-                              peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-800 peer-checked:font-semibold
-                              peer-disabled:opacity-60 peer-disabled:cursor-not-allowed
-                              hover:border-slate-300 active:scale-[0.98] transition">
-                    <% if team %>
-                      <span><%= team.flag_emoji %> <%= team.name %></span>
-                      <% if team.fifa_ranking %>
-                        <span class="mt-0.5 text-[0.625rem] font-normal text-slate-400 leading-none">FIFA #<%= team.fifa_ranking %></span>
-                      <% end %>
-                    <% else %>
-                      <span>Draw</span>
-                    <% end %>
-                  </div>
-                </label>
-              <% end %>
-            </div>
-          </li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
-
-  <% unless @locked %>
-    <div class="fixed bottom-0 inset-x-0 z-20 px-4 py-3 bg-gradient-to-t from-white via-white to-white/80 border-t border-slate-200 shadow-lg sm:static sm:bg-transparent sm:border-0 sm:shadow-none sm:flex sm:justify-end sm:px-0 sm:py-0">
-      <%= f.submit "Save all picks", class: "w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
-    </div>
-  <% end %>
-<% end %>

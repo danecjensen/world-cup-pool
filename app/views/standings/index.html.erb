@@ -18,10 +18,16 @@
       <% if @players.empty? %>
         <tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">No players yet — be the first to sign up!</td></tr>
       <% end %>
+      <% prev_points = nil %>
+      <% position = 0 %>
       <% @players.each_with_index do |p, i| %>
+        <% if p.total_points != prev_points %>
+          <% position = i + 1 %>
+          <% prev_points = p.total_points %>
+        <% end %>
         <tr class="<%= 'bg-emerald-50/40' if i.zero? %>">
-          <td class="px-4 py-3 font-mono text-slate-400 w-10"><%= i + 1 %></td>
-          <td class="px-4 py-3 font-medium"><%= p.display_name %></td>
+          <td class="px-4 py-3 font-mono text-slate-400 w-10"><%= position %></td>
+          <td class="px-4 py-3 font-medium"><%= p.name_with_flag %></td>
           <td class="px-4 py-3 text-right text-slate-600"><%= p.group_correct %></td>
           <td class="px-4 py-3 text-right text-slate-600"><%= p.bracket_correct %></td>
           <td class="px-4 py-3 text-right font-bold text-emerald-700"><%= p.total_points %></td>

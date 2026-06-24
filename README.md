@@ -48,6 +48,55 @@ heroku run rails db:seed
 
 The included `app.json` and `Procfile` configure the release phase to run `db:prepare` and the postdeploy hook to seed teams/groups/fixtures.
 
+### Media storage for `/feed` (required on Heroku)
+
+The `/feed` photo & video gallery uses Active Storage. Heroku's file system is
+**ephemeral** — files written to local disk are wiped on every deploy and on the
+daily dyno restart — so production defaults to Amazon S3. Provide a bucket with
+either of these approaches:
+
+**Option A — your own S3 bucket:**
+
+```bash
+heroku config:set AWS_ACCESS_KEY_ID=... \
+                   AWS_SECRET_ACCESS_KEY=... \
+                   AWS_REGION=us-east-1 \
+                   AWS_BUCKET=your-bucket-name
+```
+
+**Option B — Bucketeer add-on** (sets `BUCKETEER_*` vars automatically):
+
+```bash
+heroku addons:create bucketeer:hobbyist
+```
+
+Uploads use Active Storage **direct uploads** (browser → S3), which keeps large
+videos from hitting Heroku's 30-second request timeout. For this the bucket
+needs a CORS policy. Set `APP_HOST` to your app's hostname, then run the
+included task (works for both your own bucket and Bucketeer):
+
+```bash
+heroku config:set APP_HOST=your-app.herokuapp.com
+heroku run rails storage:configure_cors
+```
+
+Verify the whole storage path end-to-end with a round-trip smoke test:
+
+```bash
+heroku run rails storage:check
+```
+
+If `configure_cors` reports **access denied** (some add-on credentials can't
+change the bucket policy), fall back to proxied uploads — they route through
+the dyno and need no CORS (fine for photos and short clips):
+
+```bash
+heroku config:set ACTIVE_STORAGE_DIRECT_UPLOADS=false
+```
+
+To run against local disk instead (e.g. a non-Heroku host with a persistent
+volume), set `ACTIVE_STORAGE_SERVICE=local`.
+
 ## Admin operations
 
 After signing in as admin, visit `/admin`:

@@ -1,6 +1,15 @@
 <% content_for :title, "Admin · Knockout" %>
 
-<h1 class="text-3xl font-extrabold tracking-tight mb-6">Knockout matches</h1>
+<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+  <h1 class="text-3xl font-extrabold tracking-tight">Knockout matches</h1>
+  <%= link_to "Set Round of 32 bracket →", admin_advancing_teams_path,
+        class: "inline-flex items-center rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 text-sm shadow" %>
+</div>
+<p class="text-slate-600 -mt-3 mb-6 text-sm max-w-3xl">
+  Tip: drop a team into each Round-of-32 slot on the
+  <%= link_to "Round of 32 page", admin_advancing_teams_path, class: "text-emerald-700 font-medium hover:underline" %>
+  so the matchups below fill in with real team names. Winners then advance through the bracket automatically.
+</p>
 
 <div class="rounded-xl bg-white shadow overflow-hidden">
   <table class="w-full text-sm">
