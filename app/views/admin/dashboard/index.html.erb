@@ -51,7 +51,11 @@
       <% end %>
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-4">
+    <div class="grid sm:grid-cols-3 gap-4">
+      <%= link_to admin_advancing_teams_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Set R32 advancing teams →</h3>
+        <p class="text-sm text-slate-500 mt-1">Assign the teams that advanced from each group so the bracket shows real names instead of "1A".</p>
+      <% end %>
       <%= link_to bracket_picks_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
         <h3 class="font-semibold">Preview / test the bracket →</h3>
         <p class="text-sm text-slate-500 mt-1">Open the player-facing knockout picks page yourself to test it before flipping the flag.</p>
