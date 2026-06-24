@@ -25,16 +25,10 @@ class ScoringService
   end
 
   def resolve_bracket_slots
-    Group.find_each do |group|
-      matches = group.matches.to_a
-      next unless matches.all?(&:finished?)
-      standings = compute_group_standings(group, matches)
-      [1, 2, 3].each do |pos|
-        slot = BracketSlot.find_by(code: "#{pos}#{group.letter}")
-        slot&.update!(team: standings[pos - 1])
-      end
-    end
-
+    # Round-of-32 teams are entered by hand on the admin "advancing teams"
+    # page (we deliberately do NOT auto-fill them from group standings).
+    # Here we only propagate whatever teams are on the slots onto the matches
+    # and advance the winner of each finished match into the next round.
     KnockoutMatch.ordered.each do |km|
       km.update!(
         home_team: km.home_slot&.team,
@@ -45,6 +39,8 @@ class ScoringService
       winner = km.home_score > km.away_score ? km.home_team : km.away_team
       next if winner.nil?
       km.update!(winner_team: winner)
+      # Drop the winner into the slot that feeds the next round so the bracket
+      # advances automatically (e.g. an R32 winner appears in its R16 match).
       km.winner_slot&.update!(team: winner) if km.winner_slot
     end
   end
@@ -59,30 +55,5 @@ class ScoringService
         )
       end
     end
-  end
-
-  private
-
-  def compute_group_standings(group, matches)
-    table = group.teams.each_with_object({}) do |team, h|
-      h[team.id] = { team: team, pts: 0, gd: 0, gf: 0 }
-    end
-
-    matches.each do |m|
-      next if m.home_score.nil? || m.away_score.nil?
-      h, a = m.home_team_id, m.away_team_id
-      table[h][:gf] += m.home_score; table[a][:gf] += m.away_score
-      table[h][:gd] += (m.home_score - m.away_score)
-      table[a][:gd] += (m.away_score - m.home_score)
-      case m.result
-      when "home" then table[h][:pts] += 3
-      when "away" then table[a][:pts] += 3
-      when "draw" then table[h][:pts] += 1; table[a][:pts] += 1
-      end
-    end
-
-    table.values
-         .sort_by { |row| [-row[:pts], -row[:gd], -row[:gf], row[:team].name] }
-         .map { |row| row[:team] }
   end
 end
