@@ -20,12 +20,20 @@ class BracketPicksController < ApplicationController
     submitted = params.fetch(:picks, {})
     Pick.transaction do
       submitted.each do |km_id, team_id|
-        next if team_id.blank?
         km = KnockoutMatch.find_by(id: km_id)
         next unless km
+        pick = current_user.picks.find_by(knockout_match_id: km.id)
+
+        # A blank value means the slot is empty or the pick was invalidated by an
+        # upstream change — clear any saved pick for this match.
+        if team_id.blank?
+          pick&.destroy
+          next
+        end
+
         team = Team.find_by(id: team_id)
         next unless team
-        pick = current_user.picks.find_or_initialize_by(knockout_match_id: km.id)
+        pick ||= current_user.picks.build(knockout_match_id: km.id)
         pick.team = team
         pick.save!
       end
