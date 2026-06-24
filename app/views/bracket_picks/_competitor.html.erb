@@ -1,6 +1,8 @@
 <%# locals: km, side, team, placeholder, pick, locked %>
 <% checked = team && pick&.team_id == team.id %>
-<label class="flex items-center gap-2 <%= "cursor-pointer" if team && !locked %>">
+<label class="flex items-center gap-2 px-2.5 py-2 transition-colors has-[:checked]:bg-emerald-50
+              <%= "border-t border-slate-100" if side == "away" %>
+              <%= "cursor-pointer hover:bg-slate-50 has-[:checked]:font-semibold" if team && !locked %>">
   <input type="radio"
          name="picks[<%= km.id %>]"
          value="<%= team&.id %>"
@@ -10,9 +12,9 @@
          data-action="change->bracket#pick"
          <%= "checked" if checked %>
          <%= "disabled" if locked || team.nil? %>
-         class="h-5 w-5 text-emerald-600 focus:ring-emerald-500 <%= "hidden" if team.nil? %>">
+         class="h-4 w-4 shrink-0 text-emerald-600 focus:ring-emerald-500 <%= "hidden" if team.nil? %>">
   <span data-bracket-label="<%= side %>"
-        class="font-medium <%= "text-slate-500 italic" if team.nil? %>">
+        class="text-sm truncate <%= "text-slate-500 italic" if team.nil? %>">
     <%= team ? "#{team.flag_emoji} #{team.name}" : placeholder %>
   </span>
 </label>

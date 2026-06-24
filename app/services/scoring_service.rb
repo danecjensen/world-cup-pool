@@ -25,15 +25,19 @@ class ScoringService
   end
 
   def resolve_bracket_slots
-    # Round-of-32 teams are entered by hand on the admin "advancing teams"
-    # page (we deliberately do NOT auto-fill them from group standings).
-    # Here we only propagate whatever teams are on the slots onto the matches
-    # and advance the winner of each finished match into the next round.
+    # The Round-of-32 bracket is filled in by hand on the admin "Round of 32"
+    # page: the admin drops a team straight into each of the 32 bracket slots
+    # (stored directly on the R32 matches as home_team / away_team). We never
+    # overwrite those here. For every later round each competitor is fed by the
+    # winner of an earlier match, so we propagate that slot's team onto the
+    # match and advance the winner of each finished match into the next round.
     KnockoutMatch.ordered.each do |km|
-      km.update!(
-        home_team: km.home_slot&.team,
-        away_team: km.away_slot&.team
-      )
+      unless km.round == "r32"
+        km.update!(
+          home_team: km.home_slot&.team,
+          away_team: km.away_slot&.team
+        )
+      end
 
       next if km.home_score.nil? || km.away_score.nil?
       winner = km.home_score > km.away_score ? km.home_team : km.away_team

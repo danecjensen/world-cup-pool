@@ -1,38 +1,50 @@
-<% content_for :title, "Admin · Advancing teams" %>
+<% content_for :title, "Admin · Round of 32" %>
 
 <div class="flex flex-wrap items-end justify-between gap-2 mb-2">
-  <h1 class="text-3xl font-extrabold tracking-tight">Teams advancing to the Round of 32</h1>
+  <h1 class="text-3xl font-extrabold tracking-tight">Set the Round of 32 bracket</h1>
   <%= link_to "← Back to knockout admin", admin_knockout_matches_path, class: "text-emerald-700 font-medium hover:underline text-sm" %>
 </div>
 <p class="text-slate-600 mb-6 text-sm max-w-3xl">
-  Set which team finished in each position of every group. Saving fills the Round of 32 matchups with real team
-  names — so when players open the bracket they see e.g. <em>Brazil vs Mexico</em> instead of <em>1C vs 2D</em>.
-  Once the group stage actually finishes, results are computed automatically and override anything set here.
+  Drop a team into each of the 32 slots below to build the bracket by hand — no need to work out who came
+  1st, 2nd or 3rd in every group. Each winner you (and players) pick advances into the next round
+  automatically, exactly like a knockout tournament. Saving fills every Round-of-32 matchup with real team
+  names so players see e.g. <em>Brazil vs Mexico</em> instead of <em>TBD</em>.
 </p>
 
-<%= form_with url: admin_advancing_teams_path, method: :patch, local: true, html: { class: "space-y-6" } do |f| %>
-  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-    <% @groups.each do |group| %>
-      <% slots = @slots_by_group[group.letter] || [] %>
-      <% next if slots.empty? %>
-      <% group_teams = @teams_by_group[group.id] || [] %>
-      <section class="rounded-xl bg-white shadow overflow-hidden">
-        <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 py-2.5">
-          <h2 class="font-bold tracking-tight">Group <%= group.letter %></h2>
-        </header>
-        <div class="p-4 space-y-3">
-          <% slots.each do |slot| %>
-            <div>
-              <label class="block text-xs font-medium uppercase tracking-wide text-slate-500 mb-1"
-                     for="slots_<%= slot.id %>">
-                <%= Admin::AdvancingTeamsController::POSITION_LABELS[slot.position] || slot.code %>
-                <span class="text-slate-300 font-normal lowercase tracking-normal">(<%= slot.code %>)</span>
-              </label>
-              <%= select_tag "slots[#{slot.id}]",
-                    options_from_collection_for_select(group_teams, :id, :name, slot.team_id),
-                    include_blank: "— not set —",
-                    id: "slots_#{slot.id}",
-                    class: "block w-full rounded-md border-slate-300 shadow-sm text-sm" %>
+<% half = (@r32_matches.size / 2.0).ceil %>
+<% halves = { "Left half of the bracket" => @r32_matches.first(half), "Right half of the bracket" => @r32_matches.drop(half) } %>
+
+<%= form_with url: admin_advancing_teams_path, method: :patch, local: true,
+      html: { class: "space-y-6", data: { controller: "bracket-admin" } } do |f| %>
+  <div data-bracket-admin-target="warning"
+       class="hidden rounded-md bg-amber-50 border border-amber-300 text-amber-900 px-4 py-2.5 text-sm">
+    ⚠️ <span data-bracket-admin-target="warningText"></span> appears in more than one slot. A team can only
+    advance from one spot — double-check before saving.
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <% halves.each do |title, matches| %>
+      <section>
+        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3"><%= title %></h2>
+        <div class="space-y-3">
+          <% matches.each do |km| %>
+            <div class="rounded-xl bg-white shadow overflow-hidden">
+              <header class="flex items-center justify-between bg-slate-50 border-b border-slate-100 px-4 py-2">
+                <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Match <%= km.number %></span>
+                <span class="font-mono text-xs text-slate-300">R32 · #<%= km.bracket_position %></span>
+              </header>
+              <div class="p-3 space-y-2">
+                <% [["home_team_id", km.home_team_id, "Home"], ["away_team_id", km.away_team_id, "Away"]].each do |field, selected_id, label| %>
+                  <label class="block">
+                    <span class="block text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-1"><%= label %></span>
+                    <%= select_tag "matches[#{km.id}][#{field}]",
+                          grouped_options_for_select(@grouped_team_options, selected_id),
+                          include_blank: "— pick a team —",
+                          data: { "bracket-admin-target": "select", action: "change->bracket-admin#check" },
+                          class: "block w-full rounded-md border-slate-300 shadow-sm text-sm" %>
+                  </label>
+                <% end %>
+              </div>
             </div>
           <% end %>
         </div>
@@ -40,8 +52,8 @@
     <% end %>
   </div>
 
-  <div class="flex items-center gap-3">
-    <%= f.submit "Save advancing teams & rebuild bracket", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-3 rounded-lg shadow" %>
+  <div class="flex items-center gap-3 sticky bottom-0 bg-gradient-to-t from-white via-white py-3">
+    <%= f.submit "Save Round of 32 & rebuild bracket", class: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-3 rounded-lg shadow" %>
     <%= link_to "Cancel", admin_knockout_matches_path, class: "text-slate-600 px-4 py-2" %>
   </div>
 <% end %>
