@@ -39,9 +39,16 @@ class ScoringService
         )
       end
 
-      next if km.home_score.nil? || km.away_score.nil?
+      # A match with no result has no winner. Clear any stale winner (and its
+      # feeder slot) so cleared scores don't keep crediting picks; because the
+      # loop runs in bracket order this also cascades the clear into later rounds.
+      if km.home_score.nil? || km.away_score.nil?
+        km.update!(winner_team: nil)
+        km.winner_slot&.update!(team: nil)
+        next
+      end
+
       winner = km.home_score > km.away_score ? km.home_team : km.away_team
-      next if winner.nil?
       km.update!(winner_team: winner)
       # Drop the winner into the slot that feeds the next round so the bracket
       # advances automatically (e.g. an R32 winner appears in its R16 match).
