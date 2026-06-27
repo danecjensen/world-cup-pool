@@ -15,7 +15,12 @@ class Developer::RecordsController < Developer::BaseController
     respond_to do |format|
       format.html do
         scope = @model.csv_export_scope(scope) if @model.respond_to?(:csv_export_scope)
-        @records = scope.limit(PER_PAGE)
+        @total_count = scope.count
+        @total_pages = [(@total_count.to_f / PER_PAGE).ceil, 1].max
+        @page = params[:page].to_i
+        @page = 1 if @page < 1
+        @page = @total_pages if @page > @total_pages
+        @records = scope.offset((@page - 1) * PER_PAGE).limit(PER_PAGE)
       end
       format.csv do
         send_data build_csv(scope),

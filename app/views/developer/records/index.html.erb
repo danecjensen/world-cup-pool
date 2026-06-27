@@ -4,7 +4,10 @@
   <div>
     <%= link_to "← Models", developer_root_path, class: "text-xs text-slate-500 hover:underline" %>
     <h1 class="text-2xl font-extrabold tracking-tight"><%= @model.name.pluralize %></h1>
-    <p class="text-xs text-slate-500"><code class="font-mono"><%= @model.table_name %></code> · <%= @model.count %> total · showing first <%= [@model.count, Developer::RecordsController::PER_PAGE].min %> by <code class="font-mono"><%= @sort_column %> <%= @sort_direction %></code></p>
+    <% per_page = Developer::RecordsController::PER_PAGE %>
+    <% first_row = @total_count.zero? ? 0 : (@page - 1) * per_page + 1 %>
+    <% last_row = [@page * per_page, @total_count].min %>
+    <p class="text-xs text-slate-500"><code class="font-mono"><%= @model.table_name %></code> · <%= @total_count %> total · showing <%= first_row %>–<%= last_row %> (page <%= @page %> of <%= @total_pages %>) by <code class="font-mono"><%= @sort_column %> <%= @sort_direction %></code></p>
   </div>
   <div class="flex gap-2">
     <%= link_to "Download CSV",
@@ -60,3 +63,24 @@
     </tbody>
   </table>
 </div>
+
+<% if @total_pages > 1 %>
+  <% page_link_opts = ->(page) { { model: @model.model_name.route_key, sort: @sort_column, dir: @sort_direction, page: page } } %>
+  <nav class="flex items-center justify-between mt-4 text-sm" aria-label="Pagination">
+    <% if @page > 1 %>
+      <%= link_to "← Previous", developer_records_path(page_link_opts.call(@page - 1)),
+                  class: "px-3 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold" %>
+    <% else %>
+      <span class="px-3 py-2 rounded-md bg-slate-50 text-slate-300 font-semibold cursor-not-allowed">← Previous</span>
+    <% end %>
+
+    <span class="text-xs text-slate-500">Page <%= @page %> of <%= @total_pages %></span>
+
+    <% if @page < @total_pages %>
+      <%= link_to "Next →", developer_records_path(page_link_opts.call(@page + 1)),
+                  class: "px-3 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold" %>
+    <% else %>
+      <span class="px-3 py-2 rounded-md bg-slate-50 text-slate-300 font-semibold cursor-not-allowed">Next →</span>
+    <% end %>
+  </nav>
+<% end %>
