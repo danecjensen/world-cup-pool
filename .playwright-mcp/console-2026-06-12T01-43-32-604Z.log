@@ -1,9 +1,0 @@
-[     259ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ http://127.0.0.1:3057/:0
-[49432242ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:3057/feed/4:0
-[49432305ms] TypeError: Failed to fetch
-    at W (http://127.0.0.1:3057/assets/turbo.min-b86d83036ff04169e5bf3ebbc82e0ad528456259e47091b448f41a3cadabdb40.js:5:7238)
-    at z.perform (http://127.0.0.1:3057/assets/turbo.min-b86d83036ff04169e5bf3ebbc82e0ad528456259e47091b448f41a3cadabdb40.js:5:9017)
-[49432665ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:3057/feed/3:0
-[49432667ms] TypeError: Failed to fetch
-    at W (http://127.0.0.1:3057/assets/turbo.min-b86d83036ff04169e5bf3ebbc82e0ad528456259e47091b448f41a3cadabdb40.js:5:7238)
-    at z.perform (http://127.0.0.1:3057/assets/turbo.min-b86d83036ff04169e5bf3ebbc82e0ad528456259e47091b448f41a3cadabdb40.js:5:9017)
