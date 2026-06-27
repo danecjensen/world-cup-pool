@@ -1,0 +1,44 @@
+- generic [active] [ref=e76]:
+  - banner [ref=e77]:
+    - generic [ref=e78]:
+      - link "⚽ World Cup 2026 Pool" [ref=e79] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e80]: ⚽
+        - generic [ref=e81]: World Cup 2026 Pool
+      - navigation [ref=e82]:
+        - link "Standings" [ref=e83] [cursor=pointer]:
+          - /url: /standings
+        - link "Feed" [ref=e84] [cursor=pointer]:
+          - /url: /feed
+        - link "Group picks" [ref=e85] [cursor=pointer]:
+          - /url: /group_picks
+        - link "Hi, Commish" [ref=e86] [cursor=pointer]:
+          - /url: /profile
+        - button "Sign out" [ref=e88]
+  - paragraph [ref=e90]: Comment added.
+  - main [ref=e91]:
+    - generic [ref=e92]:
+      - link "← Back to feed" [ref=e93] [cursor=pointer]:
+        - /url: /feed
+      - generic [ref=e94]:
+        - img "Comment test post" [ref=e96]
+        - generic [ref=e97]:
+          - paragraph [ref=e98]: Comment test post
+          - generic [ref=e99]:
+            - generic [ref=e100]: Commish
+            - generic [ref=e101]: less than a minute ago
+          - button "Delete post" [ref=e103]
+      - generic [ref=e104]:
+        - heading "Comments (1)" [level=2] [ref=e105]
+        - list [ref=e106]:
+          - listitem [ref=e107]:
+            - generic [ref=e108]:
+              - generic [ref=e109]: Commish
+              - generic [ref=e110]: less than a minute ago
+            - paragraph [ref=e111]: First comment! Great photo.
+            - button "Delete" [ref=e113]
+        - generic [ref=e114]:
+          - textbox "Add a comment…" [ref=e115]
+          - button "Comment" [ref=e116] [cursor=pointer]
+  - contentinfo [ref=e117]:
+    - paragraph [ref=e118]: 2026 FIFA World Cup Pool · single shared pool · open registration

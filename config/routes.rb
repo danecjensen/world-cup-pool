@@ -44,7 +44,9 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboard#index"
     resources :matches, only: [:index, :edit, :update]
-    resources :knockout_matches, only: [:index, :edit, :update]
+    resources :knockout_matches, only: [:index, :edit, :update] do
+      delete :result, on: :member, action: :clear_result
+    end
     resource :advancing_teams, only: [:show, :update], controller: "advancing_teams"
     resources :teams, only: [:index, :edit, :update]
     resources :users, only: [:index, :update] do

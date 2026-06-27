@@ -1,0 +1,154 @@
+- generic [active] [ref=e200]:
+  - banner [ref=e201]:
+    - heading "ActionView::SyntaxErrorInTemplate in ProfilesController#show" [level=1] [ref=e202]
+  - main [ref=e203]:
+    - generic [ref=e204]:
+      - generic [ref=e205]: "Encountered a syntax error while rendering template: check <% content_for :title, \"Your Profile\" %>"
+      - generic [ref=e206]:
+        - text: <div class="mb-6">
+        - text: <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Your profile</h1>
+        - text: <p class="text-slate-600 mt-1 text-sm">Update your username or password, and review your group stage picks.</p>
+        - text: </div>
+      - generic [ref=e207]:
+        - text: <div class="grid gap-6 md:grid-cols-2 mb-10">
+        - text: <section class="bg-white rounded-xl shadow p-6">
+        - text: <h2 class="text-lg font-bold tracking-tight mb-4">Username</h2>
+        - text: "<%= form_with model: current_user, url: update_name_profile_path, method: :patch, html: { class: \"space-y-4\" } do |f| %>"
+        - text: <% if @name_errors.present? %>
+        - text: <div class="bg-rose-50 border border-rose-200 text-rose-800 text-sm px-3 py-2 rounded">
+        - text: <% @name_errors.each do |msg| %><p><%= msg %></p><% end %>
+        - text: </div>
+        - text: <% end %>
+        - text: <div>
+        - text: "<%= f.label :display_name, \"Username\", class: \"block text-sm font-medium text-slate-700\" %>"
+        - text: "<%= f.text_field :display_name, class: \"mt-1 block w-full rounded-md border-slate-300 shadow-sm\" %>"
+        - text: </div>
+        - text: "<%= f.submit \"Save username\", class: \"bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md\" %>"
+        - text: <% end %>
+        - text: </section>
+      - generic [ref=e208]:
+        - text: <section class="bg-white rounded-xl shadow p-6">
+        - text: <h2 class="text-lg font-bold tracking-tight mb-4">Change password</h2>
+        - text: "<%= form_with model: current_user, url: update_password_profile_path, method: :patch, html: { class: \"space-y-4\" } do |f| %>"
+        - text: <% if @password_errors.present? %>
+        - text: <div class="bg-rose-50 border border-rose-200 text-rose-800 text-sm px-3 py-2 rounded">
+        - text: <% @password_errors.each do |msg| %><p><%= msg %></p><% end %>
+        - text: </div>
+        - text: <% end %>
+        - text: <div>
+        - text: "<%= f.label :current_password, class: \"block text-sm font-medium text-slate-700\" %>"
+        - text: "<%= f.password_field :current_password, autocomplete: \"current-password\", class: \"mt-1 block w-full rounded-md border-slate-300 shadow-sm\" %>"
+        - text: </div>
+        - text: <div>
+        - text: "<%= f.label :password, \"New password\", class: \"block text-sm font-medium text-slate-700\" %>"
+        - text: "<%= f.password_field :password, autocomplete: \"new-password\", class: \"mt-1 block w-full rounded-md border-slate-300 shadow-sm\" %>"
+        - text: </div>
+        - text: <div>
+        - text: "<%= f.label :password_confirmation, \"Confirm new password\", class: \"block text-sm font-medium text-slate-700\" %>"
+        - text: "<%= f.password_field :password_confirmation, autocomplete: \"new-password\", class: \"mt-1 block w-full rounded-md border-slate-300 shadow-sm\" %>"
+        - text: </div>
+        - text: "<%= f.submit \"Update password\", class: \"bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-md\" %>"
+        - text: <% end %>
+        - text: </section>
+        - text: </div>
+      - generic [ref=e209]:
+        - text: <div class="flex flex-wrap items-end justify-between mb-4 gap-2">
+        - text: <h2 class="text-xl font-extrabold tracking-tight">Your group stage picks</h2>
+        - text: "<%= link_to \"Edit picks\", group_picks_path, class: \"text-sm font-medium text-emerald-700 hover:text-emerald-800 underline\" %>"
+        - text: </div>
+      - generic [ref=e210]:
+        - text: <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        - text: <% @groups.each do |group| %>
+        - text: <section class="rounded-xl bg-white shadow overflow-hidden">
+        - text: <header class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white px-4 py-2">
+        - text: <h3 class="font-bold tracking-tight text-sm">Group <%= group.letter %></h3>
+        - text: </header>
+        - text: <ul class="divide-y divide-slate-100 text-sm">
+        - text: <% group.matches.sort_by(&:number).each do |m| %>
+        - text: <% pick = @picks_by_match[m.id] %>
+        - text: <li class="px-4 py-2.5 flex items-center justify-between gap-3 <%= 'bg-slate-50' if m.finished? %>">
+        - text: <div class="min-w-0">
+        - text: <div class="truncate text-slate-700">
+        - text: <%= m.home_team.flag_emoji %> <%= m.home_team.name %>
+        - text: <span class="text-slate-400">vs</span>
+        - text: <%= m.away_team.flag_emoji %> <%= m.away_team.name %>
+        - text: </div>
+        - text: <div class="text-xs text-slate-400">
+        - text: <span class="font-mono">#<%= m.number %></span>
+        - text: <% if m.finished? %>
+        - text: · <span class="font-mono text-slate-600"><%= m.home_score %>–<%= m.away_score %></span>
+        - text: <% end %>
+        - text: </div>
+        - text: </div>
+        - text: <div class="text-right whitespace-nowrap">
+        - text: <% if pick&.group_result %>
+        - text: <span class="font-medium text-slate-800">
+        - text: <% case pick.group_result %>
+        - text: <% when "home" %><%= m.home_team.flag_emoji %> <%= m.home_team.name %>
+        - text: <% when "away" %><%= m.away_team.flag_emoji %> <%= m.away_team.name %>
+        - text: <% else %>Draw
+        - text: <% end %>
+        - text: </span>
+        - text: <% if m.finished? %>
+        - text: "<span class=\"<%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %>\"><%= pick.correct ? \"✓\" : \"✗\" %></span>"
+        - text: <% end %>
+        - text: <% else %>
+        - text: <span class="text-slate-400">No pick</span>
+        - text: <% end %>
+        - text: </div>
+        - text: </li>
+        - text: <% end %>
+        - text: </ul>
+        - text: </section>
+        - text: <% end %>
+        - text: </div>
+    - generic [ref=e211]:
+      - generic [ref=e212]:
+        - text: Extracted source (around line
+        - strong [ref=e213]: "#82"
+        - text: "):"
+      - table [ref=e215]:
+        - rowgroup [ref=e216]:
+          - row "80 81 82 83 84 85 <span class=\"font-medium text-slate-800\"> <% case pick.group_result %> <% when \"home\" %><%= m.home_team.flag_emoji %> <%= m.home_team.name %> <% when \"away\" %><%= m.away_team.flag_emoji %> <%= m.away_team.name %> <% else %>Draw <% end %>" [ref=e217]:
+            - cell "80 81 82 83 84 85" [ref=e218]:
+              - generic [ref=e219]: 80 81 82 83 84 85
+            - cell "<span class=\"font-medium text-slate-800\"> <% case pick.group_result %> <% when \"home\" %><%= m.home_team.flag_emoji %> <%= m.home_team.name %> <% when \"away\" %><%= m.away_team.flag_emoji %> <%= m.away_team.name %> <% else %>Draw <% end %>" [ref=e220]:
+              - generic [ref=e221]:
+                - generic [ref=e222]: <span class="font-medium text-slate-800">
+                - generic [ref=e223]: <% case pick.group_result %>
+                - generic [ref=e224]: <% when "home" %><%= m.home_team.flag_emoji %> <%= m.home_team.name %>
+                - generic [ref=e225]: <% when "away" %><%= m.away_team.flag_emoji %> <%= m.away_team.name %>
+                - generic [ref=e226]: <% else %>Draw
+                - generic [ref=e227]: <% end %>
+    - paragraph [ref=e228]:
+      - code [ref=e229]: "Rails.root: /Users/dane/Development/worldcup.cool"
+    - generic [ref=e230]:
+      - link "Application Trace" [ref=e231] [cursor=pointer]:
+        - /url: "#"
+      - text: "|"
+      - link "Framework Trace" [ref=e232] [cursor=pointer]:
+        - /url: "#"
+      - text: "|"
+      - link "Full Trace" [ref=e233] [cursor=pointer]:
+        - /url: "#"
+      - code [ref=e235]:
+        - 'link "app/views/profiles/show.html.erb:82: syntax error, unexpected instance variable, expecting `when''" [ref=e236] [cursor=pointer]':
+          - /url: "#"
+    - heading "Exception Causes" [level=2] [ref=e237]
+    - 'link "ActiveSupport::SyntaxErrorProxy: /Users/dane/Development/worldcup.cool/app/views/profiles/show.html.erb:82: syntax error, unexpected instance variable, expecting `when'' @output_buffer.safe_append='' ... ^~~~~~~~~~~~~~" [ref=e239] [cursor=pointer]':
+      - /url: "#"
+    - heading "Request" [level=2] [ref=e240]
+    - paragraph [ref=e241]: "Parameters:"
+    - generic [ref=e242]: None
+    - link "Toggle session dump" [ref=e245] [cursor=pointer]:
+      - /url: "#"
+    - link "Toggle env dump" [ref=e248] [cursor=pointer]:
+      - /url: "#"
+    - heading "Response" [level=2] [ref=e249]
+    - paragraph [ref=e250]: "Headers:"
+    - generic [ref=e251]: None
+  - generic [ref=e252]:
+    - generic [ref=e254]:
+      - generic "close" [ref=e256] [cursor=pointer]: x
+      - generic [ref=e258]: ">>"
+    - textbox [ref=e260]

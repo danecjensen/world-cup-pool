@@ -17,6 +17,13 @@ class Admin::KnockoutMatchesController < Admin::BaseController
     end
   end
 
+  def clear_result
+    @match = KnockoutMatch.find(params[:id])
+    @match.update(home_score: nil, away_score: nil, winner_team: nil)
+    ScoringService.recompute_all
+    redirect_to admin_knockout_matches_path, notice: "Result removed from knockout match ##{@match.number}."
+  end
+
   private
 
   def km_params

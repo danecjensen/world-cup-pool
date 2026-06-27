@@ -1,0 +1,209 @@
+- generic [active] [ref=e31]:
+  - banner [ref=e32]:
+    - generic [ref=e33]:
+      - link "⚽ World Cup 2026 Pool" [ref=e34] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e35]: ⚽
+        - generic [ref=e36]: World Cup 2026 Pool
+      - navigation [ref=e37]:
+        - link "Standings" [ref=e38] [cursor=pointer]:
+          - /url: /standings
+        - link "Feed" [ref=e39] [cursor=pointer]:
+          - /url: /feed
+        - link "Group picks" [ref=e40] [cursor=pointer]:
+          - /url: /group_picks
+        - link "Hi, Commish" [ref=e41] [cursor=pointer]:
+          - /url: /profile
+        - button "Sign out" [ref=e43]
+  - paragraph [ref=e45]: Signed in successfully.
+  - main [ref=e46]:
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - paragraph [ref=e49]: June 11 – July 19, 2026
+        - generic [ref=e50]:
+          - paragraph [ref=e51]: Kickoff in
+          - paragraph [ref=e52]: Tournament is underway ⚽
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - generic "Mexico" [ref=e55]: 🇲🇽
+            - generic: Mexico
+          - generic [ref=e56]:
+            - generic "South Korea" [ref=e57]: 🇰🇷
+            - generic: South Korea
+          - generic [ref=e58]:
+            - generic "South Africa" [ref=e59]: 🇿🇦
+            - generic: South Africa
+          - generic [ref=e60]:
+            - generic "Czechia" [ref=e61]: 🇨🇿
+            - generic: Czechia
+          - generic [ref=e62]:
+            - generic "Canada" [ref=e63]: 🇨🇦
+            - generic: Canada
+          - generic [ref=e64]:
+            - generic "Switzerland" [ref=e65]: 🇨🇭
+            - generic: Switzerland
+          - generic [ref=e66]:
+            - generic "Qatar" [ref=e67]: 🇶🇦
+            - generic: Qatar
+          - generic [ref=e68]:
+            - generic "Bosnia and Herzegovina" [ref=e69]: 🇧🇦
+            - generic: Bosnia and Herzegovina
+          - generic [ref=e70]:
+            - generic "Brazil" [ref=e71]: 🇧🇷
+            - generic: Brazil
+          - generic [ref=e72]:
+            - generic "Morocco" [ref=e73]: 🇲🇦
+            - generic: Morocco
+          - generic [ref=e74]:
+            - generic "Scotland" [ref=e75]: 🏴󠁧󠁢󠁳󠁣󠁴󠁿
+            - generic: Scotland
+          - generic [ref=e76]:
+            - generic "Haiti" [ref=e77]: 🇭🇹
+            - generic: Haiti
+          - generic [ref=e78]:
+            - generic "United States" [ref=e79]: 🇺🇸
+            - generic: United States
+          - generic [ref=e80]:
+            - generic "Australia" [ref=e81]: 🇦🇺
+            - generic: Australia
+          - generic [ref=e82]:
+            - generic "Paraguay" [ref=e83]: 🇵🇾
+            - generic: Paraguay
+          - generic [ref=e84]:
+            - generic "Turkey" [ref=e85]: 🇹🇷
+            - generic: Turkey
+          - generic [ref=e86]:
+            - generic "Germany" [ref=e87]: 🇩🇪
+            - generic: Germany
+          - generic [ref=e88]:
+            - generic "Ecuador" [ref=e89]: 🇪🇨
+            - generic: Ecuador
+          - generic [ref=e90]:
+            - generic "Ivory Coast" [ref=e91]: 🇨🇮
+            - generic: Ivory Coast
+          - generic [ref=e92]:
+            - generic "Curaçao" [ref=e93]: 🇨🇼
+            - generic: Curaçao
+          - generic [ref=e94]:
+            - generic "Netherlands" [ref=e95]: 🇳🇱
+            - generic: Netherlands
+          - generic [ref=e96]:
+            - generic "Japan" [ref=e97]: 🇯🇵
+            - generic: Japan
+          - generic [ref=e98]:
+            - generic "Tunisia" [ref=e99]: 🇹🇳
+            - generic: Tunisia
+          - generic [ref=e100]:
+            - generic "Sweden" [ref=e101]: 🇸🇪
+            - generic: Sweden
+          - generic [ref=e102]:
+            - generic "Belgium" [ref=e103]: 🇧🇪
+            - generic: Belgium
+          - generic [ref=e104]:
+            - generic "Iran" [ref=e105]: 🇮🇷
+            - generic: Iran
+          - generic [ref=e106]:
+            - generic "Egypt" [ref=e107]: 🇪🇬
+            - generic: Egypt
+          - generic [ref=e108]:
+            - generic "New Zealand" [ref=e109]: 🇳🇿
+            - generic: New Zealand
+          - generic [ref=e110]:
+            - generic "Spain" [ref=e111]: 🇪🇸
+            - generic: Spain
+          - generic [ref=e112]:
+            - generic "Uruguay" [ref=e113]: 🇺🇾
+            - generic: Uruguay
+          - generic [ref=e114]:
+            - generic "Saudi Arabia" [ref=e115]: 🇸🇦
+            - generic: Saudi Arabia
+          - generic [ref=e116]:
+            - generic "Cape Verde" [ref=e117]: 🇨🇻
+            - generic: Cape Verde
+          - generic [ref=e118]:
+            - generic "France" [ref=e119]: 🇫🇷
+            - generic: France
+          - generic [ref=e120]:
+            - generic "Senegal" [ref=e121]: 🇸🇳
+            - generic: Senegal
+          - generic [ref=e122]:
+            - generic "Norway" [ref=e123]: 🇳🇴
+            - generic: Norway
+          - generic [ref=e124]:
+            - generic "Iraq" [ref=e125]: 🇮🇶
+            - generic: Iraq
+          - generic [ref=e126]:
+            - generic "Argentina" [ref=e127]: 🇦🇷
+            - generic: Argentina
+          - generic [ref=e128]:
+            - generic "Austria" [ref=e129]: 🇦🇹
+            - generic: Austria
+          - generic [ref=e130]:
+            - generic "Algeria" [ref=e131]: 🇩🇿
+            - generic: Algeria
+          - generic [ref=e132]:
+            - generic "Jordan" [ref=e133]: 🇯🇴
+            - generic: Jordan
+          - generic [ref=e134]:
+            - generic "Portugal" [ref=e135]: 🇵🇹
+            - generic: Portugal
+          - generic [ref=e136]:
+            - generic "Colombia" [ref=e137]: 🇨🇴
+            - generic: Colombia
+          - generic [ref=e138]:
+            - generic "Uzbekistan" [ref=e139]: 🇺🇿
+            - generic: Uzbekistan
+          - generic [ref=e140]:
+            - generic "DR Congo" [ref=e141]: 🇨🇩
+            - generic: DR Congo
+          - generic [ref=e142]:
+            - generic "England" [ref=e143]: 🏴󠁧󠁢󠁥󠁮󠁧󠁿
+            - generic: England
+          - generic [ref=e144]:
+            - generic "Croatia" [ref=e145]: 🇭🇷
+            - generic: Croatia
+          - generic [ref=e146]:
+            - generic "Panama" [ref=e147]: 🇵🇦
+            - generic: Panama
+          - generic [ref=e148]:
+            - generic "Ghana" [ref=e149]: 🇬🇭
+            - generic: Ghana
+        - link "Make picks" [ref=e151] [cursor=pointer]:
+          - /url: /group_picks
+      - generic [ref=e152]: ⚽
+    - generic [ref=e153]:
+      - generic [ref=e154]:
+        - heading "Scoring" [level=2] [ref=e155]
+        - list [ref=e156]:
+          - listitem [ref=e157]: "Group game: 1 pt"
+          - listitem [ref=e158]: "Round of 32: 2 pts"
+          - listitem [ref=e159]: "Round of 16: 4 pts"
+          - listitem [ref=e160]: "Quarterfinal: 6 pts"
+          - listitem [ref=e161]: "Semifinal: 8 pts"
+          - listitem [ref=e162]: "Final: 10 pts"
+      - generic [ref=e163]:
+        - heading "Locks" [level=2] [ref=e164]
+        - paragraph [ref=e165]: All group picks must be in before the first group game kicks off. All bracket picks must be in before the first R32 match kicks off. No late picks.
+      - generic [ref=e166]:
+        - heading "Pool size" [level=2] [ref=e167]
+        - paragraph [ref=e168]: "1"
+        - paragraph [ref=e169]: player registered
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - heading "Leaderboard preview" [level=2] [ref=e172]
+        - list [ref=e173]:
+          - listitem [ref=e174]:
+            - generic [ref=e175]:
+              - generic [ref=e176]: "1."
+              - generic [ref=e177]: Commish
+            - generic [ref=e178]: 0 pts
+        - link "Full standings →" [ref=e179] [cursor=pointer]:
+          - /url: /standings
+      - generic [ref=e180]:
+        - heading "Next up" [level=2] [ref=e181]
+        - paragraph [ref=e182]: Group A · Match 2
+        - paragraph [ref=e183]: 🇰🇷 South Korea vs Czechia 🇨🇿
+        - paragraph [ref=e184]: Thu, Jun 11 · 9:00 PM · Estadio Akron, Zapopan
+        - paragraph [ref=e185]: "Your pick: Draw"
+  - contentinfo [ref=e186]:
+    - paragraph [ref=e187]: 2026 FIFA World Cup Pool · single shared pool · open registration
