@@ -51,7 +51,7 @@
       <% end %>
     </div>
 
-    <div class="grid sm:grid-cols-3 gap-4">
+    <div class="grid sm:grid-cols-2 gap-4">
       <%= link_to admin_advancing_teams_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
         <h3 class="font-semibold">Set Round of 32 bracket →</h3>
         <p class="text-sm text-slate-500 mt-1">Drop a team into each of the 32 bracket slots by hand so matchups show real names. Winners advance automatically.</p>
@@ -63,6 +63,10 @@
       <%= link_to admin_knockout_matches_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
         <h3 class="font-semibold">Enter knockout results →</h3>
         <p class="text-sm text-slate-500 mt-1">31 bracket matches across 5 rounds, with winner and score entry.</p>
+      <% end %>
+      <%= link_to admin_knockout_pick_status_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Knockout pick status →</h3>
+        <p class="text-sm text-slate-500 mt-1">See who has submitted all 31 of their knockout-stage picks.</p>
       <% end %>
     </div>
 
