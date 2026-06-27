@@ -171,104 +171,72 @@ ActiveRecord::Base.transaction do
     ["1A", "3C"], ["1B", "3D"], ["1H", "3E"], ["1L", "3I"]
   ]
 
-  next_num = 73
+  # Official FIFA 2026 match number for each (round, bracket_position). Bracket
+  # position is the visual top-to-bottom slot; the match number follows the
+  # official kickoff-ordered schedule, which is NOT bracket order — e.g. the top
+  # R32 slot is match 74, while the earliest game (match 73) sits in slot 3.
+  # These numbers drive every "Winner Match N" label, so the array order below
+  # is what makes each round feed the next exactly like the real bracket.
+  # (Match 103, the third-place play-off, isn't part of this pool, so the final
+  # keeps its official number 104.)
+  number_for = {
+    "r32"   => [74, 77, 73, 75, 83, 84, 81, 82, 76, 78, 79, 80, 86, 88, 85, 87],
+    "r16"   => [89, 90, 93, 94, 91, 92, 95, 96],
+    "qf"    => [97, 98, 99, 100],
+    "sf"    => [101, 102],
+    "final" => [104]
+  }
+
+  winner_slot_for = ->(number) do
+    BracketSlot.create!(code: "W#{number}", source_type: "match_winner", source_match_id: number)
+  end
+
+  # R32: 16 matches fed by group finishers. Remember each match's winner slot by
+  # bracket position so later rounds can pair up the right two.
+  r32_winners = {}
   r32_pairs.each_with_index do |(home_code, away_code), idx|
-    home_slot = BracketSlot.find_by(code: home_code)
-    away_slot = BracketSlot.find_by(code: away_code)
-    winner_slot = BracketSlot.create!(
-      code: "W#{next_num}",
-      source_type: "match_winner",
-      source_match_id: next_num
-    )
+    number = number_for["r32"][idx]
+    winner_slot = winner_slot_for.call(number)
     KnockoutMatch.create!(
-      number: next_num,
+      number: number,
       round: "r32",
       bracket_position: idx + 1,
-      home_slot: home_slot,
-      away_slot: away_slot,
+      home_slot: BracketSlot.find_by(code: home_code),
+      away_slot: BracketSlot.find_by(code: away_code),
       winner_slot: winner_slot,
       kickoff_at: Time.zone.local(2026, 6, 28, 12, 0) + (idx * 6).hours,
       venue: venues[idx % venues.length]
     )
-    next_num += 1
+    r32_winners[idx + 1] = winner_slot
   end
 
-  # R16: 8 matches, each pairs the winners of two consecutive R32 matches.
-  8.times do |i|
-    home_slot = BracketSlot.find_by(code: "W#{73 + i * 2}")
-    away_slot = BracketSlot.find_by(code: "W#{73 + i * 2 + 1}")
-    winner_slot = BracketSlot.create!(
-      code: "W#{next_num}",
-      source_type: "match_winner",
-      source_match_id: next_num
-    )
-    KnockoutMatch.create!(
-      number: next_num,
-      round: "r16",
-      bracket_position: i + 1,
-      home_slot: home_slot,
-      away_slot: away_slot,
-      winner_slot: winner_slot,
-      kickoff_at: Time.zone.local(2026, 7, 4, 12, 0) + (i * 6).hours,
-      venue: venues[i % venues.length]
-    )
-    next_num += 1
+  # Every later round pairs the winners of the two matches directly above and
+  # below it in the bracket: position p is fed by feeder positions 2p-1 and 2p of
+  # the previous round.
+  build_round = ->(round, count, feeders, base_kickoff, step_hours) do
+    winners = {}
+    count.times do |i|
+      number = number_for[round][i]
+      winner_slot = round == "final" ? nil : winner_slot_for.call(number)
+      KnockoutMatch.create!(
+        number: number,
+        round: round,
+        bracket_position: i + 1,
+        home_slot: feeders[2 * i + 1],
+        away_slot: feeders[2 * i + 2],
+        winner_slot: winner_slot,
+        kickoff_at: base_kickoff + (i * step_hours).hours,
+        venue: venues[i % venues.length]
+      )
+      winners[i + 1] = winner_slot
+    end
+    winners
   end
 
-  # QF: 4 matches.
-  4.times do |i|
-    home_slot = BracketSlot.find_by(code: "W#{89 + i * 2}")
-    away_slot = BracketSlot.find_by(code: "W#{89 + i * 2 + 1}")
-    winner_slot = BracketSlot.create!(
-      code: "W#{next_num}",
-      source_type: "match_winner",
-      source_match_id: next_num
-    )
-    KnockoutMatch.create!(
-      number: next_num,
-      round: "qf",
-      bracket_position: i + 1,
-      home_slot: home_slot,
-      away_slot: away_slot,
-      winner_slot: winner_slot,
-      kickoff_at: Time.zone.local(2026, 7, 9, 14, 0) + (i * 6).hours,
-      venue: venues[i % venues.length]
-    )
-    next_num += 1
-  end
-
-  # SF: 2 matches.
-  2.times do |i|
-    home_slot = BracketSlot.find_by(code: "W#{97 + i * 2}")
-    away_slot = BracketSlot.find_by(code: "W#{97 + i * 2 + 1}")
-    winner_slot = BracketSlot.create!(
-      code: "W#{next_num}",
-      source_type: "match_winner",
-      source_match_id: next_num
-    )
-    KnockoutMatch.create!(
-      number: next_num,
-      round: "sf",
-      bracket_position: i + 1,
-      home_slot: home_slot,
-      away_slot: away_slot,
-      winner_slot: winner_slot,
-      kickoff_at: Time.zone.local(2026, 7, 14, 18, 0) + (i * 24).hours,
-      venue: venues[i % venues.length]
-    )
-    next_num += 1
-  end
-
-  # Final: 1 match — no further winner slot.
-  KnockoutMatch.create!(
-    number: next_num,
-    round: "final",
-    bracket_position: 1,
-    home_slot: BracketSlot.find_by(code: "W101"),
-    away_slot: BracketSlot.find_by(code: "W102"),
-    kickoff_at: Time.zone.local(2026, 7, 19, 15, 0),
-    venue: "MetLife Stadium"
-  )
+  r16_winners = build_round.call("r16", 8, r32_winners, Time.zone.local(2026, 7, 4, 12, 0), 6)
+  qf_winners  = build_round.call("qf", 4, r16_winners, Time.zone.local(2026, 7, 9, 14, 0), 6)
+  sf_winners  = build_round.call("sf", 2, qf_winners, Time.zone.local(2026, 7, 14, 18, 0), 24)
+  build_round.call("final", 1, sf_winners, Time.zone.local(2026, 7, 19, 15, 0), 0)
 
   if ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
     User.find_or_create_by!(email: ENV["ADMIN_EMAIL"]) do |u|

@@ -4,7 +4,11 @@ class BracketPicksController < ApplicationController
 
   def show
     @rounds = KnockoutMatch::ROUNDS
-    @matches_by_round = KnockoutMatch.includes(:home_slot, :away_slot, :home_team, :away_team).ordered.group_by(&:round)
+    # Order each round top-to-bottom by bracket position so the tree reads like a
+    # real bracket. (Match numbers follow the official kickoff-ordered schedule,
+    # so they are intentionally not sequential down a column.)
+    @matches_by_round = KnockoutMatch.includes(:home_slot, :away_slot, :home_team, :away_team)
+                                     .order(:bracket_position).group_by(&:round)
     @picks_by_km = current_user.picks.where.not(knockout_match_id: nil).index_by(&:knockout_match_id)
     @group_stage_locked = group_stage_locked?
     @knockout_locked = knockout_stage_locked?
