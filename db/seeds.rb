@@ -187,6 +187,28 @@ ActiveRecord::Base.transaction do
     "final" => [104]
   }
 
+  # Official FIFA 2026 R32 kickoffs, in Central Time (the app's default zone),
+  # keyed by official match number.
+  central = ActiveSupport::TimeZone["Central Time (US & Canada)"]
+  r32_kickoff_for = {
+    73 => central.local(2026, 6, 28, 14, 0),  # South Africa vs Canada
+    76 => central.local(2026, 6, 29, 12, 0),  # Brazil vs Japan
+    74 => central.local(2026, 6, 29, 15, 30), # Germany vs Paraguay
+    75 => central.local(2026, 6, 29, 20, 0),  # Netherlands vs Morocco
+    78 => central.local(2026, 6, 30, 12, 0),  # Ivory Coast vs Norway
+    77 => central.local(2026, 6, 30, 16, 0),  # France vs Sweden
+    79 => central.local(2026, 6, 30, 20, 0),  # Mexico vs Ecuador
+    80 => central.local(2026, 7,  1, 11, 0),  # England vs DR Congo
+    82 => central.local(2026, 7,  1, 15, 0),  # Belgium vs Senegal
+    81 => central.local(2026, 7,  1, 19, 0),  # United States vs Bosnia and Herzegovina
+    84 => central.local(2026, 7,  2, 14, 0),  # Spain vs Runner-up Group J
+    83 => central.local(2026, 7,  2, 18, 0),  # Portugal vs Croatia
+    85 => central.local(2026, 7,  2, 22, 0),  # Switzerland vs 3rd Group G/J
+    88 => central.local(2026, 7,  3, 13, 0),  # Australia vs Egypt
+    86 => central.local(2026, 7,  3, 17, 0),  # Argentina vs Cape Verde
+    87 => central.local(2026, 7,  3, 20, 30)  # Colombia vs Ghana
+  }
+
   winner_slot_for = ->(number) do
     BracketSlot.create!(code: "W#{number}", source_type: "match_winner", source_match_id: number)
   end
@@ -204,7 +226,7 @@ ActiveRecord::Base.transaction do
       home_slot: BracketSlot.find_by(code: home_code),
       away_slot: BracketSlot.find_by(code: away_code),
       winner_slot: winner_slot,
-      kickoff_at: Time.zone.local(2026, 6, 28, 12, 0) + (idx * 6).hours,
+      kickoff_at: r32_kickoff_for[number],
       venue: venues[idx % venues.length]
     )
     r32_winners[idx + 1] = winner_slot
