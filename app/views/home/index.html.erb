@@ -123,7 +123,7 @@
           <li class="py-3 first:pt-0 last:pb-0">
             <p class="text-xs uppercase tracking-wide text-slate-400">Group <%= match.group.letter %> · Match <%= match.number %></p>
             <p class="text-lg font-semibold mt-1"><%= match.home_team.flag_emoji %> <%= match.home_team.name %> vs <%= match.away_team.name %> <%= match.away_team.flag_emoji %></p>
-            <p class="text-sm text-slate-600 mt-1"><%= match.kickoff_at.strftime("%-l:%M %p") %> · <%= venue_with_location(match.venue) %></p>
+            <p class="text-sm text-slate-600 mt-1"><%= match.kickoff_at.strftime("%-l:%M %p") %> · <%= match.venue %></p>
             <% if user_signed_in? %>
               <% if pick&.group_result %>
                 <% picked_team = { "home" => match.home_team, "away" => match.away_team }[pick.group_result] %>
@@ -146,7 +146,7 @@
           <li class="py-3 first:pt-0 last:pb-0">
             <p class="text-xs uppercase tracking-wide text-slate-400"><%= ko.round_name %></p>
             <p class="text-lg font-semibold mt-1"><%= ko.home_team&.name || ko.home_slot&.display_label %> vs <%= ko.away_team&.name || ko.away_slot&.display_label %></p>
-            <p class="text-sm text-slate-600 mt-1"><%= [ko.kickoff_at&.strftime("%-l:%M %p"), venue_with_location(ko.venue)].compact.join(" · ") %></p>
+            <p class="text-sm text-slate-600 mt-1"><%= [ko.kickoff_at&.strftime("%-l:%M %p"), ko.venue.presence].compact.join(" · ") %></p>
             <% if user_signed_in? %>
               <% if pick&.team %>
                 <p class="text-sm mt-1">
