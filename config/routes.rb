@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
   resource :group_picks, only: [:show, :update], controller: "group_picks"
   resource :bracket_picks, only: [:show, :update], controller: "bracket_picks"
+  resource :bracket_insights, only: [:show], controller: "bracket_insights"
   resources :standings, only: [:index]
 
   get "feed" => "feed#index", as: :feed

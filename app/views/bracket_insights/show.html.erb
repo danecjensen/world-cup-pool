@@ -1,0 +1,122 @@
+<% content_for :title, "Bracket Insights" %>
+
+<% content_for :head do %>
+  <style>
+    .insights-row { transition: opacity .15s ease, transform .15s ease, box-shadow .15s ease; }
+    .insights-active { box-shadow: 0 0 0 2px #f59e0b, 0 4px 14px -4px rgba(245,158,11,.6); transform: scale(1.04); position: relative; z-index: 2; }
+    .insights-dim { opacity: .22; filter: saturate(.4); }
+    .insights-bar { transition: width .4s cubic-bezier(.22,1,.36,1); }
+    @keyframes insights-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .insights-cell { animation: insights-pop .35s ease both; }
+  </style>
+<% end %>
+
+<div class="flex flex-wrap items-end justify-between mb-6 gap-2">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight">How the pool picked 🔮</h1>
+    <p class="text-slate-600 mt-1 text-sm">The crowd's knockout bracket — what share of players picked each team to win every match.</p>
+  </div>
+  <%= link_to "My bracket →", bracket_picks_path, class: "text-sm font-semibold text-rose-700 hover:text-rose-800 underline" %>
+</div>
+
+<% unless @reveal %>
+  <div class="rounded-xl bg-white border border-slate-200 shadow-sm px-6 py-12 text-center">
+    <div class="text-5xl mb-3">🤐</div>
+    <h2 class="text-xl font-bold">The crowd's picks are still under wraps</h2>
+    <p class="text-slate-600 mt-2 max-w-md mx-auto text-sm">
+      To keep things fair, the breakdown of how everyone filled out their bracket stays hidden until
+      picks lock at the first Round-of-32 kickoff. Check back once the knockout stage begins!
+    </p>
+    <%= link_to "Fill out your bracket", bracket_picks_path, class: "inline-block mt-6 bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
+  </div>
+<% else %>
+
+  <% if @champion && @champion[:teams].any? %>
+    <% pick = @champion[:teams].first %>
+    <div class="rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 text-amber-950 px-5 py-4 mb-6 shadow flex flex-wrap items-center gap-4">
+      <div class="text-4xl">🏆</div>
+      <div class="flex-1 min-w-[12rem]">
+        <div class="text-[11px] font-bold uppercase tracking-widest opacity-70">Pool's predicted champion</div>
+        <div class="text-2xl font-extrabold leading-tight"><%= pick[:team].flag_emoji %> <%= pick[:team].name %></div>
+      </div>
+      <div class="text-right">
+        <div class="text-3xl font-black tabular-nums"><%= pick[:pct] %>%</div>
+        <div class="text-[11px] font-medium opacity-70">of <%= pluralize(@total_bracketeers, "bracket") %> crowned them</div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="rounded-md bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 mb-6 text-sm flex items-start gap-2">
+    <span class="text-base leading-none">💡</span>
+    <span>Hover or tap any team to trace its support across the whole bracket — pinned teams stay lit so you can scroll the later rounds. Bars show the share of players who picked that team to win each match.</span>
+  </div>
+
+  <div data-controller="insights">
+    <div class="overflow-x-auto pb-4 -mx-4 px-4">
+      <div class="flex gap-5 min-w-max items-stretch">
+        <% @rounds.each_with_index do |round, round_index| %>
+          <% next unless @matches_by_round[round] %>
+          <section class="flex flex-col w-72 shrink-0">
+            <header class="rounded-t-lg bg-gradient-to-r from-rose-600 to-rose-500 text-white px-3 py-2 text-center">
+              <h2 class="font-bold tracking-tight text-sm"><%= KnockoutMatch::ROUND_NAMES[round] %></h2>
+              <span class="text-[10px] font-medium uppercase tracking-widest opacity-80"><%= KnockoutMatch::ROUND_POINTS[round] %> pts each</span>
+            </header>
+            <div class="flex-1 flex flex-col justify-around gap-3 bg-slate-50/60 rounded-b-lg p-2">
+              <% @matches_by_round[round].each do |km| %>
+                <% dist = @distribution[km.id] %>
+                <div class="insights-cell rounded-lg bg-white shadow-sm border border-slate-200 overflow-hidden">
+                  <div class="flex items-center justify-between px-2.5 py-1 bg-slate-50 border-b border-slate-100">
+                    <span class="font-mono text-[10px] text-slate-400">#<%= km.number %></span>
+                    <% if round == "r32" && km.home_team && km.away_team %>
+                      <span class="text-[10px] text-slate-500 truncate ml-2"><%= km.home_team.code %> v <%= km.away_team.code %></span>
+                    <% elsif dist %>
+                      <span class="text-[10px] text-slate-400"><%= pluralize(dist[:total], "pick") %></span>
+                    <% end %>
+                  </div>
+
+                  <% if dist.nil? || dist[:teams].empty? %>
+                    <div class="px-2.5 py-3 text-[11px] text-slate-400 italic text-center">No picks yet</div>
+                  <% else %>
+                    <div class="p-1.5 space-y-1">
+                      <% dist[:teams].each do |row| %>
+                        <% team = row[:team] %>
+                        <button type="button"
+                                data-insights-target="row"
+                                data-team-id="<%= team.id %>"
+                                data-team-name="<%= team.name %>"
+                                data-team-flag="<%= team.flag_emoji %>"
+                                data-round-index="<%= round_index %>"
+                                data-round-name="<%= KnockoutMatch::ROUND_NAMES[round] %>"
+                                data-pct="<%= row[:pct] %>"
+                                data-action="mouseenter->insights#hover mouseleave->insights#unhover click->insights#pin focus->insights#hover blur->insights#unhover"
+                                class="insights-row relative w-full text-left rounded-md overflow-hidden bg-slate-100 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                          <div class="insights-bar absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400/70 to-emerald-300/60" style="width: <%= row[:pct] %>%"></div>
+                          <div class="relative flex items-center gap-1.5 px-2 py-1.5">
+                            <span class="text-sm leading-none"><%= team.flag_emoji %></span>
+                            <span class="text-[12px] font-medium truncate flex-1"><%= team.name %></span>
+                            <span class="text-[12px] font-bold tabular-nums text-slate-700"><%= row[:pct] %>%</span>
+                          </div>
+                        </button>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Floating tracer banner -->
+    <div data-insights-target="banner"
+         class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-[92vw]
+                bg-slate-900 text-white rounded-full shadow-2xl px-5 py-2.5 flex items-center gap-3">
+      <span data-insights-target="bannerFlag" class="text-2xl leading-none"></span>
+      <span>
+        <span data-insights-target="bannerName" class="font-bold"></span>
+        <span data-insights-target="bannerStat" class="block text-[11px] text-slate-300"></span>
+      </span>
+    </div>
+  </div>
+<% end %>
