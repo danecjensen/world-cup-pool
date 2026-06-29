@@ -128,10 +128,6 @@ ActiveRecord::Base.transaction do
 
   central = ActiveSupport::TimeZone["Central Time (US & Canada)"]
   teams_by_code = Team.all.index_by(&:code)
-  venues = ["MetLife Stadium", "SoFi Stadium", "AT&T Stadium", "Mercedes-Benz Stadium",
-            "Hard Rock Stadium", "NRG Stadium", "Estadio Azteca", "Estadio Akron",
-            "BMO Field", "BC Place", "Levi's Stadium", "Lincoln Financial Field",
-            "Lumen Field", "Gillette Stadium", "Arrowhead Stadium", "Estadio BBVA"]
 
   GROUP_STAGE_SCHEDULE
     .map { |row| row.merge(kickoff_at: central.local(*row[:kickoff])) }
@@ -209,6 +205,48 @@ ActiveRecord::Base.transaction do
     87 => central.local(2026, 7,  3, 20, 30)  # Colombia vs Ghana
   }
 
+  # Official FIFA 2026 knockout venues, keyed by official match number, in the
+  # same "Stadium, City" format as the group-stage schedule. Verified against the
+  # FIFA 2026 schedule and Wikipedia's knockout-stage article.
+  knockout_venue_for = {
+    # Round of 32
+    73 => "SoFi Stadium, Inglewood",            # South Africa vs Canada
+    74 => "Gillette Stadium, Foxborough",       # Germany vs Paraguay
+    75 => "Estadio BBVA, Guadalupe",            # Netherlands vs Morocco
+    76 => "NRG Stadium, Houston",               # Brazil vs Japan
+    77 => "MetLife Stadium, East Rutherford",   # France vs Sweden
+    78 => "AT&T Stadium, Arlington",            # Ivory Coast vs Norway
+    79 => "Estadio Azteca, Mexico City",        # Mexico vs Ecuador
+    80 => "Mercedes-Benz Stadium, Atlanta",     # England vs DR Congo
+    81 => "Levi's Stadium, Santa Clara",        # United States vs Bosnia and Herzegovina
+    82 => "Lumen Field, Seattle",               # Belgium vs Senegal
+    83 => "BMO Field, Toronto",                 # Portugal vs Croatia
+    84 => "SoFi Stadium, Inglewood",            # Spain vs Runner-up Group J
+    85 => "BC Place, Vancouver",                # Switzerland vs 3rd Group G/J
+    86 => "Hard Rock Stadium, Miami Gardens",   # Argentina vs Cape Verde
+    87 => "Arrowhead Stadium, Kansas City",     # Colombia vs Ghana
+    88 => "AT&T Stadium, Arlington",            # Australia vs Egypt
+    # Round of 16
+    89 => "Lincoln Financial Field, Philadelphia",
+    90 => "NRG Stadium, Houston",
+    91 => "MetLife Stadium, East Rutherford",
+    92 => "Estadio Azteca, Mexico City",
+    93 => "AT&T Stadium, Arlington",
+    94 => "Lumen Field, Seattle",
+    95 => "Mercedes-Benz Stadium, Atlanta",
+    96 => "BC Place, Vancouver",
+    # Quarter-finals
+    97 => "Gillette Stadium, Foxborough",
+    98 => "SoFi Stadium, Inglewood",
+    99 => "Hard Rock Stadium, Miami Gardens",
+    100 => "Arrowhead Stadium, Kansas City",
+    # Semi-finals
+    101 => "AT&T Stadium, Arlington",
+    102 => "Mercedes-Benz Stadium, Atlanta",
+    # Final
+    104 => "MetLife Stadium, East Rutherford"
+  }
+
   winner_slot_for = ->(number) do
     BracketSlot.create!(code: "W#{number}", source_type: "match_winner", source_match_id: number)
   end
@@ -227,7 +265,7 @@ ActiveRecord::Base.transaction do
       away_slot: BracketSlot.find_by(code: away_code),
       winner_slot: winner_slot,
       kickoff_at: r32_kickoff_for[number],
-      venue: venues[idx % venues.length]
+      venue: knockout_venue_for[number]
     )
     r32_winners[idx + 1] = winner_slot
   end
@@ -248,7 +286,7 @@ ActiveRecord::Base.transaction do
         away_slot: feeders[2 * i + 2],
         winner_slot: winner_slot,
         kickoff_at: base_kickoff + (i * step_hours).hours,
-        venue: venues[i % venues.length]
+        venue: knockout_venue_for[number]
       )
       winners[i + 1] = winner_slot
     end
