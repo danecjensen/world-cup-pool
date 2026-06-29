@@ -36,6 +36,7 @@
                   <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-amber-400 text-amber-950">Preview</span>
                 <% end %>
               <% end %>
+              <%= link_to "Insights", bracket_insights_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
             <% end %>
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path, class: "px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30" %>
