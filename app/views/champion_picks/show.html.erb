@@ -1,0 +1,67 @@
+<% content_for :title, "Who's winning it all" %>
+
+<div class="flex flex-wrap items-end justify-between mb-6 gap-2">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight">Who's winning it all 🏆</h1>
+    <p class="text-slate-600 mt-1 text-sm">Every player and the team they picked to lift the trophy in the Final.</p>
+  </div>
+  <%= link_to "← Back to insights", bracket_insights_path, class: "text-sm font-semibold text-rose-700 hover:text-rose-800 underline" %>
+</div>
+
+<% unless @reveal && @champion_match %>
+  <div class="rounded-xl bg-white border border-slate-200 shadow-sm px-6 py-12 text-center">
+    <div class="text-5xl mb-3">🤐</div>
+    <h2 class="text-xl font-bold">Champion picks are still under wraps</h2>
+    <p class="text-slate-600 mt-2 max-w-md mx-auto text-sm">
+      To keep things fair, who everyone picked to win it all stays hidden until picks lock at the
+      first Round-of-32 kickoff. Check back once the knockout stage begins!
+    </p>
+    <%= link_to "Fill out your bracket", bracket_picks_path, class: "inline-block mt-6 bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
+  </div>
+<% else %>
+  <% picked_count = @by_team.sum { |_team, users| users.size } %>
+  <div class="rounded-md bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 mb-6 text-sm flex items-start gap-2">
+    <span class="text-base leading-none">📋</span>
+    <span><%= pluralize(picked_count, "player") %> of <%= @total_users %> have crowned a champion, backing <%= pluralize(@by_team.size, "different team") %>.</span>
+  </div>
+
+  <div class="space-y-4">
+    <% @by_team.each do |team, users| %>
+      <div class="rounded-xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-50 to-white border-b border-slate-100">
+          <span class="text-2xl leading-none"><%= team.flag_emoji %></span>
+          <h2 class="font-bold text-lg flex-1"><%= team.name %></h2>
+          <span class="shrink-0 inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-900 text-sm font-bold px-3 py-1">
+            <%= pluralize(users.size, "backer") %>
+          </span>
+        </div>
+        <ul class="flex flex-wrap gap-2 p-4">
+          <% users.each do |user| %>
+            <li class="inline-flex items-center rounded-full bg-slate-100 text-slate-700 text-sm px-3 py-1">
+              <%= user.name_with_flag %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <% if @no_pick_users.any? %>
+      <div class="rounded-xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-4 py-3 bg-slate-50 border-b border-slate-100">
+          <span class="text-2xl leading-none">🤷</span>
+          <h2 class="font-bold text-lg flex-1 text-slate-500">No champion picked yet</h2>
+          <span class="shrink-0 inline-flex items-center rounded-full bg-slate-200 text-slate-600 text-sm font-bold px-3 py-1">
+            <%= @no_pick_users.size %>
+          </span>
+        </div>
+        <ul class="flex flex-wrap gap-2 p-4">
+          <% @no_pick_users.each do |user| %>
+            <li class="inline-flex items-center rounded-full bg-slate-100 text-slate-400 text-sm px-3 py-1">
+              <%= user.name_with_flag %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+<% end %>
