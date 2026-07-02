@@ -10,7 +10,7 @@
         <th class="text-left px-3 sm:px-4 py-3">#</th>
         <th class="text-left px-3 sm:px-4 py-3">Player</th>
         <th class="hidden sm:table-cell text-right px-4 py-3">Group correct</th>
-        <th class="hidden sm:table-cell text-right px-4 py-3">Bracket correct</th>
+        <th class="hidden sm:table-cell text-right px-4 py-3">Bracket points</th>
         <th class="text-right px-3 sm:px-4 py-3">Points</th>
       </tr>
     </thead>
@@ -30,11 +30,11 @@
           <td class="px-3 sm:px-4 py-3 font-medium">
             <%= p.name_with_flag %>
             <div class="sm:hidden mt-0.5 text-xs font-normal text-slate-500">
-              Group <%= p.group_correct %> &middot; Bracket <%= p.bracket_correct %>
+              Group <%= p.group_correct %> &middot; Bracket <%= p.bracket_points %>
             </div>
           </td>
           <td class="hidden sm:table-cell px-4 py-3 text-right text-slate-600"><%= p.group_correct %></td>
-          <td class="hidden sm:table-cell px-4 py-3 text-right text-slate-600"><%= p.bracket_correct %></td>
+          <td class="hidden sm:table-cell px-4 py-3 text-right text-slate-600"><%= p.bracket_points %></td>
           <td class="px-3 sm:px-4 py-3 text-right font-bold text-emerald-700 align-top sm:align-middle"><%= p.total_points %></td>
         </tr>
       <% end %>
