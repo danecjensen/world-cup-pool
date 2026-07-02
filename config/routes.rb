@@ -53,6 +53,7 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :edit, :update]
     resources :users, only: [:index, :update] do
       member { patch :reset_password }
+      resource :bracket_picks, only: [:show, :update], controller: "bracket_picks"
     end
     resources :payments, only: [:index, :update]
     resources :feed_posts, only: [:index, :destroy] do
@@ -60,6 +61,7 @@ Rails.application.routes.draw do
     end
     get "group_pick_status" => "group_pick_status#index", as: :group_pick_status
     get "knockout_pick_status" => "knockout_pick_status#index", as: :knockout_pick_status
+    get "pick_audits" => "pick_audits#index", as: :pick_audits
     post "score" => "dashboard#recompute_scores", as: :recompute_scores
     post "toggle_bracket_visibility" => "dashboard#toggle_bracket_visibility", as: :toggle_bracket_visibility
   end

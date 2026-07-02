@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_27_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_02_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -128,6 +128,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_27_000000) do
     t.boolean "correct", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "admin_entered", default: false, null: false
     t.index ["bracket_slot_id"], name: "index_picks_on_bracket_slot_id"
     t.index ["knockout_match_id"], name: "index_picks_on_knockout_match_id"
     t.index ["match_id"], name: "index_picks_on_match_id"
@@ -175,18 +176,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_27_000000) do
     t.index ["name"], name: "index_teams_on_name", unique: true
   end
 
-  create_table "watch_parties", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "match_id"
-    t.string "location", null: false
-    t.string "match_label"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["created_at"], name: "index_watch_parties_on_created_at"
-    t.index ["match_id"], name: "index_watch_parties_on_match_id"
-    t.index ["user_id"], name: "index_watch_parties_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -202,6 +191,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_27_000000) do
     t.string "support_flag"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "watch_parties", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "match_id"
+    t.string "location", null: false
+    t.string "match_label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_watch_parties_on_created_at"
+    t.index ["match_id"], name: "index_watch_parties_on_match_id"
+    t.index ["user_id"], name: "index_watch_parties_on_user_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

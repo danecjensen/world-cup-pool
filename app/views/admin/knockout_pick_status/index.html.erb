@@ -7,7 +7,9 @@
 
 <p class="text-sm text-slate-500 mb-4">
   "Yes" means the player has submitted all <%= @total_matches %> knockout-stage picks
-  (Round of 32 through the Final).
+  (Round of 32 through the Final). Use "Edit picks" to enter a bracket on a player's behalf
+  (e.g. picks they emailed in) — those edits are flagged and listed on the
+  <%= link_to "admin-entered picks page", admin_pick_audits_path, class: "text-emerald-700 font-medium hover:underline" %>.
 </p>
 
 <div class="overflow-x-auto rounded-xl bg-white shadow-sm border border-slate-100">
@@ -18,6 +20,7 @@
         <th class="px-4 py-3 font-semibold">Nickname</th>
         <th class="px-4 py-3 font-semibold text-center">Picks made</th>
         <th class="px-4 py-3 font-semibold text-center">All knockout picks submitted?</th>
+        <th class="px-4 py-3 font-semibold text-right"></th>
       </tr>
     </thead>
     <tbody>
@@ -36,6 +39,9 @@
                 No<span class="ml-1 font-normal text-rose-600">(<%= made %>/<%= @total_matches %>)</span>
               </span>
             <% end %>
+          </td>
+          <td class="px-4 py-3 text-right whitespace-nowrap">
+            <%= link_to "Edit picks", admin_user_bracket_picks_path(user), class: "text-emerald-700 font-medium hover:underline" %>
           </td>
         </tr>
       <% end %>

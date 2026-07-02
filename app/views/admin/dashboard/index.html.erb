@@ -66,7 +66,11 @@
       <% end %>
       <%= link_to admin_knockout_pick_status_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
         <h3 class="font-semibold">Knockout pick status →</h3>
-        <p class="text-sm text-slate-500 mt-1">See who has submitted all 31 of their knockout-stage picks.</p>
+        <p class="text-sm text-slate-500 mt-1">See who has submitted all 31 of their knockout-stage picks, and enter a bracket on a player's behalf.</p>
+      <% end %>
+      <%= link_to admin_pick_audits_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Admin-entered picks →</h3>
+        <p class="text-sm text-slate-500 mt-1">Audit trail of every pick an admin entered or changed on a player's behalf.</p>
       <% end %>
     </div>
 

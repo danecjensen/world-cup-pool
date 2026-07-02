@@ -1,0 +1,38 @@
+<% content_for :title, "Admin · #{@pick_user.display_name}'s bracket" %>
+
+<div class="flex flex-wrap items-end justify-between mb-6 gap-2">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight"><%= @pick_user.display_name %>'s knockout bracket</h1>
+    <p class="text-slate-600 mt-1 text-sm break-all"><%= @pick_user.email %></p>
+  </div>
+  <%= link_to "← Back to knockout pick status", admin_knockout_pick_status_path, class: "text-sm text-slate-600 hover:text-slate-900" %>
+</div>
+
+<div class="rounded-md bg-amber-50 border border-amber-300 text-amber-900 px-4 py-3 mb-4 text-sm">
+  <span class="font-bold uppercase tracking-wide text-xs px-1.5 py-0.5 rounded bg-amber-400 text-amber-950 mr-1">Admin edit</span>
+  You are editing this player's bracket on their behalf (e.g. picks they emailed in). Every pick you add or change
+  is flagged as admin-entered and listed on the
+  <%= link_to "admin-entered picks page", admin_pick_audits_path, class: "font-semibold underline hover:text-amber-950" %>
+  so there's oversight on these edits.
+</div>
+
+<% if @knockout_locked %>
+  <div class="rounded-md bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 mb-4 text-sm">
+    🔒 Bracket picks are locked for players, but as an admin you can still save changes here — use with care.
+  </div>
+<% end %>
+
+<% if @admin_entered_count.positive? %>
+  <p class="text-sm text-slate-500 mb-4">
+    <span class="font-semibold text-slate-700"><%= @admin_entered_count %></span> of this player's saved picks
+    <%= @admin_entered_count == 1 ? "is" : "are" %> currently flagged as admin-entered.
+  </p>
+<% end %>
+
+<%= render "bracket_picks/bracket_form",
+      form_url: admin_user_bracket_picks_path(@pick_user),
+      rounds: @rounds,
+      matches_by_round: @matches_by_round,
+      picks_by_km: @picks_by_km,
+      locked: false,
+      submit_label: "Save #{@pick_user.display_name}'s bracket" %>
