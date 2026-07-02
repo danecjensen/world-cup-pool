@@ -7,11 +7,11 @@
   <table class="w-full text-sm">
     <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
       <tr>
-        <th class="text-left px-4 py-3">#</th>
-        <th class="text-left px-4 py-3">Player</th>
-        <th class="text-right px-4 py-3">Group correct</th>
-        <th class="text-right px-4 py-3">Bracket correct</th>
-        <th class="text-right px-4 py-3">Total points</th>
+        <th class="text-left px-3 sm:px-4 py-3">#</th>
+        <th class="text-left px-3 sm:px-4 py-3">Player</th>
+        <th class="hidden sm:table-cell text-right px-4 py-3">Group correct</th>
+        <th class="hidden sm:table-cell text-right px-4 py-3">Bracket correct</th>
+        <th class="text-right px-3 sm:px-4 py-3">Points</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-slate-100">
@@ -26,11 +26,16 @@
           <% prev_points = p.total_points %>
         <% end %>
         <tr class="<%= 'bg-emerald-50/40' if i.zero? %>">
-          <td class="px-4 py-3 font-mono text-slate-400 w-10"><%= position %></td>
-          <td class="px-4 py-3 font-medium"><%= p.name_with_flag %></td>
-          <td class="px-4 py-3 text-right text-slate-600"><%= p.group_correct %></td>
-          <td class="px-4 py-3 text-right text-slate-600"><%= p.bracket_correct %></td>
-          <td class="px-4 py-3 text-right font-bold text-emerald-700"><%= p.total_points %></td>
+          <td class="px-3 sm:px-4 py-3 font-mono text-slate-400 w-10 align-top sm:align-middle"><%= position %></td>
+          <td class="px-3 sm:px-4 py-3 font-medium">
+            <%= p.name_with_flag %>
+            <div class="sm:hidden mt-0.5 text-xs font-normal text-slate-500">
+              Group <%= p.group_correct %> &middot; Bracket <%= p.bracket_correct %>
+            </div>
+          </td>
+          <td class="hidden sm:table-cell px-4 py-3 text-right text-slate-600"><%= p.group_correct %></td>
+          <td class="hidden sm:table-cell px-4 py-3 text-right text-slate-600"><%= p.bracket_correct %></td>
+          <td class="px-3 sm:px-4 py-3 text-right font-bold text-emerald-700 align-top sm:align-middle"><%= p.total_points %></td>
         </tr>
       <% end %>
     </tbody>
