@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   resource :bracket_insights, only: [:show], controller: "bracket_insights"
   resource :champion_picks, only: [:show], controller: "champion_picks"
   resources :standings, only: [:index]
+  get "brackets/:user_id" => "user_brackets#show", as: :user_bracket
 
   get "feed" => "feed#index", as: :feed
   post "feed" => "feed#create"

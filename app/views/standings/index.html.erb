@@ -20,6 +20,9 @@
       <% end %>
       <% prev_points = nil %>
       <% position = 0 %>
+      <%# Link to each player's bracket only when the viewer could actually see it:
+          signed in, bracket live, and picks revealed (locked or admin). %>
+      <% link_brackets = user_signed_in? && knockout_visible? && (knockout_stage_locked? || admin_user?) %>
       <% @players.each_with_index do |p, i| %>
         <% if p.total_points != prev_points %>
           <% position = i + 1 %>
@@ -28,7 +31,11 @@
         <tr class="<%= 'bg-emerald-50/40' if i.zero? %>">
           <td class="px-3 sm:px-4 py-3 font-mono text-slate-400 w-10 align-top sm:align-middle"><%= position %></td>
           <td class="px-3 sm:px-4 py-3 font-medium">
-            <%= p.name_with_flag %>
+            <% if link_brackets %>
+              <%= link_to p.name_with_flag, user_bracket_path(p), class: "hover:text-emerald-700 underline decoration-slate-300 underline-offset-2 hover:decoration-emerald-500" %>
+            <% else %>
+              <%= p.name_with_flag %>
+            <% end %>
             <div class="sm:hidden mt-0.5 text-xs font-normal text-slate-500">
               Group <%= p.group_correct %> &middot; Bracket <%= p.bracket_points %>
             </div>
