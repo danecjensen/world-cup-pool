@@ -5,7 +5,7 @@ class StandingsController < ApplicationController
       COALESCE(SUM(picks.points_awarded), 0) AS total_points,
       COALESCE(SUM(CASE WHEN picks.correct THEN 1 ELSE 0 END), 0) AS correct_picks,
       COALESCE(SUM(CASE WHEN picks.match_id IS NOT NULL AND picks.correct THEN 1 ELSE 0 END), 0) AS group_correct,
-      COALESCE(SUM(CASE WHEN picks.knockout_match_id IS NOT NULL AND picks.correct THEN 1 ELSE 0 END), 0) AS bracket_correct
+      COALESCE(SUM(CASE WHEN picks.knockout_match_id IS NOT NULL THEN picks.points_awarded ELSE 0 END), 0) AS bracket_points
     SQL
 
     @players = User.left_joins(:picks)
