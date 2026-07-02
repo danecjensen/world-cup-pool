@@ -32,66 +32,8 @@
       html: { data: { controller: "bracket",
                       bracket_picks_value: @picks_by_km.transform_values(&:team_id).to_json,
                       bracket_locked_value: (@knockout_locked ? true : false) } } do |f| %>
-  <div class="overflow-x-auto pb-4 -mx-4 px-4">
-    <div class="flex gap-5 min-w-max items-stretch">
-      <% @rounds.each do |round| %>
-        <% next unless @matches_by_round[round] %>
-        <section class="flex flex-col w-64 shrink-0">
-          <header class="rounded-t-lg bg-gradient-to-r from-rose-600 to-rose-500 text-white px-3 py-2 text-center">
-            <h2 class="font-bold tracking-tight text-sm"><%= KnockoutMatch::ROUND_NAMES[round] %></h2>
-            <span class="text-[10px] font-medium uppercase tracking-widest opacity-80"><%= KnockoutMatch::ROUND_POINTS[round] %> pts each</span>
-          </header>
-          <div class="flex-1 flex flex-col justify-around gap-3 bg-slate-50/60 rounded-b-lg p-2">
-            <% @matches_by_round[round].each do |km| %>
-              <% pick = @picks_by_km[km.id] %>
-              <%
-                # R32 competitors are fixed teams the admin entered; every later
-                # round is fed by the winner of an earlier match (resolved live
-                # in the browser as players make their picks).
-                home_team    = km.round == "r32" ? km.home_team : nil
-                away_team    = km.round == "r32" ? km.away_team : nil
-                home_feeder  = km.home_slot&.source_type == "match_winner" ? km.home_slot.source_match_id : nil
-                away_feeder  = km.away_slot&.source_type == "match_winner" ? km.away_slot.source_match_id : nil
-                home_placeholder = km.round == "r32" ? "TBD" : (km.home_slot&.display_label || "TBD")
-                away_placeholder = km.round == "r32" ? "TBD" : (km.away_slot&.display_label || "TBD")
-              %>
-              <div class="rounded-lg bg-white shadow-sm border border-slate-200 overflow-hidden"
-                  data-bracket-target="match"
-                  data-match-id="<%= km.id %>"
-                  data-number="<%= km.number %>"
-                  <% if home_team %>data-home-team-id="<%= home_team.id %>" data-home-team-label="<%= home_team.name %>" data-home-team-flag="<%= home_team.flag_emoji %>"<% elsif home_feeder %>data-home-feeder="<%= home_feeder %>"<% end %>
-                  data-home-placeholder="<%= home_placeholder %>"
-                  <% if away_team %>data-away-team-id="<%= away_team.id %>" data-away-team-label="<%= away_team.name %>" data-away-team-flag="<%= away_team.flag_emoji %>"<% elsif away_feeder %>data-away-feeder="<%= away_feeder %>"<% end %>
-                  data-away-placeholder="<%= away_placeholder %>">
-                <div class="flex items-center justify-between px-2.5 py-1 bg-slate-50 border-b border-slate-100">
-                  <span class="font-mono text-[10px] text-slate-400">#<%= km.number %></span>
-                  <% if km.kickoff_at %>
-                    <span class="text-[10px] text-slate-400"><%= km.kickoff_at.strftime("%b %-d") %></span>
-                  <% end %>
-                </div>
-                <%# Blank default so de-selecting (or an invalidated downstream pick) clears the saved pick. %>
-                <input type="hidden" name="picks[<%= km.id %>]" value="">
-                <%= render "competitor", km: km, side: "home", team: home_team, placeholder: home_placeholder, pick: pick, locked: @knockout_locked %>
-                <%= render "competitor", km: km, side: "away", team: away_team, placeholder: away_placeholder, pick: pick, locked: @knockout_locked %>
-                <% if km.winner_team || (pick && km.winner_team) %>
-                  <div class="px-2.5 py-1 text-[10px] border-t border-slate-100 flex items-center justify-between">
-                    <% if km.winner_team %>
-                      <span class="text-emerald-700 font-semibold truncate">✓ <%= km.winner_team.name %></span>
-                    <% end %>
-                    <% if pick && km.winner_team %>
-                      <span class="<%= pick.correct ? 'text-emerald-600' : 'text-rose-500' %> font-bold">
-                        <%= pick.correct ? "+#{km.points_value}" : "0" %>
-                      </span>
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-        </section>
-      <% end %>
-    </div>
-  </div>
+  <%= render "bracket_tree", rounds: @rounds, matches_by_round: @matches_by_round,
+                             picks_by_km: @picks_by_km, locked: @knockout_locked %>
 
   <% unless @knockout_locked %>
     <div class="flex justify-end mt-6">
