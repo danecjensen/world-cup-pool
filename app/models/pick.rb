@@ -8,12 +8,16 @@ class Pick < ApplicationRecord
   validates :group_result, inclusion: { in: Match::RESULTS, allow_nil: true }
   validate :exactly_one_target
 
+  # Picks whose current value was entered/changed by an admin on the user's
+  # behalf (e.g. picks submitted over email) — surfaced on the admin audit page.
+  scope :admin_entered, -> { where(admin_entered: true) }
+
   # Columns used when exporting picks to CSV from the developer tools. Instead of
   # dumping raw foreign keys and the home/away/draw enum, this surfaces the
   # picker's identity, the match name, and the team the user actually picked.
   CSV_EXPORT_COLUMNS = %w[
     id username email match selection
-    points_awarded correct created_at updated_at
+    points_awarded correct admin_entered created_at updated_at
   ].freeze
 
   def self.csv_export_columns
@@ -38,6 +42,7 @@ class Pick < ApplicationRecord
       "selection" => selection_label,
       "points_awarded" => points_awarded,
       "correct" => correct,
+      "admin_entered" => admin_entered,
       "created_at" => created_at,
       "updated_at" => updated_at
     }

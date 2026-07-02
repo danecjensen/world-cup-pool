@@ -32,9 +32,14 @@
                 data-away-placeholder="<%= away_placeholder %>">
               <div class="flex items-center justify-between px-2.5 py-1 bg-slate-50 border-b border-slate-100">
                 <span class="font-mono text-[10px] text-slate-400">#<%= km.number %></span>
-                <% if km.kickoff_at %>
-                  <span class="text-[10px] text-slate-400"><%= km.kickoff_at.strftime("%b %-d") %></span>
-                <% end %>
+                <div class="flex items-center gap-1.5">
+                  <% if pick&.admin_entered? %>
+                    <span class="text-[9px] font-bold uppercase tracking-wide px-1 py-0.5 rounded bg-amber-100 text-amber-800" title="This pick was entered by an admin">Admin</span>
+                  <% end %>
+                  <% if km.kickoff_at %>
+                    <span class="text-[10px] text-slate-400"><%= km.kickoff_at.strftime("%b %-d") %></span>
+                  <% end %>
+                </div>
               </div>
               <%# Blank default so de-selecting (or an invalidated downstream pick) clears the saved pick. %>
               <input type="hidden" name="picks[<%= km.id %>]" value="">

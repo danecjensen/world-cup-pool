@@ -39,6 +39,9 @@ class BracketPicksController < ApplicationController
         next unless team
         pick ||= current_user.picks.build(knockout_match_id: km.id)
         pick.team = team
+        # Once the player changes a pick themselves it's theirs again — clear
+        # the admin-entered audit flag set by Admin::BracketPicksController.
+        pick.admin_entered = false if pick.changed?
         pick.save!
       end
     end
