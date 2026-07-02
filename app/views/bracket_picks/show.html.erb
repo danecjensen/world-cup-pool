@@ -28,10 +28,16 @@
   sideways to reach the later rounds and the final.
 </div>
 
-<%= render "bracket_form",
-      form_url: bracket_picks_path,
-      rounds: @rounds,
-      matches_by_round: @matches_by_round,
-      picks_by_km: @picks_by_km,
-      locked: @knockout_locked,
-      submit_label: "Save bracket" %>
+<%= form_with url: bracket_picks_path, method: :patch, local: true,
+      html: { data: { controller: "bracket",
+                      bracket_picks_value: @picks_by_km.transform_values(&:team_id).to_json,
+                      bracket_locked_value: (@knockout_locked ? true : false) } } do |f| %>
+  <%= render "bracket_tree", rounds: @rounds, matches_by_round: @matches_by_round,
+                             picks_by_km: @picks_by_km, locked: @knockout_locked %>
+
+  <% unless @knockout_locked %>
+    <div class="flex justify-end mt-6">
+      <%= f.submit "Save bracket", class: "bg-rose-600 hover:bg-rose-700 text-white font-semibold px-6 py-3 rounded-lg shadow" %>
+    </div>
+  <% end %>
+<% end %>
