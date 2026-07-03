@@ -80,6 +80,50 @@
   </div>
 </section>
 
+<section class="rounded-xl bg-white shadow overflow-hidden mb-8">
+  <header class="flex flex-wrap items-center justify-between gap-2 bg-gradient-to-r from-sky-600 to-emerald-500 text-white px-5 py-4">
+    <div>
+      <h2 class="font-bold tracking-tight text-lg">💧 Drip Cup</h2>
+      <p class="text-sm text-white/80">Head-to-head "which kit is better?" picker with Elo rankings.</p>
+    </div>
+    <% if drip_cup_enabled? %>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400 text-emerald-950 text-sm font-semibold">● Live for all players</span>
+    <% else %>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-300 text-amber-950 text-sm font-semibold">● Admin-only preview</span>
+    <% end %>
+  </header>
+
+  <div class="p-5 space-y-4">
+    <div class="rounded-lg border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="max-w-prose">
+        <h3 class="font-semibold">Feature flag — open the Drip Cup to users</h3>
+        <p class="text-sm text-slate-500 mt-1">
+          <% if drip_cup_enabled? %>
+            The Drip Cup is <strong>live</strong>: every signed-in player sees the nav link and can vote on kits.
+          <% else %>
+            The Drip Cup is <strong>hidden</strong> from players. Only admins can open it (in preview) to test before launch. Flip this on when you're ready for everyone.
+          <% end %>
+        </p>
+      </div>
+      <%= button_to admin_toggle_drip_cup_path, method: :post,
+                    class: "shrink-0 rounded-lg #{drip_cup_enabled? ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white font-semibold px-5 py-3 shadow" do %>
+        <%= drip_cup_enabled? ? "Make Drip Cup admin-only" : "Open Drip Cup to all players" %>
+      <% end %>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <%= link_to drip_cup_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Open the picker →</h3>
+        <p class="text-sm text-slate-500 mt-1">Vote on kit matchups yourself — one design on the top half of the screen, one on the bottom.</p>
+      <% end %>
+      <%= link_to drip_cup_leaderboard_path, class: "rounded-lg border border-slate-200 p-4 hover:shadow-md block" do %>
+        <h3 class="font-semibold">Kit rankings →</h3>
+        <p class="text-sm text-slate-500 mt-1">The current Elo table across all kits.</p>
+      <% end %>
+    </div>
+  </div>
+</section>
+
 <div class="grid md:grid-cols-2 gap-4 mb-8">
   <%= link_to admin_matches_path, class: "rounded-xl bg-white shadow p-5 hover:shadow-md block" do %>
     <h2 class="font-semibold">Enter group-stage results →</h2>

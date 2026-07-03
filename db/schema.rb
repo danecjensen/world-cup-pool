@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_02_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_03_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,29 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_02_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["letter"], name: "index_groups_on_letter", unique: true
+  end
+
+  create_table "kit_votes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "winner_kit_id", null: false
+    t.bigint "loser_kit_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["loser_kit_id"], name: "index_kit_votes_on_loser_kit_id"
+    t.index ["user_id"], name: "index_kit_votes_on_user_id"
+    t.index ["winner_kit_id"], name: "index_kit_votes_on_winner_kit_id"
+  end
+
+  create_table "kits", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "image_path", null: false
+    t.float "rating", default: 1000.0, null: false
+    t.integer "wins", default: 0, null: false
+    t.integer "losses", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["image_path"], name: "index_kits_on_image_path", unique: true
+    t.index ["rating"], name: "index_kits_on_rating"
   end
 
   create_table "knockout_matches", force: :cascade do |t|
@@ -161,6 +184,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_02_000000) do
     t.boolean "bracket_visible", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "drip_cup_enabled", default: false, null: false
   end
 
   create_table "teams", force: :cascade do |t|
@@ -210,6 +234,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_02_000000) do
   add_foreign_key "bracket_slots", "teams"
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
+  add_foreign_key "kit_votes", "kits", column: "loser_kit_id"
+  add_foreign_key "kit_votes", "kits", column: "winner_kit_id"
+  add_foreign_key "kit_votes", "users"
   add_foreign_key "knockout_matches", "bracket_slots", column: "away_slot_id"
   add_foreign_key "knockout_matches", "bracket_slots", column: "home_slot_id"
   add_foreign_key "knockout_matches", "bracket_slots", column: "winner_slot_id"
