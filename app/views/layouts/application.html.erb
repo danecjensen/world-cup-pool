@@ -38,6 +38,14 @@
               <% end %>
               <%= link_to "Insights", bracket_insights_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10" %>
             <% end %>
+            <% if drip_cup_visible? %>
+              <%= link_to drip_cup_path, class: "px-3 py-1.5 rounded-md hover:bg-white/10 inline-flex items-center gap-1.5" do %>
+                Drip Cup
+                <% if drip_cup_preview? %>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-amber-400 text-amber-950">Preview</span>
+                <% end %>
+              <% end %>
+            <% end %>
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path, class: "px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30" %>
               <%= link_to "Dev", developer_root_path, class: "px-3 py-1.5 rounded-md bg-slate-900/30 hover:bg-slate-900/50" %>

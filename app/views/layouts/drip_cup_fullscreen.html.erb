@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Drip Cup" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-dvh overflow-hidden bg-slate-950 text-white antialiased flex flex-col">
+    <header class="shrink-0 flex items-center justify-between gap-2 px-4 py-2.5 bg-slate-900">
+      <%= link_to root_path, class: "text-sm font-medium text-white/70 hover:text-white" do %>
+        &larr; Back
+      <% end %>
+      <div class="flex items-center gap-2 font-extrabold tracking-tight">
+        <span>💧 Drip Cup</span>
+        <% if drip_cup_preview? %>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-amber-400 text-amber-950">Preview</span>
+        <% end %>
+      </div>
+      <%= link_to "Rankings", drip_cup_leaderboard_path, class: "text-sm font-medium text-white/70 hover:text-white" %>
+    </header>
+
+    <% if alert.present? %>
+      <p class="shrink-0 bg-rose-600 text-white text-sm text-center px-4 py-2"><%= alert %></p>
+    <% end %>
+
+    <main class="flex-1 min-h-0">
+      <%= yield %>
+    </main>
+  </body>
+</html>

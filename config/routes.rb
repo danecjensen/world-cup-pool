@@ -21,6 +21,10 @@ Rails.application.routes.draw do
   resource :bracket_insights, only: [:show], controller: "bracket_insights"
   resource :champion_picks, only: [:show], controller: "champion_picks"
   resources :standings, only: [:index]
+
+  get "drip-cup" => "drip_cup#show", as: :drip_cup
+  post "drip-cup/votes" => "drip_cup#vote", as: :drip_cup_votes
+  get "drip-cup/leaderboard" => "drip_cup#leaderboard", as: :drip_cup_leaderboard
   get "brackets/:user_id" => "user_brackets#show", as: :user_bracket
 
   get "feed" => "feed#index", as: :feed
@@ -65,5 +69,6 @@ Rails.application.routes.draw do
     get "pick_audits" => "pick_audits#index", as: :pick_audits
     post "score" => "dashboard#recompute_scores", as: :recompute_scores
     post "toggle_bracket_visibility" => "dashboard#toggle_bracket_visibility", as: :toggle_bracket_visibility
+    post "toggle_drip_cup" => "dashboard#toggle_drip_cup", as: :toggle_drip_cup
   end
 end

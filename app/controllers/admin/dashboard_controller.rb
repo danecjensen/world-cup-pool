@@ -20,4 +20,11 @@ class Admin::DashboardController < Admin::BaseController
     redirect_to admin_root_path,
                 notice: "Bracket is now #{setting.bracket_visible? ? 'visible' : 'hidden'} to users."
   end
+
+  def toggle_drip_cup
+    setting = SiteSetting.current
+    setting.update!(drip_cup_enabled: !setting.drip_cup_enabled?)
+    redirect_to admin_root_path,
+                notice: "Drip Cup is now #{setting.drip_cup_enabled? ? 'live for all players' : 'admin-only'}."
+  end
 end

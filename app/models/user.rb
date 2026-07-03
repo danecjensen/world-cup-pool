@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :watch_parties, dependent: :destroy
+  has_many :kit_votes, dependent: :destroy
 
   validates :display_name, presence: true, uniqueness: { case_sensitive: false }, length: { in: 2..30 }
 

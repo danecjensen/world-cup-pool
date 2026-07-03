@@ -4,7 +4,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   helper_method :group_stage_locked?, :knockout_stage_locked?,
-                :bracket_visible?, :knockout_visible?, :knockout_preview?
+                :bracket_visible?, :knockout_visible?, :knockout_preview?,
+                :drip_cup_enabled?, :drip_cup_visible?, :drip_cup_preview?
 
   # Feature flag: when on, the knockout bracket is live for every user.
   def bracket_visible?
@@ -23,6 +24,23 @@ class ApplicationController < ActionController::Base
   # "not live yet" messaging in the UI.
   def knockout_preview?
     !bracket_visible? && admin_user?
+  end
+
+  # Feature flag: when on, the Drip Cup kit picker is live for every user.
+  def drip_cup_enabled?
+    SiteSetting.current.drip_cup_enabled?
+  end
+
+  # Whether the current viewer may use the Drip Cup at all. While the flag
+  # is off, admins can still play with it to test before it ships.
+  def drip_cup_visible?
+    drip_cup_enabled? || admin_user?
+  end
+
+  # True only when an admin is previewing the Drip Cup before the flag has
+  # been switched on for everyone.
+  def drip_cup_preview?
+    !drip_cup_enabled? && admin_user?
   end
 
   def group_stage_locked?

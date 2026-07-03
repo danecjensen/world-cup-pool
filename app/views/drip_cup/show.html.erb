@@ -1,0 +1,26 @@
+<% content_for :title, "Drip Cup — which kit is better?" %>
+
+<div class="relative h-full flex flex-col">
+  <% [@kit_top, @kit_bottom].each_with_index do |kit, i| %>
+    <%= button_to drip_cup_votes_path,
+                  params: { winner_id: kit.id, matchup_token: @matchup_token },
+                  form_class: "flex-1 min-h-0 flex #{'border-t-4 border-slate-950' if i == 1}",
+                  class: "group relative w-full h-full bg-white active:bg-emerald-50 transition-colors cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-500 ring-inset",
+                  aria: { label: "Pick #{kit.name}" } do %>
+      <%= image_tag kit.image_path, alt: kit.name,
+                    class: "absolute inset-0 h-full w-full object-contain p-4 pointer-events-none" %>
+      <span class="absolute <%= i.zero? ? "top-2" : "bottom-2" %> left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-slate-900/80 text-white text-sm font-semibold whitespace-nowrap">
+        <%= kit.name %>
+      </span>
+    <% end %>
+  <% end %>
+
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-1 pointer-events-none">
+    <span class="h-12 w-12 rounded-full bg-slate-950 text-white flex items-center justify-center font-extrabold text-sm shadow-lg border-2 border-white/20">VS</span>
+    <%= link_to "Skip ›", drip_cup_path,
+                class: "pointer-events-auto px-2.5 py-0.5 rounded-full bg-slate-950/80 text-white/80 text-xs font-semibold hover:text-white" %>
+    <span class="px-2 py-0.5 rounded-full bg-slate-950/60 text-white/60 text-[10px] font-medium whitespace-nowrap">
+      Tap the kit with more drip &middot; <%= pluralize(@vote_count, "vote") %> cast
+    </span>
+  </div>
+</div>
