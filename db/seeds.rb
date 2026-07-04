@@ -205,6 +205,30 @@ ActiveRecord::Base.transaction do
     87 => central.local(2026, 7,  3, 20, 30)  # Colombia vs Ghana
   }
 
+  # Official FIFA 2026 kickoffs for the round of 16 onward, in Central Time,
+  # keyed by official match number (same scheme as r32_kickoff_for).
+  later_round_kickoff_for = {
+    # Round of 16
+    90 => central.local(2026, 7,  4, 12, 0),  # Houston
+    89 => central.local(2026, 7,  4, 16, 0),  # Philadelphia
+    91 => central.local(2026, 7,  5, 15, 0),  # East Rutherford
+    92 => central.local(2026, 7,  5, 19, 0),  # Mexico City
+    93 => central.local(2026, 7,  6, 14, 0),  # Arlington
+    94 => central.local(2026, 7,  6, 19, 0),  # Seattle
+    95 => central.local(2026, 7,  7, 11, 0),  # Atlanta
+    96 => central.local(2026, 7,  7, 15, 0),  # Vancouver
+    # Quarter-finals
+    97 => central.local(2026, 7,  9, 15, 0),  # Foxborough
+    98 => central.local(2026, 7, 10, 14, 0),  # Inglewood
+    99 => central.local(2026, 7, 11, 16, 0),  # Miami Gardens
+    100 => central.local(2026, 7, 11, 20, 0), # Kansas City
+    # Semi-finals
+    101 => central.local(2026, 7, 14, 14, 0), # Arlington
+    102 => central.local(2026, 7, 15, 14, 0), # Atlanta
+    # Final
+    104 => central.local(2026, 7, 19, 14, 0)  # East Rutherford
+  }
+
   # Official FIFA 2026 knockout venues, keyed by official match number, in the
   # same "Stadium, City" format as the group-stage schedule. Verified against the
   # FIFA 2026 schedule and Wikipedia's knockout-stage article.
@@ -273,7 +297,7 @@ ActiveRecord::Base.transaction do
   # Every later round pairs the winners of the two matches directly above and
   # below it in the bracket: position p is fed by feeder positions 2p-1 and 2p of
   # the previous round.
-  build_round = ->(round, count, feeders, base_kickoff, step_hours) do
+  build_round = ->(round, count, feeders) do
     winners = {}
     count.times do |i|
       number = number_for[round][i]
@@ -285,7 +309,7 @@ ActiveRecord::Base.transaction do
         home_slot: feeders[2 * i + 1],
         away_slot: feeders[2 * i + 2],
         winner_slot: winner_slot,
-        kickoff_at: base_kickoff + (i * step_hours).hours,
+        kickoff_at: later_round_kickoff_for[number],
         venue: knockout_venue_for[number]
       )
       winners[i + 1] = winner_slot
@@ -293,10 +317,10 @@ ActiveRecord::Base.transaction do
     winners
   end
 
-  r16_winners = build_round.call("r16", 8, r32_winners, Time.zone.local(2026, 7, 4, 12, 0), 6)
-  qf_winners  = build_round.call("qf", 4, r16_winners, Time.zone.local(2026, 7, 9, 14, 0), 6)
-  sf_winners  = build_round.call("sf", 2, qf_winners, Time.zone.local(2026, 7, 14, 18, 0), 24)
-  build_round.call("final", 1, sf_winners, Time.zone.local(2026, 7, 19, 15, 0), 0)
+  r16_winners = build_round.call("r16", 8, r32_winners)
+  qf_winners  = build_round.call("qf", 4, r16_winners)
+  sf_winners  = build_round.call("sf", 2, qf_winners)
+  build_round.call("final", 1, sf_winners)
 
   if ENV["ADMIN_EMAIL"].present? && ENV["ADMIN_PASSWORD"].present?
     User.find_or_create_by!(email: ENV["ADMIN_EMAIL"]) do |u|
