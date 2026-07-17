@@ -85,9 +85,35 @@ Rails.application.configure do
     config.action_mailer.default_url_options = { host: ENV["APP_HOST"], protocol: "https" }
   end
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Deliver mail (e.g. Devise password-reset emails) over SMTP.
+  #
+  # This is provider-agnostic: it reads generic SMTP_* env vars if you set
+  # them, and otherwise falls back to the credentials that the Heroku SendGrid
+  # add-on provisions automatically (SENDGRID_USERNAME / SENDGRID_PASSWORD).
+  #
+  # Easiest setup on Heroku:
+  #   heroku addons:create sendgrid:starter
+  #   heroku config:set APP_HOST=your-app.herokuapp.com
+  # That's it — no other config needed for the SendGrid path.
+  smtp_address  = ENV["SMTP_ADDRESS"].presence || "smtp.sendgrid.net"
+  smtp_username = ENV["SMTP_USERNAME"].presence || ENV["SENDGRID_USERNAME"].presence
+  smtp_password = ENV["SMTP_PASSWORD"].presence || ENV["SENDGRID_PASSWORD"].presence
+
+  if smtp_username.present? && smtp_password.present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.perform_deliveries = true
+    # Surface delivery errors in the logs instead of failing silently.
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.smtp_settings = {
+      address:              smtp_address,
+      port:                 ENV.fetch("SMTP_PORT", 587).to_i,
+      domain:               ENV["SMTP_DOMAIN"].presence || ENV["APP_HOST"].presence || "herokuapp.com",
+      user_name:            smtp_username,
+      password:             smtp_password,
+      authentication:       :plain,
+      enable_starttls_auto: true
+    }
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

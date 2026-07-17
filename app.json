@@ -23,6 +23,15 @@
       "value": "Commissioner",
       "required": false
     },
+    "APP_HOST": {
+      "description": "Public hostname used to build links in emails (e.g. password reset), e.g. your-app.herokuapp.com. Required for the reset-password email links to be correct.",
+      "required": false
+    },
+    "MAILER_SENDER": {
+      "description": "From address on outgoing emails (password reset, etc.), e.g. no-reply@yourdomain.com.",
+      "value": "no-reply@example.com",
+      "required": false
+    },
     "POOL_NAME": {
       "description": "Display name for this pool",
       "required": false
@@ -50,7 +59,8 @@
     }
   },
   "addons": [
-    { "plan": "heroku-postgresql:essential-0" }
+    { "plan": "heroku-postgresql:essential-0" },
+    { "plan": "sendgrid:starter" }
   ],
   "buildpacks": [
     { "url": "heroku/ruby" }

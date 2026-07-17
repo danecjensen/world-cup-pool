@@ -24,7 +24,10 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
+  # The "from" address on Devise emails (password reset, etc.). Override per
+  # deploy with the MAILER_SENDER env var. With SendGrid this can be any
+  # address, but using a domain you've verified improves deliverability.
+  config.mailer_sender = ENV.fetch('MAILER_SENDER', 'no-reply@example.com')
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'

@@ -48,6 +48,34 @@ heroku run rails db:seed
 
 The included `app.json` and `Procfile` configure the release phase to run `db:prepare` and the postdeploy hook to seed teams/groups/fixtures.
 
+### Email (password reset, etc.)
+
+Devise sends password-reset emails over SMTP. Production has no built-in mail
+server, so you need to attach an email provider. The easiest option on Heroku is
+the **SendGrid** add-on, which provisions SMTP credentials automatically:
+
+```bash
+heroku addons:create sendgrid:starter
+heroku config:set APP_HOST=your-app.herokuapp.com \
+                  MAILER_SENDER=no-reply@yourdomain.com
+```
+
+`APP_HOST` is required so the reset links in the email point at your app. Once
+the add-on is attached, no secrets need to be set by hand — the app reads the
+`SENDGRID_USERNAME` / `SENDGRID_PASSWORD` config vars the add-on creates.
+
+To use a different provider (Mailgun, Postmark, Amazon SES, …) instead, skip the
+add-on and set the generic SMTP vars:
+
+```bash
+heroku config:set SMTP_ADDRESS=smtp.yourprovider.com \
+                  SMTP_PORT=587 \
+                  SMTP_USERNAME=... \
+                  SMTP_PASSWORD=... \
+                  APP_HOST=your-app.herokuapp.com \
+                  MAILER_SENDER=no-reply@yourdomain.com
+```
+
 ### Media storage for `/feed` (required on Heroku)
 
 The `/feed` photo & video gallery uses Active Storage. Heroku's file system is
