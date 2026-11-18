@@ -151,6 +151,7 @@ GEM
       net-smtp
     marcel (1.1.0)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (5.27.0)
     msgpack (1.8.3)
     net-imap (0.6.4)
@@ -163,6 +164,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
+    nokogiri (1.19.3)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.19.3-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.19.3-aarch64-linux-musl)
@@ -198,7 +202,7 @@ GEM
     psych (5.3.1)
       date
       stringio
-    puma (8.0.2)
+    puma (8.1.1)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.6)
